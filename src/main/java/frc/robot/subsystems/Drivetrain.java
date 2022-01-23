@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import edu.wpi.first.wpilibj.Encoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import static frc.robot.RobotMap.*;
+import frc.robot.RobotMap.*;
 import frc.robot.IO;
 
 
@@ -22,8 +23,6 @@ public class Drivetrain implements Subsystem {
     WPI_TalonFX backRight = new WPI_TalonFX(ID_DRIVE_BL);
     Timer timer = new Timer(); //for timing autonomous functions
     private DifferentialDrive drive = new DifferentialDrive(frontLeft, frontRight); //front motors are masters & control inputs for both front and back
-    private Encoder encoderL = new Encoder(6, 7, false); // parameters are ports
-    private Encoder encoderR = new Encoder(8, 9, true);
     
 
     /** drive function that can be called without having to pass in private vairables **/
@@ -31,44 +30,29 @@ public class Drivetrain implements Subsystem {
         if ((IO.getDriveTrigger() - IO.getReverseTrigger()) > 1 || (IO.getDriveTrigger() - IO.getReverseTrigger()) < -1) {
             System.out.println("out of bounds drive value. go to Drivetrain.java line 34 and edit to an in-bounds expression");
         } else {
-            drive.arcadeDrive(IO.getThrottle(), IO.getDriveXAxis() * DRIVE_SPEED_MULT);
+            drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getDriveXAxis() * DRIVE_SPEED_MULT);
+            System.out.println("R: " + frontLeft.getSelectedSensorPosition());
+            System.out.println("L: " + frontRight.getSelectedSensorPosition());
+            System.out.println("A: " + getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition()) +"\n");
+
         }
     }
 
     /**  automated drive function that can be called and executed without direct input from a controller **/
-    public void autoTimeDrive(double time, double speed, double turn) {
-        if (timer.get() <= time && speed < 1 && speed > -1 && turn < 1 && turn > -1) {
-            System.out.println(timer.get());
-            drive.arcadeDrive(-speed *DRIVE_SPEED_MULT, turn);
+    public void autoTimeDrive(double dist, double speed, double turn) {
+        if (getDriveDistance(frontLeft.getSelectedSensorPosition(), frontRight.getSelectedSensorPosition()) > dist && speed < 1 && speed > -1 && turn < 1 && turn > -1) {
+            drive.arcadeDrive(speed * DRIVE_SPEED_MULT, turn);
         } else {
             this.stopMotors();
         }
     }
+    
 
     /** drive a distance at a speed (uses encoder data) -- NEEDS UPDATING*/
     public void autoDistDrive(double dist, double speed) {
-        // System.out.println(Math.abs(encoderL.get()));
-        // System.out.println(encoderR.get());
-        // // Drives forward at half speed until the robot has moved 5 feet, then stops:
-        // // frontRight.setInverted(true);      // Invert so positive is forward
-        // if(Math.abs(encoderL.getDistance()) < dist) {
-            frontLeft.set(AUTO_CONTROL_MODE, speed);
-            frontRight.set(AUTO_CONTROL_MODE, speed);
-        // } else {
-        //     frontLeft.stopMotor();
-        // }
-        // if(Math.abs(encoderL.getDistance()) < dist) {
-        //     frontRight.pidWrite(speed);
-        // } else {
-        //     frontRight.stopMotor();
-        // }
+        //code
     }
 
-    public void resetEnc() {
-        encoderL.reset();
-        encoderR.reset();
-
-    }
 
     /**initialize the drivetrain**/
     public void init() {
@@ -100,6 +84,10 @@ public class Drivetrain implements Subsystem {
         frontLeft.setSensorPhase(false); // Check
         frontRight.setSensorPhase(true); // Check
 
+        //init sensor position
+        frontLeft.setSelectedSensorPosition(0);
+        frontRight.setSelectedSensorPosition(0);
+
         //Set Brake/Coast Options
         frontLeft.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         backLeft.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
@@ -118,10 +106,7 @@ public class Drivetrain implements Subsystem {
         * forward. Change to 'false' so positive/green-LEDs moves robot forward
         */
         // drive.setRightSideInverted(false); // do not change this
-        encoderL.reset();
-        encoderR.reset();
-        encoderL.setDistancePerPulse(31.92/8.667);
-        encoderR.setDistancePerPulse(31.92/8.667); //1.13377687664 circ 8.667 ratio
+        //1.13377687664 circ 8.667 ratio
     }
 
     public void initDefaultCommand() {}
@@ -157,5 +142,13 @@ public class Drivetrain implements Subsystem {
         backRight.stopMotor();
         backLeft.stopMotor();
     }
+
+        /**gets the current travel distance of the current encoder */
+        public static double getDriveDistance(double left, double right) {
+            double distance;
+            double avgRawPos = (left + right) /2;
+            distance = (avgRawPos / COUNTS_PER_REV) * DRIVE_GEAR_RATIO * DRIVE_DIAMETER;
+            return distance;
+        }
 }
 

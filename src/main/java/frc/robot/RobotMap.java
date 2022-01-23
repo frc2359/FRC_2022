@@ -20,6 +20,10 @@ public interface RobotMap { // Change this to an enum
     //This is the mapping of the buttons to the various functions of the robot
     public static final int  DRIVE_PORT = 0;
 
+    final int COUNTS_PER_REV = 4096;
+    final double DRIVE_GEAR_RATIO = 0.05;
+    final int DRIVE_DIAMETER = 4;
+
     //Controls mode    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html
     public static final ControlMode DRIVE_CONTROL_MODE = ControlMode.PercentOutput; //this controls in what unit drive is measured in.
     public static final ControlMode AUTO_CONTROL_MODE = ControlMode.Velocity;
