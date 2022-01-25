@@ -46,5 +46,13 @@ public class IO {
         return driver.getBButtonReleased();
     }
 
+    /**gets the current travel distance of the current encoder */
+    public static double getDriveDistance(double left, double right, boolean isAvg) {
+        double distance;
+        double rawPosition = isAvg ? ((left + right) /2) : ((left > right) ? left : right);
+        distance = (rawPosition / COUNTS_PER_REV) * DRIVE_GEAR_RATIO * DRIVE_DIAMETER;
+        return distance;
+    }
+
 
 }
