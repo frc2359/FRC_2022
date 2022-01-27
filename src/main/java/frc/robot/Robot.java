@@ -49,12 +49,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     //again, copied from FRC_2021 since I'm not 100% sure of its function yet
-    final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-		final NetworkTable ntstuff = inst.getTable("obs");
-    ultrasonicReading = ntstuff.getEntry("dist");
+    final NetworkTableInstance robotNetInst = NetworkTableInstance.getDefault();
+		final NetworkTable robotNet = robotNetInst.getTable("obs");
+    ultrasonicReading = robotNet.getEntry("dist");
     drivetrain.init();
-		//to_the_right  = ntstuff.getEntry("r");
-		//to_the_left   = ntstuff.getEntry("l");
+		//to_the_right  = robotNet.getEntry("r");
+		//to_the_left   = robotNet.getEntry("l");
   }
 
   /** This function is run once each time the robot enters autonomous mode. */
