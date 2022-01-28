@@ -8,10 +8,8 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
-import edu.wpi.first.wpilibj.Encoder;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import static frc.robot.RobotMap.*;
-import frc.robot.RobotMap.*;
 import frc.robot.IO;
 
 
@@ -33,14 +31,13 @@ public class Drivetrain implements Subsystem {
             drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getDriveXAxis() * DRIVE_SPEED_MULT);
             System.out.println("R: " + frontLeft.getSelectedSensorPosition());
             System.out.println("L: " + frontRight.getSelectedSensorPosition());
-            System.out.println("A: " + getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition()) +"\n");
-
+            System.out.println("A: " + IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true) +"\n");
         }
     }
 
     /**  automated drive function that can be called and executed without direct input from a controller **/
     public void autoTimeDrive(double dist, double speed, double turn) {
-        if (getDriveDistance(frontLeft.getSelectedSensorPosition(), frontRight.getSelectedSensorPosition()) > dist && speed < 1 && speed > -1 && turn < 1 && turn > -1) {
+        if (IO.getDriveDistance(frontLeft.getSelectedSensorPosition(), frontRight.getSelectedSensorPosition(), true) > dist && speed < 1 && speed > -1 && turn < 1 && turn > -1) {
             drive.arcadeDrive(speed * DRIVE_SPEED_MULT, turn);
         } else {
             this.stopMotors();
@@ -141,12 +138,5 @@ public class Drivetrain implements Subsystem {
         backRight.stopMotor();
         backLeft.stopMotor();
     }
-
-        /**gets the current travel distance of the current encoder */
-        public static double getDriveDistance(double left, double right) {
-            double distance;
-            double avgRawPos = (left + right) /2;
-            distance = (avgRawPos / COUNTS_PER_REV) * DRIVE_GEAR_RATIO * DRIVE_DIAMETER * Math.PI;
-            return distance;
-        }
 }
+
