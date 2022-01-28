@@ -20,8 +20,8 @@ public interface RobotMap { // Change this to an enum
     //This is the mapping of the buttons to the various functions of the robot
     public static final int  DRIVE_PORT = 0;
 
-    final int COUNTS_PER_REV = 4096;
-    final double DRIVE_GEAR_RATIO = 0.05;
+    final int COUNTS_PER_REV = 2048;
+    final double DRIVE_GEAR_RATIO = 0.0675862; //1:14.7959
     final int DRIVE_DIAMETER = 4;
 
     //Controls mode    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html

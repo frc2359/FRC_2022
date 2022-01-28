@@ -133,7 +133,6 @@ public class Drivetrain implements Subsystem {
             frontRight.set(DRIVE_CONTROL_MODE,IO.getReverseTrigger() * rMult);
         }
     }
-
     /**stops motors manually**/
     public void stopMotors() {
         frontLeft.stopMotor();
@@ -147,8 +146,7 @@ public class Drivetrain implements Subsystem {
         public static double getDriveDistance(double left, double right) {
             double distance;
             double avgRawPos = (left + right) /2;
-            distance = (avgRawPos / COUNTS_PER_REV) * DRIVE_GEAR_RATIO * DRIVE_DIAMETER;
+            distance = (avgRawPos / COUNTS_PER_REV) * DRIVE_GEAR_RATIO * DRIVE_DIAMETER * Math.PI;
             return distance;
         }
 }
-
