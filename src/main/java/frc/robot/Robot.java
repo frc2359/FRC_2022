@@ -79,6 +79,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
+    System.out.println(IO.getDriveTrigger());
     drivetrain.arcadeDrive();
   }
 

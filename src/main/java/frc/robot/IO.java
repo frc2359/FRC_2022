@@ -32,8 +32,8 @@ public class IO {
     }
 
     /**gets the amount of tilt in the x-axis for directional steering**/
-    public static double getDriveXAxis() {
-        return driver.getRightX();
+    public static double getLeftXAxis() {
+        return driver.getLeftX();
     }
 
     /**gets throttle value (negative is backwards, positive is forwards)**/
@@ -41,10 +41,26 @@ public class IO {
         return (getDriveTrigger() - getReverseTrigger()) * DRIVE_SPEED_MULT;
     }
 
+    /**gets whether the B button on the controller has been pressed**/
+    public static boolean bButtonIsPressed() {
+        return driver.getBButtonPressed();
+    }
+
     /**gets whether the B button on the controller has been released**/
     public static boolean bButtonIsReleased() {
         return driver.getBButtonReleased();
     }
+
+    /**gets whether the A button on the controller has been released**/
+    public static boolean aButtonIsPressed() {
+        return driver.getAButtonPressed();
+    }
+
+    /**gets whether the A button on the controller has been released**/
+    public static boolean aButtonIsReleased() {
+        return driver.getAButtonReleased();
+    }
+        
 
     /**gets the current travel distance of the current encoder */
     public static double getDriveDistance(double left, double right, boolean isAvg) {
@@ -54,5 +70,14 @@ public class IO {
         return distance;
     }
 
-
+    /**Gets the left stick value when a is pushed - mod for setting intake velocity */
+    public static double getIntakeX(boolean isLeft) {
+        if (aButtonIsPressed() && isLeft) {
+            return driver.getLeftTriggerAxis();
+        } else if (aButtonIsPressed() && !isLeft) {
+            return driver.getRightTriggerAxis();
+        } else {
+            return 0;
+        }
+    }
 }

@@ -16,6 +16,7 @@ public class Shooter implements Subsystem {
     private final double INITIAL_VELOCITY = 1419;
     private final double MAX_VELOCITY = 5676;
 
+
     public void init() {
         shootPID.setReference(INITIAL_VELOCITY, CANSparkMax.ControlType.kVelocity);
     }
@@ -25,10 +26,13 @@ public class Shooter implements Subsystem {
     } 
 
     public void shoot() {
+        double motorV;
         if(IO.bButtonIsPressed()){
             while (IO.bButtonIsPressed()) {
-                shootPID.setReference(IO.getLeftXAxis() * MAX_VELOCITY, CANSparkMax.ControlType.kVelocity);
+                motorV = IO.getLeftXAxis() * MAX_VELOCITY;
+                shootPID.setReference(motorV, CANSparkMax.ControlType.kVelocity);
             }
+            // System.out.println(motorV);
             while (IO.aButtonIsPressed()) {
                 shootPID.setReference(IO.getLeftXAxis() * MAX_VELOCITY, CANSparkMax.ControlType.kVelocity);
             }

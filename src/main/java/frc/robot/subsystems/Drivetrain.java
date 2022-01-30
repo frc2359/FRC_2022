@@ -17,8 +17,8 @@ public class Drivetrain implements Subsystem {
     //The Falcon 500s are a unit that include Talon FXs as their base motors, over which there is an encoder built in.
     WPI_TalonFX frontLeft = new WPI_TalonFX(ID_DRIVE_FL);
     WPI_TalonFX frontRight = new WPI_TalonFX(ID_DRIVE_FR);
-    WPI_TalonFX backLeft = new WPI_TalonFX(ID_DRIVE_BR);
-    WPI_TalonFX backRight = new WPI_TalonFX(ID_DRIVE_BL);
+    // WPI_TalonFX backLeft = new WPI_TalonFX(ID_DRIVE_BR);
+    // WPI_TalonFX backRight = new WPI_TalonFX(ID_DRIVE_BL);
     Timer timer = new Timer(); //for timing autonomous functions
     private DifferentialDrive drive = new DifferentialDrive(frontLeft, frontRight); //front motors are masters & control inputs for both front and back
     
@@ -28,7 +28,8 @@ public class Drivetrain implements Subsystem {
         if ((IO.getDriveTrigger() - IO.getReverseTrigger()) > 1 || (IO.getDriveTrigger() - IO.getReverseTrigger()) < -1) {
             System.out.println("out of bounds drive value. go to Drivetrain.java line 34 and edit to an in-bounds expression");
         } else {
-            drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getDriveXAxis() * DRIVE_SPEED_MULT);
+            drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+            // drive.arcadeDrive(Math.sqrt(IO.getThrottle()) * 10, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             System.out.println("R: " + frontLeft.getSelectedSensorPosition());
             System.out.println("L: " + frontRight.getSelectedSensorPosition());
             System.out.println("A: " + IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true) +"\n");
@@ -64,19 +65,19 @@ public class Drivetrain implements Subsystem {
         //Reset Motor Controllers to Factory Configuration
         frontLeft.configFactoryDefault();
         frontRight.configFactoryDefault();
-        backLeft.configFactoryDefault();
-        backRight.configFactoryDefault();
+        // backLeft.configFactoryDefault();
+        // backRight.configFactoryDefault();
         
         //Set motors that are on the same side to follow each other (both left together, both right together)
-        backLeft.follow(frontLeft);
-        backRight.follow(frontRight);
+        // backLeft.follow(frontLeft);
+        // backRight.follow(frontRight);
 
 
         //Set Motor Direction and Encoder Sensor Phase
         frontLeft.setInverted(false);      // Positive is forward
-        backLeft.setInverted(InvertType.FollowMaster);     
+        // backLeft.setInverted(InvertType.FollowMaster);     
         frontRight.setInverted(true);      // Invert so positive is forward
-        backRight.setInverted(InvertType.FollowMaster);
+        // backRight.setInverted(InvertType.FollowMaster);
 
         frontLeft.setSensorPhase(false); // Check
         frontRight.setSensorPhase(true); // Check
@@ -87,9 +88,9 @@ public class Drivetrain implements Subsystem {
 
         //Set Brake/Coast Options
         frontLeft.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        backLeft.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        // backLeft.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         frontRight.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        backRight.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        // backRight.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         
 
         //Set Math.clamp Switch Positions
@@ -113,7 +114,7 @@ public class Drivetrain implements Subsystem {
         //convert the x-axis value given by the controller into a multiplier
         double lMult = 1; //speed multiplier
         double rMult = 1; //speed multiplier
-        if(IO.getDriveXAxis() < 0) { //This is for steering. We will need to check the functionality of this 
+        if(IO.getLeftXAxis() < 0) { //This is for steering. We will need to check the functionality of this 
             rMult = 0.5;
         } else {
             lMult = 0.5; 
@@ -135,8 +136,8 @@ public class Drivetrain implements Subsystem {
         frontLeft.stopMotor();
         frontRight.stopMotor();
         //should not be needed
-        backRight.stopMotor();
-        backLeft.stopMotor();
+        // backRight.stopMotor();
+        // backLeft.stopMotor();
     }
 }
 
