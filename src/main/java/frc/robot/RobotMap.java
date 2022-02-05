@@ -12,9 +12,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 public interface RobotMap { // Change this to an enum
     public static final int ID_DRIVE_FR = 0;
     public static final int ID_DRIVE_FL = 1;
-    public static final int ID_SHOOTER_1 = 2;
-    public static final int ID_SHOOTER_2 = 3;
-    public static final int ID_SHOOTER_3 = 4;
+    public static final int ID_SHOOTER_1 = 6;
+    public static final int ID_SHOOTER_2 = 5;
+    public static final int ID_SHOOTER_3 = 2;
 
     public static final double DRIVE_SPEED_MULT = 1; //14M->50->14->56D
 

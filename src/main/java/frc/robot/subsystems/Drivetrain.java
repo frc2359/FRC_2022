@@ -28,8 +28,14 @@ public class Drivetrain implements Subsystem {
         if ((IO.getDriveTrigger() - IO.getReverseTrigger()) > 1 || (IO.getDriveTrigger() - IO.getReverseTrigger()) < -1) {
             System.out.println("out of bounds drive value. go to Drivetrain.java line 34 and edit to an in-bounds expression");
         } else {
-            drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
-            // drive.arcadeDrive(Math.sqrt(IO.getThrottle()) * 10, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+            // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+            if(IO.getThrottle() < 0){
+                drive.arcadeDrive(Math.pow(IO.getThrottle(), 2) / 10, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+                System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
+
+            } else {
+                drive.arcadeDrive((IO.getThrottle() * IO.getThrottle()) / 10, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+            }
             System.out.println("R: " + frontLeft.getSelectedSensorPosition());
             System.out.println("L: " + frontRight.getSelectedSensorPosition());
             System.out.println("A: " + IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true) +"\n");
