@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 // import edu.wpi.first.wpilibj.GenericHID;
 // import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 //classes we make are imported here:
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
-import frc.robot.IO;
+// import frc.robot.IO;
 
 
 

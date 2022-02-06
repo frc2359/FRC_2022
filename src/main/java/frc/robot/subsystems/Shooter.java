@@ -1,10 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+// import edu.wpi.first.wpilibj.Timer;
+// import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+// import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,10 +17,9 @@ public class Shooter implements Subsystem {
     
     private CANSparkMax shootMtr2 = new CANSparkMax(ID_SHOOTER_3, MotorType.kBrushless);
     private CANSparkMax shootMotors[] = new CANSparkMax[]{shootMtr, shootMtr1, shootMtr2};
-    private SparkMaxPIDController shootPIDs[] = new SparkMaxPIDController[3];
-    // private SparkMaxPIDController shootPID = shootMtr.getPIDController();
+    // private SparkMaxPIDController shootPIDs[] = new SparkMaxPIDController[3];
     private RelativeEncoder motorEncoders[] = new RelativeEncoder[3];
-    private final double INITIAL_VELOCITY = 1419;
+    // private final double INITIAL_VELOCITY = 1419;
     private final double MAX_VELOCITY = 10000;
 
 
