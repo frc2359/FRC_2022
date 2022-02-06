@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 //classes we make are imported here:
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Shooter;
 import frc.robot.IO;
 
 
@@ -31,6 +32,7 @@ public class Robot extends TimedRobot {
   // private final Joystick m_stick = new Joystick(0);
   private final Timer m_timer = new Timer();
   public static final Drivetrain drivetrain = new Drivetrain();
+  public static final Shooter shooter = new Shooter();
 
   //These were on the FRC_2021 project - I'm not sure if they have to do with the radio, so I just added them in:
   public static NetworkTableInstance rpi3;
@@ -48,13 +50,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    //again, copied from FRC_2021 since I'm not 100% sure of its function yet
+    //instantiate network interface for Raspberry pi
     final NetworkTableInstance robotNetInst = NetworkTableInstance.getDefault();
 		final NetworkTable robotNet = robotNetInst.getTable("obs");
-    ultrasonicReading = robotNet.getEntry("dist");
+
+    //initiate subsystems 
     drivetrain.init();
-		//to_the_right  = robotNet.getEntry("r");
-		//to_the_left   = robotNet.getEntry("l");
+    shooter.init();
   }
 
   /** This function is run once each time the robot enters autonomous mode. */
@@ -68,7 +70,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-      // drivetrain.autoTimeDrive(5, 0.5, 0);
       drivetrain.autoDistDrive(1, 0.2);
   }
 
@@ -79,8 +80,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    System.out.println(IO.getDriveTrigger());
     drivetrain.arcadeDrive();
+    shooter.shoot();
   }
 
   /** This function is called once each time the robot enters test mode. */

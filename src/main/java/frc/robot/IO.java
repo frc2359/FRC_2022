@@ -35,7 +35,6 @@ public class IO {
     /**gets the amount of tilt in the x-axis for directional steering**/
     public static double getLeftXAxis() {
         SmartDashboard.putNumber(("LeftX"), driver.getLeftX());
-        System.out.println("LeftX : " + driver.getLeftX());
         return driver.getLeftX();
     }
 

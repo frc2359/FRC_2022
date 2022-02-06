@@ -41,7 +41,6 @@ public class Shooter implements Subsystem {
     public void getAllSpeeds() {
         for (int i = 0; i < motorEncoders.length; i++) {
             SmartDashboard.putNumber(("Motor " +  i), motorEncoders[i].getVelocity());
-            System.out.println("Motor " +  i + ": " + motorEncoders[i].getVelocity());
         }
     }
 
@@ -58,15 +57,14 @@ public class Shooter implements Subsystem {
         getAllSpeeds();
         if(IO.bButtonIsPressed()){
             shootMtr.set(IO.getLeftXAxis());
-        }
-            // // System.out.println(motorV);
-            // // while (IO.aButtonIsPressed()) {
+            // while (IO.aButtonIsPressed()) {
             //     for (int i = 0; i < shootMotors.length; i++ ) {
             //         shootPIDs[i].setReference(IO.getLeftXAxis() * MAX_VELOCITY, CANSparkMax.ControlType.kVelocity);
             //         System.out.println(motorV);
 
             //     }
-            // // }
+            // }
+        }
     }
     
 }
