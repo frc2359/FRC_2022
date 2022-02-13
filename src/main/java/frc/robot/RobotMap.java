@@ -26,7 +26,7 @@ public interface RobotMap { // Change this to an enum
     final double DRIVE_GEAR_RATIO = 0.25; //1:14.7959 0.0675862069
     final int DRIVE_DIAMETER = 4;
 
-    //Controls mode    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html
+    //Controls mode for drive    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html
     public static final ControlMode DRIVE_CONTROL_MODE = ControlMode.PercentOutput; //this controls in what unit drive is measured in.
     public static final ControlMode AUTO_CONTROL_MODE = ControlMode.Velocity;
 

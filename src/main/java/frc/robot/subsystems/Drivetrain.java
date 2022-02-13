@@ -7,8 +7,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
+// import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
 
@@ -30,6 +31,7 @@ public class Drivetrain implements Subsystem {
         } else {
             // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             if(IO.getThrottle() < 0){
+
                 drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
                 SmartDashboard.putNumber(("Velocity R: "), frontRight.getSelectedSensorVelocity());
                 SmartDashboard.putNumber(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
@@ -39,9 +41,9 @@ public class Drivetrain implements Subsystem {
             } else {
                 drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             }
-            System.out.println("R: " + frontLeft.getSelectedSensorPosition());
-            System.out.println("L: " + frontRight.getSelectedSensorPosition());
-            System.out.println("A: " + IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true) +"\n");
+            SmartDashboard.putNumber(("Right Drive Enc Value"),  frontLeft.getSelectedSensorPosition());
+            SmartDashboard.putNumber(("Left Drive Enc Value"),  frontRight.getSelectedSensorPosition());
+            SmartDashboard.putNumber(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
         }
     }
 
