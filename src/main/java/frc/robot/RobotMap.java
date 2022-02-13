@@ -16,7 +16,7 @@ public interface RobotMap { // Change this to an enum
     public static final int ID_SHOOTER_2 = 5;
     public static final int ID_SHOOTER_3 = 2;
 
-    public static final double DRIVE_SPEED_MULT = 1; //14M->50->14->56D
+    public static final double DRIVE_SPEED_MULT = -1; //14M->50->14->56D
 
     //This is the mapping of the buttons to the various functions of the robot
     public static final int  DRIVE_PORT = 0;
@@ -31,6 +31,6 @@ public interface RobotMap { // Change this to an enum
     public static final ControlMode AUTO_CONTROL_MODE = ControlMode.Velocity;
 
     // Motor Control Brake Modes
-        //false = coast; true = brake
+        //false = coast; true = brake   
     public static final boolean BRAKE_MODE_DRIVE = true; //when the controller is moved back to a neutral position, the motors will STOP
 }

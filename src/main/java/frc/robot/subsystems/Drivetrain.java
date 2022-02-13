@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
@@ -30,11 +30,14 @@ public class Drivetrain implements Subsystem {
         } else {
             // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             if(IO.getThrottle() < 0){
-                drive.arcadeDrive(Math.pow(IO.getThrottle(), 2) / 10, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
-                System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
+                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+                SmartDashboard.putNumber(("Velocity R: "), frontRight.getSelectedSensorVelocity());
+                SmartDashboard.putNumber(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
+                
+                // System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
 
             } else {
-                drive.arcadeDrive((IO.getThrottle() * IO.getThrottle()) / 10, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             }
             System.out.println("R: " + frontLeft.getSelectedSensorPosition());
             System.out.println("L: " + frontRight.getSelectedSensorPosition());
