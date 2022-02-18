@@ -9,6 +9,13 @@ import static frc.robot.RobotMap.*;
 // import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 
+/**
+ * The IO class is primarily dedicated to handling the inputs and outputs from the XBOX Controller, as well as various telemetric data on the robot
+ * The XBOX controller is containerized in IO in order to ensure that we don't create an excess of traffic to the controller, as well as to ensure that the physical 
+ * link to the controller can stay private, and so that we can specify combinations of button presses that would otherwise pollute other classes.
+ */
+
+
 public class IO {
     private static XboxController driver = new XboxController(DRIVE_PORT); //this is a beta feature that was not used in the original code
 
@@ -36,6 +43,12 @@ public class IO {
     public static double getLeftXAxis() {
         SmartDashboard.putNumber(("LeftX"), driver.getLeftX());
         return driver.getLeftX();
+    }
+
+    /**gets the amount of tilt in the x-axis for velocity control**/
+    public static double getRightXAxis() {
+        SmartDashboard.putNumber(("RightX"), driver.getRightX());
+        return driver.getRightX();
     }
 
     /**gets throttle value (negative is backwards, positive is forwards)**/

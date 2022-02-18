@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
 
+/**
+ * The Drivetrain is an abstraction of the real-life system of two wheels powered by Falcon 500s that run our drive mechanism. It is an example of an FRC "Subsystem".
+ */
 
 public class Drivetrain implements Subsystem {
     //The Falcon 500s are a unit that include Talon FXs as their base motors, over which there is an encoder built in.
