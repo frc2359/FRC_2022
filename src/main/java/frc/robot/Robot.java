@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
   // private final DifferentialDrive m_robotDrive = new DifferentialDrive(new PWMSparkMax(0), new PWMSparkMax(1));
   // private final Joystick m_stick = new Joystick(0);
   private final Timer m_timer = new Timer();
-  public static final Drivetrain drivetrain = new Drivetrain();
+  // public static final Drivetrain drivetrain = new Drivetrain();
   public static final Shooter shooter = new Shooter();
 
   //These were on the FRC_2021 project - I'm not sure if they have to do with the radio, so I just added them in:
@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
 		final NetworkTable robotNet = robotNetInst.getTable("obs");
 
     //initiate subsystems 
-    drivetrain.init();
+    // drivetrain.init();
     shooter.init();
   }
 
@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-      drivetrain.autoDistDrive(1, 0.2);
+      // drivetrain.autoDistDrive(1, 0.2);
   }
 
   /** This function is called once each time the robot enters teleoperated mode. */
@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    drivetrain.arcadeDrive();
+    // drivetrain.arcadeDrive();
     shooter.shoot();
   }
 

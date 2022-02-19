@@ -45,17 +45,17 @@ public class Shooter implements Subsystem {
     /**Initialize Shooter */
     public void init() {
         // PID coefficients
-        kP = 6e-5; 
+        kP = 10e-5; 
         kI = 0;
         kD = 0; 
         kIz = 0; 
         kFF = 0.000015; 
         kMaxOutput = 1; 
         kMinOutput = -1;
-        maxRPM = 5700;
+        maxRPM = MAX_SHOOT_VELOCITY;
         
-        shootMtr1.follow(shootMtr);
-        shootMtr2.follow(shootMtr);
+        // shootMtr1.follow(shootMtr);
+        // shootMtr2.follow(shootMtr);
         for (int i = 0; i < shootMotors.length; i++ ) {
             shootPIDs[i] = shootMotors[i].getPIDController();
             motorEncoders[i] = shootMotors[i].getEncoder();
@@ -79,7 +79,15 @@ public class Shooter implements Subsystem {
 
     /**Sets the speed of all three motors (for usage with percent power control mode) */
     public void setPercentPower(double pwr) {
-        shootMtr.set(pwr);
+        for (int i = 0; i < shootMotors.length; i++) {
+            shootMotors[i].set(pwr);
+        }
+    } 
+
+    /**Set a specific motor at a percent power */
+    public void setPercentPower(double pwr, int ind) {
+        System.out.println(ind > shootMotors.length ? "Out of Bounds Value" : "Good value");
+        shootMotors[ind].set(pwr);
     } 
 
     /**Get speeds of all motors from the encoders and post them to SmartDashboard */
@@ -98,17 +106,22 @@ public class Shooter implements Subsystem {
         }
     }
 
+    public void pickBallUp() {
+        setPercentPower(0.05, 1);
+    }
+
     public void setVelocity(double setPoint) {
         for (int i = 0; i < motorEncoders.length; i++) {
         shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVelocity);
         }
     }
 
-    public void shoot() {
-        setPercentPower(1);
+    public void shoot() {        
         getAllSpeeds();
+        if(IO.aButtonIsPressed()) {
+            setPercentPower(0.1);
+        }
         if(IO.bButtonIsPressed()){
-            // shootMtr.set(IO.getRightXAxis());
             setVelocity(IO.getRightXAxis() * MAX_SHOOT_VELOCITY);            
         }
     }
