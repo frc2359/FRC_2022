@@ -22,7 +22,8 @@ public class Shooter implements Subsystem {
     private CANSparkMax shootMotors[] = new CANSparkMax[]{shootMtr, shootMtr1, shootMtr2};
     private SparkMaxPIDController shootPIDs[] = new SparkMaxPIDController[3];
     private RelativeEncoder motorEncoders[] = new RelativeEncoder[3];
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
+    private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
 
 
      /**
@@ -52,20 +53,11 @@ public class Shooter implements Subsystem {
         kFF = 0.000015; 
         kMaxOutput = 1; 
         kMinOutput = -1;
-        maxRPM = MAX_SHOOT_VELOCITY;
         
-        // shootMtr1.follow(shootMtr);
-        // shootMtr2.follow(shootMtr);
         for (int i = 0; i < shootMotors.length; i++ ) {
             shootPIDs[i] = shootMotors[i].getPIDController();
             motorEncoders[i] = shootMotors[i].getEncoder();
-            // set PID coefficients
-            shootPIDs[i].setP(kP);
-            shootPIDs[i].setI(kI);
-            shootPIDs[i].setD(kD);
-            shootPIDs[i].setIZone(kIz);
-            shootPIDs[i].setFF(kFF);
-            shootPIDs[i].setOutputRange(kMinOutput, kMaxOutput);
+            setPID(kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput); // set PID coefficients
         }
         // display PID coefficients on SmartDashboard
         SmartDashboard.putNumber("P Gain", kP);
@@ -106,24 +98,55 @@ public class Shooter implements Subsystem {
         }
     }
 
+    /**Shooter mode for what to do upon being given to command to pick a ball up */
     public void pickBallUp() {
-        setPercentPower(0.05, 1);
+        // setPercentPower(0.05, 1);
+        shootPIDs[2].setReference(0.1 * MAX_SHOOT_VELOCITY, velocityMode);
     }
 
+    /**Sets the velocity of each of the shooter motors using PID controls */
     public void setVelocity(double setPoint) {
         for (int i = 0; i < motorEncoders.length; i++) {
-        shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVelocity);
+        shootPIDs[i].setReference(setPoint, velocityMode);
         }
     }
 
-    public void shoot() {        
+    /**Sets the PID coefficients for each of the shooter motors */
+    public void setPID(double kP, double kI, double kD, double kIz, double kFF, double kMinOutput, double kMaxOutput) {
+        for(int i = 0; i < shootPIDs.length; i++){
+            shootPIDs[i].setP(kP);
+            shootPIDs[i].setI(kI);
+            shootPIDs[i].setD(kD);
+            shootPIDs[i].setIZone(kIz);
+            shootPIDs[i].setFF(kFF);
+            shootPIDs[i].setOutputRange(kMinOutput, kMaxOutput);
+        }
+    }
+
+    /**Get PID Coefficients from the Smart Dashboard entered on-the-fly */
+    public void setPIDFromSmartDashboard () {
+        double newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput;
+        newP = SmartDashboard.getNumber("P Gain", kP);
+        newI = SmartDashboard.getNumber("I Gain", kI);
+        newD = SmartDashboard.getNumber("D Gain", kD);
+        newIZone = SmartDashboard.getNumber("I Zone", kIz);
+        newFF = SmartDashboard.getNumber("Feed Forward", kFF);
+        newMaxOuput = SmartDashboard.getNumber("Max Output", kMaxOutput);
+        newMinOutput = SmartDashboard.getNumber("Min Output", kMinOutput);
+        if(newP != kP || newI!= kI || newD!= kD || newIZone!= kIz || newFF !=kFF || newMaxOuput!=kMaxOutput || newMinOutput!=kMinOutput){
+            setPID(newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput);
+        }
+    }
+
+    /**What the shooter does and checks for periodically */
+    public void shooterPeriodic() {        
         getAllSpeeds();
+        setPIDFromSmartDashboard();
         if(IO.aButtonIsPressed()) {
-            setPercentPower(0.1);
+            pickBallUp();
         }
         if(IO.bButtonIsPressed()){
             setVelocity(IO.getRightXAxis() * MAX_SHOOT_VELOCITY);            
         }
     }
-    
 }
