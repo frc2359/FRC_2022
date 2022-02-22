@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     // drivetrain.arcadeDrive();
-    shooter.shooterPeriodic();
+    shooter.shooterControl();
   }
 
   /** This function is called once each time the robot enters test mode. */
