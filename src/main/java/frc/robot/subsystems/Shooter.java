@@ -7,7 +7,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
 
@@ -60,13 +60,13 @@ public class Shooter implements Subsystem {
             setPID(kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput); // set PID coefficients
         }
         // display PID coefficients on SmartDashboard
-        SmartDashboard.putNumber("P Gain", kP);
-        SmartDashboard.putNumber("I Gain", kI);
-        SmartDashboard.putNumber("D Gain", kD);
-        SmartDashboard.putNumber("I Zone", kIz);
-        SmartDashboard.putNumber("Feed Forward", kFF);
-        SmartDashboard.putNumber("Max Output", kMaxOutput);
-        SmartDashboard.putNumber("Min Output", kMinOutput);
+        IO.putNumberToSmartDashboard("P Gain", kP);
+        IO.putNumberToSmartDashboard("I Gain", kI);
+        IO.putNumberToSmartDashboard("D Gain", kD);
+        IO.putNumberToSmartDashboard("I Zone", kIz);
+        IO.putNumberToSmartDashboard("Feed Forward", kFF);
+        IO.putNumberToSmartDashboard("Max Output", kMaxOutput);
+        IO.putNumberToSmartDashboard("Min Output", kMinOutput);
     }
 
     /**Sets the speed of all three motors (for usage with percent power control mode) */
@@ -85,7 +85,7 @@ public class Shooter implements Subsystem {
     /**Get speeds of all motors from the encoders and post them to SmartDashboard */
     public void getAllSpeeds() {
         for (int i = 0; i < motorEncoders.length; i++) {
-            SmartDashboard.putNumber(("Motor " +  i), motorEncoders[i].getVelocity());
+            IO.putNumberToSmartDashboard(("Motor " +  i), motorEncoders[i].getVelocity());
         }
     }
 
@@ -126,20 +126,20 @@ public class Shooter implements Subsystem {
     /**Get PID Coefficients from the Smart Dashboard entered on-the-fly */
     public void setPIDFromSmartDashboard () {
         double newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput;
-        newP = SmartDashboard.getNumber("P Gain", kP);
-        newI = SmartDashboard.getNumber("I Gain", kI);
-        newD = SmartDashboard.getNumber("D Gain", kD);
-        newIZone = SmartDashboard.getNumber("I Zone", kIz);
-        newFF = SmartDashboard.getNumber("Feed Forward", kFF);
-        newMaxOuput = SmartDashboard.getNumber("Max Output", kMaxOutput);
-        newMinOutput = SmartDashboard.getNumber("Min Output", kMinOutput);
+        newP = IO.getNumberFromSmartDashboard("P Gain", kP);
+        newI = IO.getNumberFromSmartDashboard("I Gain", kI);
+        newD = IO.getNumberFromSmartDashboard("D Gain", kD);
+        newIZone = IO.getNumberFromSmartDashboard("I Zone", kIz);
+        newFF = IO.getNumberFromSmartDashboard("Feed Forward", kFF);
+        newMaxOuput = IO.getNumberFromSmartDashboard("Max Output", kMaxOutput);
+        newMinOutput = IO.getNumberFromSmartDashboard("Min Output", kMinOutput);
         if(newP != kP || newI!= kI || newD!= kD || newIZone!= kIz || newFF !=kFF || newMaxOuput!=kMaxOutput || newMinOutput!=kMinOutput){
             setPID(newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput);
         }
     }
 
-    /**What the shooter does and checks for periodically */
-    public void shooterPeriodic() {        
+    /**Manually setting veliocty */
+    public void manualControl() {
         getAllSpeeds();
         setPIDFromSmartDashboard();
         if(IO.aButtonIsPressed()) {
@@ -148,5 +148,10 @@ public class Shooter implements Subsystem {
         if(IO.bButtonIsPressed()){
             setVelocity(IO.getRightXAxis() * MAX_SHOOT_VELOCITY);            
         }
+    }
+
+    /**What the shooter does and checks for periodically */
+    public void shooterPeriodic() {        
+        //code
     }
 }
