@@ -57,8 +57,9 @@ public class Shooter implements Subsystem {
         for (int i = 0; i < shootMotors.length; i++ ) {
             shootPIDs[i] = shootMotors[i].getPIDController();
             motorEncoders[i] = shootMotors[i].getEncoder();
-            setPID(kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput); // set PID coefficients
         }
+        setPID(10e-5, 0, 0, 0, 0.000015, 1, -1); // set PID coefficients
+
         // display PID coefficients on SmartDashboard
         IO.putNumberToSmartDashboard("P Gain", kP);
         IO.putNumberToSmartDashboard("I Gain", kI);
@@ -72,14 +73,14 @@ public class Shooter implements Subsystem {
     /**Sets the speed of all three motors (for usage with percent power control mode) */
     public void setPercentPower(double pwr) {
         for (int i = 0; i < shootMotors.length; i++) {
-            shootMotors[i].set(pwr);
+            shootPIDs[i].setReference(pwr, CANSparkMax.ControlType.kVoltage);
         }
     } 
 
     /**Set a specific motor at a percent power */
     public void setPercentPower(double pwr, int ind) {
         System.out.println(ind > shootMotors.length ? "Out of Bounds Value" : "Good value");
-        shootMotors[ind].set(pwr);
+        shootPIDs[ind].setReference(pwr, CANSparkMax.ControlType.kVoltage);
     } 
 
     /**Get speeds of all motors from the encoders and post them to SmartDashboard */
@@ -101,7 +102,18 @@ public class Shooter implements Subsystem {
     /**Shooter mode for what to do upon being given to command to pick a ball up */
     public void pickBallUp() {
         // setPercentPower(0.05, 1);
-        shootPIDs[2].setReference(0.1 * MAX_SHOOT_VELOCITY, velocityMode);
+        shootPIDs[0].setReference(0, CANSparkMax.ControlType.kVoltage);
+        shootPIDs[1].setReference(0, CANSparkMax.ControlType.kVoltage);
+        setPercentPower(2.5, 2);
+
+    }
+
+    /**Stops all motors */
+    public void stopSys() {
+        for(int i=0; i<shootPIDs.length; i++) {
+            shootPIDs[i].setReference(0, CANSparkMax.ControlType.kVoltage);
+
+        }
     }
 
     /**Sets the velocity of each of the shooter motors using PID controls */
@@ -134,19 +146,26 @@ public class Shooter implements Subsystem {
         newMaxOuput = IO.getNumberFromSmartDashboard("Max Output", kMaxOutput);
         newMinOutput = IO.getNumberFromSmartDashboard("Min Output", kMinOutput);
         if(newP != kP || newI!= kI || newD!= kD || newIZone!= kIz || newFF !=kFF || newMaxOuput!=kMaxOutput || newMinOutput!=kMinOutput){
-            setPID(newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput);
+            // setPID(newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput);
         }
     }
 
     /**Manually setting veliocty */
     public void manualControl() {
         getAllSpeeds();
-        setPIDFromSmartDashboard();
+        // setPIDFromSmartDashboard();
         if(IO.aButtonIsPressed()) {
             pickBallUp();
+            System.out.println("1");         
         }
-        if(IO.bButtonIsPressed()){
-            setVelocity(IO.getRightXAxis() * MAX_SHOOT_VELOCITY);            
+        else if(IO.bButtonIsPressed()){
+
+            setVelocity(IO.getRightXAxis() * MAX_SHOOT_VELOCITY);   
+            System.out.println("2");         
+        }
+        else if(IO.yButtonIsPressed()) {
+            stopSys();
+            System.out.println("3");         
         }
     }
 
