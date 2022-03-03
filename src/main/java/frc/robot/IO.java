@@ -71,6 +71,11 @@ public class IO {
         return driver.getAButtonPressed();
     }
 
+     /**gets whether the Y button on the controller has been released**/
+     public static boolean xButtonIsPressed() {
+        return driver.getXButtonPressed();
+    }
+    
     /**gets whether the Y button on the controller has been released**/
     public static boolean yButtonIsPressed() {
         return driver.getYButtonPressed();

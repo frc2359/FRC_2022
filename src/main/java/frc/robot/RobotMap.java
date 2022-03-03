@@ -34,5 +34,6 @@ public interface RobotMap { // Change this to an enum
     public static final int ID_SHOOTER_2 = 5;
     public static final int ID_SHOOTER_3 = 2;
     public static final double MAX_SHOOT_VELOCITY = 7500;
+    public static final int ID_PNEUMATIC_HUB = 7;
     
 }

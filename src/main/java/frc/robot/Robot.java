@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 // import edu.wpi.first.wpilibj.GenericHID;
 // import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj.command.Scheduler;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.Timer;
 //classes we make are imported here:
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
-// import frc.robot.IO;
+import frc.robot.subsystems.Collector;
+import frc.robot.IO;
 
 
 
@@ -31,8 +32,9 @@ public class Robot extends TimedRobot {
   // private final DifferentialDrive m_robotDrive = new DifferentialDrive(new PWMSparkMax(0), new PWMSparkMax(1));
   // private final Joystick m_stick = new Joystick(0);
   private final Timer m_timer = new Timer();
-  // public static final Drivetrain drivetrain = new Drivetrain();
+  public static final Drivetrain drivetrain = new Drivetrain();
   public static final Shooter shooter = new Shooter();
+  public static final Collector collector = new Collector();
 
   //These were on the FRC_2021 project - I'm not sure if they have to do with the radio, so I just added them in:
   public static NetworkTableInstance rpi3;
@@ -55,7 +57,7 @@ public class Robot extends TimedRobot {
 		final NetworkTable robotNet = robotNetInst.getTable("obs");
 
     //initiate subsystems 
-    // drivetrain.init();
+    drivetrain.init();
     shooter.init();
   }
 
@@ -80,8 +82,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    // drivetrain.arcadeDrive();
+    drivetrain.arcadeDrive();
     shooter.shooterControl();
+    SmartDashboard.putBoolean("Ball Loaded?", collector.isBallLoaded());
   }
 
   /** This function is called once each time the robot enters test mode. */

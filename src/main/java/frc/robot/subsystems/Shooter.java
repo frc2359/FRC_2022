@@ -7,6 +7,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
@@ -16,15 +18,15 @@ import frc.robot.IO;
  */
 
 public class Shooter implements Subsystem {
+    private PneumaticHub pneumaticController = new PneumaticHub(ID_PNEUMATIC_HUB)
     private CANSparkMax shootMtr = new CANSparkMax(ID_SHOOTER_1, MotorType.kBrushless);
     private CANSparkMax shootMtr1 = new CANSparkMax(ID_SHOOTER_2, MotorType.kBrushless);
     private CANSparkMax shootMtr2 = new CANSparkMax(ID_SHOOTER_3, MotorType.kBrushless);
     private CANSparkMax shootMotors[] = new CANSparkMax[]{shootMtr, shootMtr1, shootMtr2};
     private SparkMaxPIDController shootPIDs[] = new SparkMaxPIDController[3];
     private RelativeEncoder motorEncoders[] = new RelativeEncoder[3];
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
     private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
-
 
      /**
      * PIDController objects are commanded to a set point using the 
@@ -46,19 +48,22 @@ public class Shooter implements Subsystem {
     /**Initialize Shooter */
     public void init() {
         // PID coefficients
-        kP = 10e-5; 
+        // = 10e-5; 
+        kP = 6e-5; 
         kI = 0;
         kD = 0; 
         kIz = 0; 
         kFF = 0.000015; 
         kMaxOutput = 1; 
         kMinOutput = -1;
+        maxRPM = 5700;
         
         for (int i = 0; i < shootMotors.length; i++ ) {
             shootPIDs[i] = shootMotors[i].getPIDController();
             motorEncoders[i] = shootMotors[i].getEncoder();
         }
-        setPID(10e-5, 0, 0, 0, 0.000015, 1, -1); // set PID coefficients
+        //setPID(10e-30, 0, 0, 0, 0.000015, 1, -1); // set PID coefficients
+        setPID(kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput); // set PID coefficients
 
         // display PID coefficients on SmartDashboard
         SmartDashboard.putNumber("P Gain", kP);
@@ -68,6 +73,11 @@ public class Shooter implements Subsystem {
         SmartDashboard.putNumber("Feed Forward", kFF);
         SmartDashboard.putNumber("Max Output", kMaxOutput);
         SmartDashboard.putNumber("Min Output", kMinOutput);
+        setVelocity(0);
+        setPctPower(0);
+
+        //Prime Pneumatics
+        
     }
 
     /**Sets the speed of all three motors (for usage with percent power control mode) */
@@ -117,9 +127,20 @@ public class Shooter implements Subsystem {
     }
 
     /**Sets the velocity of each of the shooter motors using PID controls */
+    public void setPctPower(double setPoint) {
+        for (int i = 0; i < motorEncoders.length; i++) {
+            //shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVoltage);
+            shootMotors[i].set(setPoint);
+        }
+    }
+
+
+    /**Sets the velocity of each of the shooter motors using PID controls */
     public void setVelocity(double setPoint) {
         for (int i = 0; i < motorEncoders.length; i++) {
-        shootPIDs[i].setReference(setPoint, velocityMode);
+        shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVelocity);
+        SmartDashboard.putNumber("Velocity SetPoint", setPoint);
+        SmartDashboard.putNumber("Process Variable", motorEncoders[0].getVelocity());
         }
     }
 
@@ -155,17 +176,28 @@ public class Shooter implements Subsystem {
         getAllSpeeds();
         // setPIDFromSmartDashboard();
         if(IO.aButtonIsPressed()) {
-            pickBallUp();
+            setVelocity(.5*maxRPM);
+            //setPctPower(.5);
             System.out.println("1");         
         }
         else if(IO.bButtonIsPressed()){
-
-            setVelocity(IO.getRightXAxis() * MAX_SHOOT_VELOCITY);   
+            setVelocity(0); 
+            //setPctPower(0);
             System.out.println("2");         
         }
-        else if(IO.yButtonIsPressed()) {
-            stopSys();
+        else if(IO.xButtonIsPressed()) {
+            //stopSys();
+            setVelocity(.7*maxRPM);
+            //setPctPower(.7);
+            System.out.println("3");         
+        }else if(IO.yButtonIsPressed()) {
+            //stopSys();
+            setVelocity(.9*maxRPM);
+            //setPctPower(.9);
             System.out.println("3");         
         }
     }
 }
+
+
+/** */
