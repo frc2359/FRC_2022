@@ -30,7 +30,6 @@ public interface RobotMap { // Change this to an enum
     final int DRIVE_DIAMETER = 4;
 
     /* SHOOTER---------------------------------------------------------------------------------------------------------------------------- */
-    public static final int ID_PNEUMATIC_HUB = 7;
     public static final int ID_SHOOTER_1 = 6;
     public static final int ID_SHOOTER_2 = 5;
     public static final int ID_SHOOTER_3 = 2;
