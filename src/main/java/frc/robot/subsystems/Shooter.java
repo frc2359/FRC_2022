@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
+import edu.wpi.first.wpilibj.PneumaticHub;
 
 /**
  * The Shooter is an abstraction of the real-life system of three belts run by REV NEOs that run our shooting mechanism. It is an example of an FRC "Subsystem".
@@ -24,6 +25,7 @@ public class Shooter implements Subsystem {
     private RelativeEncoder motorEncoders[] = new RelativeEncoder[3];
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
     private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
+    private PneumaticHub pneumatics = new PneumaticHub(ID_PNEUMATIC_HUB);
 
 
      /**
