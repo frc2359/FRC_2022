@@ -29,18 +29,10 @@ import frc.robot.IO;
  * directory.
  */
 public class Robot extends TimedRobot {
-  // private final DifferentialDrive m_robotDrive = new DifferentialDrive(new PWMSparkMax(0), new PWMSparkMax(1));
-  // private final Joystick m_stick = new Joystick(0);
   private final Timer m_timer = new Timer();
   public static final Drivetrain drivetrain = new Drivetrain();
   public static final Shooter shooter = new Shooter();
   public static final Collector collector = new Collector();
-
-  //These were on the FRC_2021 project - I'm not sure if they have to do with the radio, so I just added them in:
-  public static NetworkTableInstance rpi3;
-  //public static NetworkTableEntry to_the_right;
-  //public static NetworkTableEntry to_the_left;
-  public static NetworkTableEntry ultrasonicReading;
 
   //This is proactive - I'm not sure we'll end up NEEDING this, but I'm guessing it will be nescessary
   public static final double DRIVE_SENSITIVITY_MULT = 1;
@@ -52,9 +44,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    //instantiate network interface for Raspberry pi
-    final NetworkTableInstance robotNetInst = NetworkTableInstance.getDefault();
-		final NetworkTable robotNet = robotNetInst.getTable("obs");
+    
 
     //initiate subsystems 
     drivetrain.init();
@@ -83,8 +73,11 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     drivetrain.arcadeDrive();
-    shooter.shooterControl();
+    // shooter.shooterControl();
     SmartDashboard.putBoolean("Ball Loaded?", collector.isBallLoaded());
+    shooter.shooterPeriodic();
+    IO.putNumberToSmartDashboard("Lidar Distance", IO.getLidarDistance());
+    IO.putNumberToSmartDashboard("Vision Distance", IO.getVisionDistance());
   }
 
   /** This function is called once each time the robot enters test mode. */

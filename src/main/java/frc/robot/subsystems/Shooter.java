@@ -12,13 +12,13 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
+import edu.wpi.first.wpilibj.PneumaticHub;
 
 /**
  * The Shooter is an abstraction of the real-life system of three belts run by REV NEOs that run our shooting mechanism. It is an example of an FRC "Subsystem".
  */
 
 public class Shooter implements Subsystem {
-    private PneumaticHub pneumaticController = new PneumaticHub(ID_PNEUMATIC_HUB)
     private CANSparkMax shootMtr = new CANSparkMax(ID_SHOOTER_1, MotorType.kBrushless);
     private CANSparkMax shootMtr1 = new CANSparkMax(ID_SHOOTER_2, MotorType.kBrushless);
     private CANSparkMax shootMtr2 = new CANSparkMax(ID_SHOOTER_3, MotorType.kBrushless);
@@ -27,6 +27,7 @@ public class Shooter implements Subsystem {
     private RelativeEncoder motorEncoders[] = new RelativeEncoder[3];
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
     private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
+    private PneumaticHub pneumatics = new PneumaticHub(ID_PNEUMATIC_HUB);
 
      /**
      * PIDController objects are commanded to a set point using the 
@@ -96,7 +97,7 @@ public class Shooter implements Subsystem {
     /**Get speeds of all motors from the encoders and post them to SmartDashboard */
     public void getAllSpeeds() {
         for (int i = 0; i < motorEncoders.length; i++) {
-            SmartDashboard.putNumber(("Motor " +  i), motorEncoders[i].getVelocity());
+            IO.putNumberToSmartDashboard(("Motor " +  i), motorEncoders[i].getVelocity());
         }
     }
 
@@ -159,20 +160,20 @@ public class Shooter implements Subsystem {
     /**Get PID Coefficients from the Smart Dashboard entered on-the-fly */
     public void setPIDFromSmartDashboard () {
         double newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput;
-        newP = SmartDashboard.getNumber("P Gain", kP);
-        newI = SmartDashboard.getNumber("I Gain", kI);
-        newD = SmartDashboard.getNumber("D Gain", kD);
-        newIZone = SmartDashboard.getNumber("I Zone", kIz);
-        newFF = SmartDashboard.getNumber("Feed Forward", kFF);
-        newMaxOuput = SmartDashboard.getNumber("Max Output", kMaxOutput);
-        newMinOutput = SmartDashboard.getNumber("Min Output", kMinOutput);
+        newP = IO.getNumberFromSmartDashboard("P Gain", kP);
+        newI = IO.getNumberFromSmartDashboard("I Gain", kI);
+        newD = IO.getNumberFromSmartDashboard("D Gain", kD);
+        newIZone = IO.getNumberFromSmartDashboard("I Zone", kIz);
+        newFF = IO.getNumberFromSmartDashboard("Feed Forward", kFF);
+        newMaxOuput = IO.getNumberFromSmartDashboard("Max Output", kMaxOutput);
+        newMinOutput = IO.getNumberFromSmartDashboard("Min Output", kMinOutput);
         if(newP != kP || newI!= kI || newD!= kD || newIZone!= kIz || newFF !=kFF || newMaxOuput!=kMaxOutput || newMinOutput!=kMinOutput){
             // setPID(newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput);
         }
     }
 
-    /**What the shooter does and checks for periodically */
-    public void shooterControl() {        
+    /**Manually setting veliocty */
+    public void manualControl() {
         getAllSpeeds();
         // setPIDFromSmartDashboard();
         if(IO.aButtonIsPressed()) {
@@ -196,6 +197,11 @@ public class Shooter implements Subsystem {
             //setPctPower(.9);
             System.out.println("3");         
         }
+    }
+
+    /**What the shooter does and checks for periodically */
+    public void shooterPeriodic() {        
+        //code
     }
 }
 

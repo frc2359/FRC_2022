@@ -2,14 +2,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 // import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
 
@@ -18,11 +16,10 @@ import frc.robot.IO;
  */
 
 public class Drivetrain implements Subsystem {
-    //The Falcon 500s are a unit that include Talon FXs as their base motors, over which there is an encoder built in.
+    //The Falcon 500s are a unit that include Talon FXs as their base motors, in which there is an encoder built in.
     WPI_TalonFX frontLeft = new WPI_TalonFX(ID_DRIVE_FL);
     WPI_TalonFX frontRight = new WPI_TalonFX(ID_DRIVE_FR);
-    // WPI_TalonFX backLeft = new WPI_TalonFX(ID_DRIVE_BR);
-    // WPI_TalonFX backRight = new WPI_TalonFX(ID_DRIVE_BL);
+
     Timer timer = new Timer(); //for timing autonomous functions
     private DifferentialDrive drive = new DifferentialDrive(frontLeft, frontRight); //front motors are masters & control inputs for both front and back
     
@@ -36,26 +33,17 @@ public class Drivetrain implements Subsystem {
             if(IO.getThrottle() < 0){
 
                 drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
-                SmartDashboard.putNumber(("Velocity R: "), frontRight.getSelectedSensorVelocity());
-                SmartDashboard.putNumber(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
+                IO.putNumberToSmartDashboard(("Velocity R: "), frontRight.getSelectedSensorVelocity());
+                IO.putNumberToSmartDashboard(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
                 
                 // System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
 
             } else {
                 drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             }
-            SmartDashboard.putNumber(("Right Drive Enc Value"),  frontLeft.getSelectedSensorPosition());
-            SmartDashboard.putNumber(("Left Drive Enc Value"),  frontRight.getSelectedSensorPosition());
-            SmartDashboard.putNumber(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
-        }
-    }
-
-    /**  automated drive function that can be called and executed without direct input from a controller **/
-    public void autoTimeDrive(double dist, double speed, double turn) {
-        if (IO.getDriveDistance(frontLeft.getSelectedSensorPosition(), frontRight.getSelectedSensorPosition(), true) > dist && speed < 1 && speed > -1 && turn < 1 && turn > -1) {
-            drive.arcadeDrive(speed * DRIVE_SPEED_MULT, turn);
-        } else {
-            this.stopMotors();
+            IO.putNumberToSmartDashboard(("Right Drive Enc Value"),  frontLeft.getSelectedSensorPosition());
+            IO.putNumberToSmartDashboard(("Left Drive Enc Value"),  frontRight.getSelectedSensorPosition());
+            IO.putNumberToSmartDashboard(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
         }
     }
     
@@ -79,19 +67,11 @@ public class Drivetrain implements Subsystem {
         //Reset Motor Controllers to Factory Configuration
         frontLeft.configFactoryDefault();
         frontRight.configFactoryDefault();
-        // backLeft.configFactoryDefault();
-        // backRight.configFactoryDefault();
-        
-        //Set motors that are on the same side to follow each other (both left together, both right together)
-        // backLeft.follow(frontLeft);
-        // backRight.follow(frontRight);
 
 
         //Set Motor Direction and Encoder Sensor Phase
         frontLeft.setInverted(false);      // Positive is forward
-        // backLeft.setInverted(InvertType.FollowMaster);     
         frontRight.setInverted(true);      // Invert so positive is forward
-        // backRight.setInverted(InvertType.FollowMaster);
 
         frontLeft.setSensorPhase(false); // Check
         frontRight.setSensorPhase(true); // Check
@@ -102,9 +82,7 @@ public class Drivetrain implements Subsystem {
 
         //Set Brake/Coast Options
         frontLeft.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        // backLeft.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         frontRight.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        // backRight.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         
 
         //Set Math.clamp Switch Positions
@@ -123,35 +101,11 @@ public class Drivetrain implements Subsystem {
 
     public void initDefaultCommand() {}
 
-    /**more diverse drive function. This is a work in progress.**/ //WE NEED TO GET THIS WORKING 
-    public void drive() { 
-        //convert the x-axis value given by the controller into a multiplier
-        double lMult = 1; //speed multiplier
-        double rMult = 1; //speed multiplier
-        if(IO.getLeftXAxis() < 0) { //This is for steering. We will need to check the functionality of this 
-            rMult = 0.5;
-        } else {
-            lMult = 0.5; 
-        }
-        if(IO.reverseTriggerIsPressed() && IO.throttleTriggerIsPressed()) { 
-            //When both triggers are pressed, stop the robot. This is mostly to avoid potential issues that arise if there is no conditional here.
-            frontLeft.stopMotor();
-            frontRight.stopMotor();
-        } else if(IO.throttleTriggerIsPressed()) {
-            frontLeft.set(DRIVE_CONTROL_MODE, IO.getDriveTrigger() * lMult);
-            frontRight.set(DRIVE_CONTROL_MODE,IO.getDriveTrigger() * rMult);
-        } else if(IO.reverseTriggerIsPressed()) {
-            frontLeft.set(DRIVE_CONTROL_MODE,IO.getReverseTrigger() * lMult);
-            frontRight.set(DRIVE_CONTROL_MODE,IO.getReverseTrigger() * rMult);
-        }
-    }
+
     /**stops motors manually**/
     public void stopMotors() {
         frontLeft.stopMotor();
         frontRight.stopMotor();
-        //should not be needed
-        // backRight.stopMotor();
-        // backLeft.stopMotor();
     }
 }
 
