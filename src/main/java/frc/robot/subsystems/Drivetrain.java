@@ -56,7 +56,7 @@ public class Drivetrain implements Subsystem {
     public void autoDistDrive(double dist, double speed) {
         double distance = distanceToNativeUnits(dist);
         double encoderAverage = (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2;
-        if(distance < encoderAverage) {
+        if(distance > encoderAverage) {
             driveAuto(0.6);
         }
     }

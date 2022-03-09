@@ -60,6 +60,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_timer.reset();
     m_timer.start();
+    collectCommand.setState(0);
     drivetrain.zeroEncoders();
     //repeat = -10;
   }
@@ -67,6 +68,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    System.out.println("A");
       drivetrain.autoDistDrive(1, 0.2);
   }
 
