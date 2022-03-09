@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-// import com.ctre.phoenix.motorcontrol.InvertType;
+import edu.wpi.first.math.util.Units;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
@@ -26,32 +26,47 @@ public class Drivetrain implements Subsystem {
 
     /** drive function that can be called without having to pass in private vairables **/
     public void arcadeDrive() {
-        if ((IO.getDriveTrigger() - IO.getReverseTrigger()) > 1 || (IO.getDriveTrigger() - IO.getReverseTrigger()) < -1) {
+        if ((IO.getDriveTrigger(true) - IO.getReverseTrigger(true)) > 1 || (IO.getDriveTrigger(true) - IO.getReverseTrigger(true)) < -1) {
             System.out.println("out of bounds drive value. go to Drivetrain.java line 34 and edit to an in-bounds expression");
         } else {
             // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             if(IO.getThrottle() < 0){
 
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * DRIVE_SPEED_MULT);
                 IO.putNumberToSmartDashboard(("Velocity R: "), frontRight.getSelectedSensorVelocity());
                 IO.putNumberToSmartDashboard(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
                 
                 // System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
 
             } else {
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis() * DRIVE_SPEED_MULT);
+                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * DRIVE_SPEED_MULT);
             }
             IO.putNumberToSmartDashboard(("Right Drive Enc Value"),  frontLeft.getSelectedSensorPosition());
             IO.putNumberToSmartDashboard(("Left Drive Enc Value"),  frontRight.getSelectedSensorPosition());
-            IO.putNumberToSmartDashboard(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
+         //   IO.putNumberToSmartDashboard(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
         }
     }
     
+    public void driveAuto(double speed) {
+        drive.arcadeDrive(speed, 0);
+    }
+
 
     /** drive a distance at a speed (uses encoder data) -- NEEDS UPDATING*/
     public void autoDistDrive(double dist, double speed) {
-        //code
+        double distance = distanceToNativeUnits(dist);
+        double encoderAverage = (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2;
+        if(distance < encoderAverage) {
+            driveAuto(0.6);
+        }
     }
+
+    public void zeroEncoders() {
+        frontLeft.setSelectedSensorPosition(0);
+        frontRight.setSelectedSensorPosition(0);
+    }
+
+
 
 
     /**initialize the drivetrain**/
@@ -100,6 +115,27 @@ public class Drivetrain implements Subsystem {
     }
 
     public void initDefaultCommand() {}
+
+
+    private int distanceToNativeUnits(double positionMeters){
+        double wheelRotations = positionMeters/(2 * Math.PI * Units.inchesToMeters(DRIVE_RADIUS));
+        double motorRotations = wheelRotations * DRIVE_GEAR_RATIO;
+        int sensorCounts = (int)(motorRotations * COUNTS_PER_REV);
+        return sensorCounts;
+    }
+    
+    private double nativeUnitsToDistanceMeters(double sensorCounts){
+        double motorRotations = (double)sensorCounts / COUNTS_PER_REV;
+        double wheelRotations = motorRotations / DRIVE_GEAR_RATIO;
+        double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(DRIVE_RADIUS));
+        return positionMeters;
+    }
+
+    // public void driveDistance(double distance, double speed) {
+    //     distance = distance / 12;
+    //     int targetDistance = distanceToNativeUnits(distance);
+    //     if()
+    // }
 
 
     /**stops motors manually**/

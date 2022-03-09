@@ -8,11 +8,11 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.PneumaticHub;
+//import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
-import edu.wpi.first.wpilibj.PneumaticHub;
+//import edu.wpi.first.wpilibj.PneumaticHub;
 
 /**
  * The Shooter is an abstraction of the real-life system of three belts run by REV NEOs that run our shooting mechanism. It is an example of an FRC "Subsystem".
@@ -26,8 +26,9 @@ public class Shooter implements Subsystem {
     private SparkMaxPIDController shootPIDs[] = new SparkMaxPIDController[3];
     private RelativeEncoder motorEncoders[] = new RelativeEncoder[3];
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
-    private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
-    private PneumaticHub pneumatics = new PneumaticHub(ID_PNEUMATIC_HUB);
+    private boolean lowPower = false;
+    //private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
+    //private PneumaticHub pneumatics = new PneumaticHub(ID_PNEUMATIC_HUB);
 
      /**
      * PIDController objects are commanded to a set point using the 
@@ -75,21 +76,21 @@ public class Shooter implements Subsystem {
         SmartDashboard.putNumber("Max Output", kMaxOutput);
         SmartDashboard.putNumber("Min Output", kMinOutput);
         setVelocity(0);
-        setPctPower(0);
+        setPercentPower(0);
 
         //Prime Pneumatics
         
     }
 
     /**Sets the speed of all three motors (for usage with percent power control mode) */
-    public void setPercentPower(double pwr) {
+    public void setPower(double pwr) {
         for (int i = 0; i < shootMotors.length; i++) {
             shootPIDs[i].setReference(pwr, CANSparkMax.ControlType.kVoltage);
         }
     } 
 
     /**Set a specific motor at a percent power */
-    public void setPercentPower(double pwr, int ind) {
+    public void setPower(double pwr, int ind) {
         System.out.println(ind > shootMotors.length ? "Out of Bounds Value" : "Good value");
         shootPIDs[ind].setReference(pwr, CANSparkMax.ControlType.kVoltage);
     } 
@@ -110,13 +111,52 @@ public class Shooter implements Subsystem {
         }
     }
 
-    /**Shooter mode for what to do upon being given to command to pick a ball up */
-    public void pickBallUp() {
-        // setPercentPower(0.05, 1);
-        shootPIDs[0].setReference(0, CANSparkMax.ControlType.kVoltage);
-        shootPIDs[1].setReference(0, CANSparkMax.ControlType.kVoltage);
-        setPercentPower(2.5, 2);
+    /**Sets the percent power of each of the shooter motors */
+    public void setPercentPower(double setPoint) {
+        for (int i = 0; i < motorEncoders.length; i++) {
+            //shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVoltage);
+            shootMotors[i].set(setPoint);
+        }
+    }
 
+    /**Sets the percent power of one specific shooter motor at index */
+    public void setPercentPower(double setPoint, int index) {
+        if (index <= 2) {
+            shootMotors[index].set(setPoint);
+        }
+    }
+
+    /**Shooter mode for what to do upon being given to command to pick a ball up */
+    public void pickBallUp(int state) {
+        switch(state) {
+            case 0: break;
+            case 1: setPercentPower(0);
+                    break;
+            case 2: setPercentPower(0,2);
+                    setPercentPower(0,1);
+                    setPercentPower(0.1, 0);
+                    // setPercentPower(SmartDashboard.getNumber("ShootSpeed", 0), 0);
+                    break;
+            case 3: setPercentPower(0);
+                    break;
+            case 4: // Ready to Shoot
+                    if(IO.yButtonIsPressed(false)) {
+                        lowPower = !lowPower;
+                    }
+                    setPercentPower(0);
+                    break;
+            case 5: // Shoot
+                    if(lowPower) { 
+                        setPercentPower(0.4);
+                    } else { 
+                        setPercentPower(0.75);
+                    }
+                    break;
+
+        }
+        // setPercentPower(0,0);
+        // setPercentPower(0,1);
+        // setPercentPower(0.2, 2);
     }
 
     /**Stops all motors */
@@ -127,13 +167,7 @@ public class Shooter implements Subsystem {
         }
     }
 
-    /**Sets the velocity of each of the shooter motors using PID controls */
-    public void setPctPower(double setPoint) {
-        for (int i = 0; i < motorEncoders.length; i++) {
-            //shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVoltage);
-            shootMotors[i].set(setPoint);
-        }
-    }
+  
 
 
     /**Sets the velocity of each of the shooter motors using PID controls */
@@ -172,7 +206,7 @@ public class Shooter implements Subsystem {
         }
     }
 
-    /**Manually setting veliocty */
+    /*/**Manually setting veliocty 
     public void manualControl() {
         getAllSpeeds();
         // setPIDFromSmartDashboard();
@@ -197,13 +231,10 @@ public class Shooter implements Subsystem {
             //setPctPower(.9);
             System.out.println("3");         
         }
-    }
+    }*/
 
     /**What the shooter does and checks for periodically */
     public void shooterPeriodic() {        
         //code
     }
 }
-
-
-/** */

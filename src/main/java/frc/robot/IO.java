@@ -20,116 +20,110 @@ import static frc.robot.RobotMap.*;
 public class IO {
     //Driver Controller
     private static XboxController driver = new XboxController(DRIVE_PORT);
+    private static XboxController shootController = new XboxController(SHOOT_PORT);
     //NetworkTables values
     private static NetworkTableInstance rpi3;
     private static NetworkTable table;
     private static NetworkTableEntry ultrasonicReading;
 
     /**Returns whether or not the trigger mapped to the throttle is pressed.**/
-    public static boolean throttleTriggerIsPressed() {
-        return driver.getRightTriggerAxis() > 0 ? true : false;
+    public static boolean throttleTriggerIsPressed(boolean isDriver) {
+        return (isDriver ? driver : shootController).getRightTriggerAxis() > 0 ? true : false;
     }
     
     /**Returns the current value of the trigger mapped to the throttle.**/
-    public static double getDriveTrigger() {
-        return driver.getRightTriggerAxis();
+    public static double getDriveTrigger(boolean isDriver) {
+        return (isDriver ? driver : shootController).getRightTriggerAxis();
     }
 
     /**Returns whether or not the trigger mapped to reverse is pressed.**/
-    public static boolean reverseTriggerIsPressed() {
-        return driver.getLeftTriggerAxis() > 0 ? true : false;
+    public static boolean reverseTriggerIsPressed(boolean isDriver) {
+        return (isDriver ? driver : shootController).getLeftTriggerAxis() > 0 ? true : false;
     }
 
     /**Returns the current value of the trigger mapped to the reverse.**/
-    public static double getReverseTrigger() {
-        return driver.getLeftTriggerAxis();
+    public static double getReverseTrigger(boolean isDriver) {
+        return (isDriver ? driver : shootController).getLeftTriggerAxis();
     }
 
     /**gets the amount of tilt in the x-axis for directional steering**/
-    public static double getLeftXAxis() {
-        SmartDashboard.putNumber(("LeftX"), driver.getLeftX());
-        return driver.getLeftX();
+    public static double getLeftXAxis(boolean isDriver) {
+        SmartDashboard.putNumber(("LeftX"), (isDriver ? driver : shootController).getLeftX());
+        return (isDriver ? driver : shootController).getLeftX();
     }
 
     /**gets the amount of tilt in the x-axis for velocity control**/
-    public static double getRightXAxis() {
-        SmartDashboard.putNumber(("RightX"), driver.getRightX());
-        return driver.getRightX();
+    public static double getRightXAxis(boolean isDriver) {
+        SmartDashboard.putNumber(("RightX"), (isDriver ? driver : shootController).getRightX());
+        return (isDriver ? driver : shootController).getRightX();
     }
 
     /**gets throttle value (negative is backwards, positive is forwards)**/
     public static double getThrottle() {
-        return (getDriveTrigger() - getReverseTrigger()) * DRIVE_SPEED_MULT;
+        return (getDriveTrigger(true) - getReverseTrigger(true)) * DRIVE_SPEED_MULT;
     }
 
     /**gets whether the B button on the controller has been pressed**/
-    public static boolean bButtonIsPressed() {
-        return driver.getBButtonPressed();
+    public static boolean bButtonIsPressed(boolean isDriver) {
+        return (isDriver ? driver : shootController).getBButtonPressed();
     }
 
     /**gets whether the B button on the controller has been released**/
-    public static boolean bButtonIsReleased() {
-        return driver.getBButtonReleased();
+    public static boolean bButtonIsReleased(boolean isDriver) {
+        return (isDriver ? driver : shootController).getBButtonReleased();
     }
 
     /**gets whether the A button on the controller has been released**/
-    public static boolean aButtonIsPressed() {
-        return driver.getAButtonPressed();
+    public static boolean aButtonIsPressed(boolean isDriver) {
+        return (isDriver ? driver : shootController).getAButtonPressed();
     }
 
     /**gets whether the A button on the controller has been released**/
-    public static boolean aButtonIsReleased() {
-        return driver.getAButtonReleased();
+    public static boolean aButtonIsReleased(boolean isDriver) {
+        return (isDriver ? driver : shootController).getAButtonReleased();
     }
 
     /**gets whether the A button on the controller has been released**/
-    public static boolean xButtonIsPressed() {
-        return driver.getXButtonPressed();
+    public static boolean xButtonIsPressed(boolean isDriver) {
+        return (isDriver ? driver : shootController).getXButtonPressed();
     }
 
     /**gets whether the A button on the controller has been released**/
-    public static boolean xButtonIsReleased() {
-        return driver.getXButtonReleased();
+    public static boolean xButtonIsReleased(boolean isDriver) {
+        return (isDriver ? driver : shootController).getXButtonReleased();
     }
 
     /**gets whether the A button on the controller has been released**/
-    public static boolean yButtonIsPressed() {
-        return driver.getYButtonPressed();
+    public static boolean yButtonIsPressed(boolean isDriver) {
+        return (isDriver ? driver : shootController).getYButtonPressed();
     }
 
     /**gets whether the A button on the controller has been released**/
-    public static boolean yButtonIsReleased() {
-        return driver.getYButtonReleased();
+    public static boolean yButtonIsReleased(boolean isDriver) {
+        return (isDriver ? driver : shootController).getYButtonReleased();
     }
 
+    /**Initialize the NetworkTables for reading camera and distance data. */
     public static void initNetworkTables() {
         rpi3 = NetworkTableInstance.getDefault();
         table = rpi3.getTable("datatable");
     }
 
     /**Gets distance calculated by LiDAR sensors on the robot - we used this for our goal detection */
-    public static double getLidarDistance() {
-        return table.getEntry("lidardist").getDouble(-1);
-    }
+   // public static double getLidarDistance() {
+   //     return table.getEntry("lidardist").getDouble(-1);
+   // }
 
     /**Gets distance caluclated by Microsoft webcams with triangulation (no fancy LiDAR) - we used this for our ball detection */
-    public static double getVisionDistance() {
-        return table.getEntry("visiondist").getDouble(-1);
-    }
-
-    /**gets the current travel distance of the current encoder */
-    public static double getDriveDistance(double left, double right, boolean isAvg) {
-        double distance;
-        double rawPosition = isAvg ? ((left + right) /2) : ((left > right) ? left : right);
-        distance = (rawPosition / COUNTS_PER_REV) * DRIVE_GEAR_RATIO * DRIVE_DIAMETER;
-        return distance;
-    }
+   // public static double getVisionDistance() {
+   //     return table.getEntry("visiondist").getDouble(-1);
+   // }
 
     /**Gets the left stick value when a is pushed - mod for setting intake velocity */
     public static double getIntakeX(boolean isLeft) {
-        if (aButtonIsPressed() && isLeft) {
+        if (aButtonIsPressed(true) && isLeft) {
             return driver.getLeftTriggerAxis();
-        } else if (aButtonIsPressed() && !isLeft) {
+        } else if (aButtonIsPressed(true) && !isLeft) {
             return driver.getRightTriggerAxis();
         } else {
             return 0;

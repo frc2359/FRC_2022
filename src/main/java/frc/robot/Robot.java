@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 // import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.networktables.*;
+//import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
 
@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Collector;
+import frc.robot.autonomous.*;
 import frc.robot.IO;
 
 
@@ -33,6 +34,7 @@ public class Robot extends TimedRobot {
   public static final Drivetrain drivetrain = new Drivetrain();
   public static final Shooter shooter = new Shooter();
   public static final Collector collector = new Collector();
+  public static final Collect collectCommand = new Collect(collector, shooter);
 
   //This is proactive - I'm not sure we'll end up NEEDING this, but I'm guessing it will be nescessary
   public static final double DRIVE_SENSITIVITY_MULT = 1;
@@ -49,6 +51,8 @@ public class Robot extends TimedRobot {
     //initiate subsystems 
     drivetrain.init();
     shooter.init();
+    collector.init();
+    
   }
 
   /** This function is run once each time the robot enters autonomous mode. */
@@ -56,28 +60,37 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_timer.reset();
     m_timer.start();
+    drivetrain.zeroEncoders();
     //repeat = -10;
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-      // drivetrain.autoDistDrive(1, 0.2);
+      drivetrain.autoDistDrive(1, 0.2);
   }
 
   /** This function is called once each time the robot enters teleoperated mode. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    collectCommand.setState(1);
+  }
 
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
+    // collector.runPneumatics();
+    
+
+    collectCommand.collect();
+
     drivetrain.arcadeDrive();
     // shooter.shooterControl();
     SmartDashboard.putBoolean("Ball Loaded?", collector.isBallLoaded());
     shooter.shooterPeriodic();
-    IO.putNumberToSmartDashboard("Lidar Distance", IO.getLidarDistance());
-    IO.putNumberToSmartDashboard("Vision Distance", IO.getVisionDistance());
+    //IO.putNumberToSmartDashboard("Lidar Distance", IO.getLidarDistance());
+    //IO.putNumberToSmartDashboard("Vision Distance", IO.getVisionDistance());
+
   }
 
   /** This function is called once each time the robot enters test mode. */
