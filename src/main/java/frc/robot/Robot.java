@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     System.out.println("A");
-      drivetrain.autoDistDrive(1, 0.2);
+      drivetrain.autoDistDrive(2.16, 0.2);
   }
 
   /** This function is called once each time the robot enters teleoperated mode. */
