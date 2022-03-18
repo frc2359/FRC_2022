@@ -51,7 +51,7 @@ public class Shooter implements Subsystem {
     public void init() {
         // PID coefficients
         // = 10e-5; 
-        kP = 6e-5; 
+        kP = 1; 
         kI = 0;
         kD = 0; 
         kIz = 0; 
@@ -131,6 +131,7 @@ public class Shooter implements Subsystem {
         switch(state) {
             case 0: break;
             case 1: setPercentPower(0);
+                    SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
                     break;
             case 2: setPercentPower(0,2);
                     setPercentPower(0,1);
@@ -142,14 +143,19 @@ public class Shooter implements Subsystem {
             case 4: // Ready to Shoot
                     if(IO.yButtonIsPressed(false)) {
                         lowPower = !lowPower;
+                        SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
                     }
                     setPercentPower(0);
                     break;
             case 5: // Shoot
                     if(lowPower) { 
-                        setPercentPower(0.4);
+                        setPercentPower(0.3);
                     } else { 
-                        setPercentPower(0.75);
+                        setPercentPower(0.70);
+                        // setPercentPower(0.60);
+                        // shootPIDs[0].setReference(1600, CANSparkMax.ControlType.kVelocity);
+                        // shootPIDs[1].setReference(1600, CANSparkMax.ControlType.kVelocity);
+                        // shootPIDs[2].setReference(1600, CANSparkMax.ControlType.kVelocity);
                     }
                     break;
 

@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Relay.Direction;
+import edu.wpi.first.wpilibj.Relay;
+
 
 
 //classes we make are imported here:
@@ -18,6 +21,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Collector;
 import frc.robot.autonomous.*;
+import static frc.robot.RobotMap.*;
 import frc.robot.IO;
 
 
@@ -35,6 +39,8 @@ public class Robot extends TimedRobot {
   public static final Shooter shooter = new Shooter();
   public static final Collector collector = new Collector();
   public static final Collect collectCommand = new Collect(collector, shooter);
+  public static final StartAutonomous auto = new StartAutonomous(shooter, drivetrain, collector);
+  public static final Relay led = new Relay(ID_LED);
 
   //This is proactive - I'm not sure we'll end up NEEDING this, but I'm guessing it will be nescessary
   public static final double DRIVE_SENSITIVITY_MULT = 1;
@@ -53,6 +59,8 @@ public class Robot extends TimedRobot {
     shooter.init();
     collector.init();
     
+
+
   }
 
   /** This function is run once each time the robot enters autonomous mode. */
@@ -62,20 +70,29 @@ public class Robot extends TimedRobot {
     m_timer.start();
     collectCommand.setState(0);
     drivetrain.zeroEncoders();
+    System.out.println("Init");
+    auto.init();
     //repeat = -10;
+
+    // collectCommand.init();
+
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    System.out.println("A");
-      drivetrain.autoDistDrive(1, 0.2);
+    auto.autoRun();
+    shooter.shooterPeriodic();
+    
+    
   }
 
   /** This function is called once each time the robot enters teleoperated mode. */
   @Override
   public void teleopInit() {
     collectCommand.setState(1);
+    collectCommand.init();
+    led.setDirection(Relay.Direction.kForward);
   }
 
   /** This function is called periodically during teleoperated mode. */
@@ -84,9 +101,16 @@ public class Robot extends TimedRobot {
     // collector.runPneumatics();
     
 
-    collectCommand.collect();
+    collectCommand.collect(true);
+
+    if(collector.isBallLoaded()) {
+        led.set(Relay.Value.kOn);
+    } else {
+      led.set(Relay.Value.kOff);
+    }
 
     drivetrain.arcadeDrive();
+
     // shooter.shooterControl();
     SmartDashboard.putBoolean("Ball Loaded?", collector.isBallLoaded());
     shooter.shooterPeriodic();

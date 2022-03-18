@@ -51,14 +51,40 @@ public class Drivetrain implements Subsystem {
         drive.arcadeDrive(speed, 0);
     }
 
+    public double getAverageDriveDistance() {
+        return ((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
+    }
 
-    /** drive a distance at a speed (uses encoder data) -- NEEDS UPDATING*/
-    public void autoDistDrive(double dist, double speed) {
-        double distance = distanceToNativeUnits(dist);
-        double encoderAverage = (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2;
-        if(distance > encoderAverage) {
-            driveAuto(0.6);
+    public double getRotations() {
+        return (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2;
+    }
+
+    public double getAverageDriveDistanceFeet() {
+        System.out.println("encoder distance: " + (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
+        return (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS;
+    }
+
+    /** drive a distance at a speed (uses encoder data)*/
+    public boolean autoDistDrive(double dist, double speed) {
+        double encoderAverage = getAverageDriveDistance();
+        System.out.println("We have gone " + nativeUnitsToDistanceFeet(encoderAverage));
+        encoderAverage = nativeUnitsToDistanceFeet(encoderAverage);
+        if(dist > encoderAverage) {
+            driveAuto(speed);
+            System.out.println("Going...");
+            return false;
         }
+        return true;
+    }
+
+    public void doAutonomousDrive() {
+        int state = 0;
+        switch(state){
+            case 0:
+                zeroEncoders();
+            case 1:
+
+            }
     }
 
     public void zeroEncoders() {
@@ -117,8 +143,8 @@ public class Drivetrain implements Subsystem {
     public void initDefaultCommand() {}
 
 
-    private int distanceToNativeUnits(double positionMeters){
-        double wheelRotations = positionMeters/(2 * Math.PI * Units.inchesToMeters(DRIVE_RADIUS));
+    private int distanceToNativeUnits(double positionInches){
+        double wheelRotations = positionInches/(2 * Math.PI * DRIVE_RADIUS);
         double motorRotations = wheelRotations * DRIVE_GEAR_RATIO;
         int sensorCounts = (int)(motorRotations * COUNTS_PER_REV);
         return sensorCounts;
@@ -130,6 +156,14 @@ public class Drivetrain implements Subsystem {
         double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(DRIVE_RADIUS));
         return positionMeters;
     }
+
+    private double nativeUnitsToDistanceFeet(double sensorCounts){
+        double motorRotations = (double)sensorCounts / COUNTS_PER_REV;
+        double wheelRotations = motorRotations / DRIVE_GEAR_RATIO;
+        double positionMeters = wheelRotations * (2 * Math.PI * 12 * DRIVE_RADIUS);
+        return positionMeters;
+    }
+
 
     // public void driveDistance(double distance, double speed) {
     //     distance = distance / 12;

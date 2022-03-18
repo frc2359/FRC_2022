@@ -17,10 +17,10 @@ public interface RobotMap { // Change this to an enum
 
     //This is the mapping of controllers to their ports
     public static final int  DRIVE_PORT = 0;
-    public static final int  SHOOT_PORT = 0;
+    public static final int  SHOOT_PORT = 1;
 
     // Drive Behaviors
-    public static final boolean BRAKE_MODE_DRIVE = false; //false = coast; true = brake  
+    public static final boolean BRAKE_MODE_DRIVE = true; //false = coast; true = brake  
     public static final double DRIVE_SPEED_MULT = 1;
     //Controls mode for drive    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html
     public static final ControlMode DRIVE_CONTROL_MODE = ControlMode.PercentOutput; //this controls in what unit drive is measured in.
@@ -30,6 +30,9 @@ public interface RobotMap { // Change this to an enum
     final double DRIVE_GEAR_RATIO = 1 / 10.71; //1:14.7959 0.0675862069 10.71:1
     final int DRIVE_DIAMETER = 6;
     final int DRIVE_RADIUS = DRIVE_DIAMETER / 2;
+
+    //LED-----------------
+    public static final int ID_LED = 1;
 
     /* SHOOTER---------------------------------------------------------------------------------------------------------------------------- */
     public static final int ID_SHOOTER_1 = 6;
@@ -41,5 +44,23 @@ public interface RobotMap { // Change this to an enum
     public static final int ID_PNEUMATIC_HUB = 1;
     public static final int ID_SOLENOID_CHANNEL = 7;
     public static final int ID_INTAKE_MOTOR = 3;
+
+    //STATE
+    public static final int STATE_UNKNOWN = 0;
+    public static final int STATE_NOT_COLLECTING = 1;
+    public static final int STATE_COLLECTING = 2;
+    public static final int STATE_SECURE_BALL = 3;
+    public static final int STATE_PREPARE_TO_SHOOT = 4;
+    public static final int STATE_SHOOT = 5;
     
+    //AUTO ------
+    public static final int ST_AUTO_START = 0;
+    public static final int ST_AUTO_DRIVE_BACK1 = 1;
+    public static final int ST_AUTO_SHOOT1 = 2;
+    public static final int ST_AUTO_DRIVE_BACK2 = 3;
+    public static final int ST_AUTO_CHECK_2ND_BALL = 4;
+    public static final int ST_AUTO_PAUSE = 5;
+    public static final int ST_AUTO_DRIVE_FORWARD = 6;
+    public static final int ST_AUTO_SHOOT2 = 7;
+    public static final int ST_AUTO_DONE = 8;
 }

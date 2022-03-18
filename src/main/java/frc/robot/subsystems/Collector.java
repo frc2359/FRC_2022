@@ -22,14 +22,14 @@ public class Collector {
 
 
     /** Gets sensor data of whether the ball is loaded in the shooter or not */
-    public boolean isBallLoaded() {
+    public boolean isBallLoaded() {        
         return !sensorBall1.get() || !sensorBall2.get();
     }
 
     public void init() {
         airCompressor.enableDigital();
         //solLifter.set(true);
-        intakeMotor.set(.4);
+        // intakeMotor.set(.4);
     }
 
     /** Sets whether the flippers are up or not */
