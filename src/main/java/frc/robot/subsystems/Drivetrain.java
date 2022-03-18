@@ -87,6 +87,10 @@ public class Drivetrain implements Subsystem {
             }
     }
 
+    public void turn(double kP, double error) {
+        drive.tankDrive(kP * error, -kP * error);
+    }
+
     public void zeroEncoders() {
         frontLeft.setSelectedSensorPosition(0);
         frontRight.setSelectedSensorPosition(0);

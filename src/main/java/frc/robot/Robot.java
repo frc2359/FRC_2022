@@ -24,6 +24,9 @@ import frc.robot.autonomous.*;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.SPI;
+
 
 
 
@@ -44,6 +47,11 @@ public class Robot extends TimedRobot {
 
   //This is proactive - I'm not sure we'll end up NEEDING this, but I'm guessing it will be nescessary
   public static final double DRIVE_SENSITIVITY_MULT = 1;
+
+  ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+  double kP = 0.05;
+  int iter = 0;
+
   
 
   /**
@@ -73,6 +81,10 @@ public class Robot extends TimedRobot {
     System.out.println("Init");
     auto.init();
     //repeat = -10;
+    gyro.reset();
+    gyro.calibrate();
+    
+
 
     // collectCommand.init();
 
@@ -83,9 +95,26 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    auto.autoRun();
-    shooter.shooterPeriodic();
+    // auto.autoRun();
+    // shooter.shooterPeriodic();
+
+    if(gyro.getAngle() < 90) {
+      drivetrain.turn(0.05, -0.05);
+
+    }
     
+    // Ahmad stuff start
+    // Find the heading error; setpoint is 90
+    // if(iter == 0) {
+    //   double error = 90 - gyro.getAngle();
+    //   // Turns the robot to face the desired direction
+    //   SmartDashboard.putNumber("angle", error);
+    //   drivetrain.turn(0.05 * error, -0.05 * error);
+    //   SmartDashboard.putString("Turned?", "Yes");
+    //   iter++;
+    // }
+    
+    // Ahmad stuff end
     
   }
 
@@ -95,6 +124,8 @@ public class Robot extends TimedRobot {
     collectCommand.setState(1);
     collectCommand.init();
     led.setDirection(Relay.Direction.kForward);
+    SmartDashboard.putNumber("Speed", 0);
+
   }
 
   /** This function is called periodically during teleoperated mode. */
@@ -118,6 +149,8 @@ public class Robot extends TimedRobot {
     shooter.shooterPeriodic();
     //IO.putNumberToSmartDashboard("Lidar Distance", IO.getLidarDistance());
     //IO.putNumberToSmartDashboard("Vision Distance", IO.getVisionDistance());
+
+    
 
   }
 

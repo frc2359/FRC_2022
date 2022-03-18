@@ -27,6 +27,7 @@ public class Shooter implements Subsystem {
     private RelativeEncoder motorEncoders[] = new RelativeEncoder[3];
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
     private boolean lowPower = false;
+    double speed;
     //private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
     //private PneumaticHub pneumatics = new PneumaticHub(ID_PNEUMATIC_HUB);
 
@@ -55,7 +56,7 @@ public class Shooter implements Subsystem {
         kI = 0;
         kD = 0; 
         kIz = 0; 
-        kFF = 0.000015; 
+        kFF = 0.00000000015; 
         kMaxOutput = 1; 
         kMinOutput = -1;
         maxRPM = 5700;
@@ -132,6 +133,7 @@ public class Shooter implements Subsystem {
             case 0: break;
             case 1: setPercentPower(0);
                     SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
+                    speed = SmartDashboard.getNumber("Speed", 0);
                     break;
             case 2: setPercentPower(0,2);
                     setPercentPower(0,1);
@@ -144,6 +146,7 @@ public class Shooter implements Subsystem {
                     if(IO.yButtonIsPressed(false)) {
                         lowPower = !lowPower;
                         SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
+                        
                     }
                     setPercentPower(0);
                     break;
@@ -151,11 +154,11 @@ public class Shooter implements Subsystem {
                     if(lowPower) { 
                         setPercentPower(0.3);
                     } else { 
-                        setPercentPower(0.70);
+                        // setPercentPower(0.70);
                         // setPercentPower(0.60);
-                        // shootPIDs[0].setReference(1600, CANSparkMax.ControlType.kVelocity);
-                        // shootPIDs[1].setReference(1600, CANSparkMax.ControlType.kVelocity);
-                        // shootPIDs[2].setReference(1600, CANSparkMax.ControlType.kVelocity);
+                        shootPIDs[0].setReference(speed, CANSparkMax.ControlType.kVelocity);
+                        shootPIDs[1].setReference(speed, CANSparkMax.ControlType.kVelocity);
+                        shootPIDs[2].setReference(speed, CANSparkMax.ControlType.kVelocity);
                     }
                     break;
 
