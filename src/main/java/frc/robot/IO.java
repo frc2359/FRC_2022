@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 // import edu.wpi.first.wpilibj.GenericHID.*;
 // import edu.wpi.first.wpilibj.Joystick;
@@ -114,6 +115,33 @@ public class IO {
     /**gets whether the A button on the controller has been released**/
     public static boolean isHIDButtonPressed(int button, boolean isDriver) {
         return (isDriver ? driver : otherController).getRawButton(button);
+    }
+
+    /**gets the team color from FMS**/
+    public static boolean isAllianceBlue() {
+        if (DriverStation.getAlliance() == DriverStation.Alliance.Blue)
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean isAllianceRed() {
+        if (DriverStation.getAlliance() == DriverStation.Alliance.Red)
+            return true;
+        else
+            return false;     
+    }
+
+    public static int getAllianceColor() {
+        if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
+            return COLOR_BLUE;
+        }
+        else if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+            return COLOR_RED;
+        }
+        else {
+            return COLOR_BLUE; //COLOR_UNKNOWN;
+        }   
     }
 
     /**Gets distance calculated by LiDAR sensors on the robot - we used this for our goal detection */

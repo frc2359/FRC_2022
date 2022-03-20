@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Relay;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.Arduino;
 import frc.robot.autonomous.*;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
@@ -45,9 +46,11 @@ public class Robot extends TimedRobot {
   public static final Drivetrain drivetrain = new Drivetrain();
   public static final Shooter shooter = new Shooter();
   public static final Collector collector = new Collector();
-  public static final Collect collectCommand = new Collect(collector, shooter);
-  public static final StartAutonomous auto = new StartAutonomous(shooter, drivetrain, collector);
+  public static final Arduino arduino = new Arduino();
+  public static final Collect collectCommand = new Collect(collector, shooter, arduino);
+  public static final StartAutonomous auto = new StartAutonomous(shooter, drivetrain, collector, arduino);
   public static final Relay led = new Relay(ID_LED);
+  
   
 
   //This is proactive - I'm not sure we'll end up NEEDING this, but I'm guessing it will be nescessary
@@ -67,20 +70,42 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     
-
     //initiate subsystems 
     drivetrain.init();
     shooter.init();
     collector.init();
+    arduino.init();
 
+    // Calibrate Gyro
+    gyro.calibrate(); 
 
+    // Define LED strings
+    arduino.defineLEDString(LED_STRING_COLLECTOR, 24);
+    arduino.defineLEDString(LED_STRING_LIFTER_LEFT, 24);
+    arduino.defineLEDString(LED_STRING_LIFTER_RIGHT, 24);
+    arduino.defineLEDString(LED_STRING_UNDERBODY, 60);
+    arduino.defineLEDString(LED_STRING_UPPERBODY, 60);
 
+    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
+    arduino.setLEDColor(LED_STRING_LIFTER_LEFT, LED_COLOR_BLACK);
+    arduino.setLEDColor(LED_STRING_LIFTER_RIGHT, LED_COLOR_BLACK);
+    arduino.setLEDColor(LED_STRING_UNDERBODY, LED_COLOR_GREEN);
+    if (IO.isAllianceBlue()) {
+      arduino.setLEDColor(LED_STRING_UPPERBODY, LED_COLOR_BLUE);
+    }
+    else if (IO.isAllianceRed()) {
+      arduino.setLEDColor(LED_STRING_UPPERBODY, LED_COLOR_RED);
+    }
+    else {
+      arduino.setLEDColor(LED_STRING_UPPERBODY, LED_COLOR_BLACK);
+    }
+     
   }
 
   /** This function is run once each time the robot enters autonomous mode. */
   @Override
   public void autonomousInit() {
-    gyro.calibrate();
+    //gyro.calibrate();    // ***** this should be done in Robot Init
     m_timer.reset();
     m_timer.start();
     collectCommand.setState(0);
@@ -90,9 +115,8 @@ public class Robot extends TimedRobot {
     //repeat = -10;
     gyro.reset();
     driveCommand.changePIDValues();
-
     
-
+    iter = 0;     // Added by Mr. R.  otherwise you can't run auto more than once in a row...
 
     // collectCommand.init();
 
@@ -141,6 +165,7 @@ public class Robot extends TimedRobot {
     collectCommand.init();
     led.setDirection(Relay.Direction.kForward);
     SmartDashboard.putNumber("Speed", 0);
+    SmartDashboard.putNumber("Alliance", IO.getAllianceColor());
   }
 
   /** This function is called periodically during teleoperated mode. */

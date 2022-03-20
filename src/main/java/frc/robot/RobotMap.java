@@ -29,6 +29,12 @@ public interface RobotMap { // Change this to an enum
     public static final int  HID_SHOOT_LOW = 6;
     public static final int  HID_SHOOT_LAUNCH_PAD = 7;
     public static final int  HID_SHOOT_EJECT = 8;
+    public static final int  HID_AUTO_EJECT_MODE = 9;
+
+    // ALLIANCE & BALL COLORS
+    public static final int  COLOR_UNKNOWN = 0;
+    public static final int  COLOR_BLUE = 1;
+    public static final int  COLOR_RED = 2;
 
     // Drive Behaviors
     public static final boolean BRAKE_MODE_DRIVE = true; //false = coast; true = brake  
@@ -56,7 +62,7 @@ public interface RobotMap { // Change this to an enum
     public static final int ID_SOLENOID_CHANNEL = 7;
     public static final int ID_INTAKE_MOTOR = 3;
 
-    //STATE
+    //STATE FOR COLLECTOR AND SHOOTER
     public static final int STATE_UNKNOWN = 0;
     public static final int STATE_NOT_COLLECTING = 1;
     public static final int STATE_COLLECTING = 2;
@@ -75,4 +81,30 @@ public interface RobotMap { // Change this to an enum
     public static final int ST_AUTO_DRIVE_FORWARD = 6;
     public static final int ST_AUTO_SHOOT2 = 7;
     public static final int ST_AUTO_DONE = 8;
+
+    //ARDUINO LED COLOR MAP
+    public static final int LED_COLOR_BLACK = 0; // 0,0,0
+    public static final int LED_COLOR_WHITE = 1; // 255,255,255
+    public static final int LED_COLOR_RED = 2; // 255,0,0
+    public static final int LED_COLOR_LIME = 3; // 0,255,0
+    public static final int LED_COLOR_BLUE = 4; // 0,0,255
+    public static final int LED_COLOR_YELLOW = 5; // 255,255,0
+    public static final int LED_COLOR_CYAN = 6; // 0,255,255
+    public static final int LED_COLOR_MAGENTA = 7; // 255,0,255 
+    public static final int LED_COLOR_SILVER = 8; // 192,192,192
+    public static final int LED_COLOR_GRAY = 9; // 128,128,128
+    public static final int LED_COLOR_MAROON = 10; // 128,0,0
+    public static final int LED_COLOR_OLIVE = 11; // 128,128,0
+    public static final int LED_COLOR_GREEN = 12; // 128,128,0
+    public static final int LED_COLOR_PURPLE = 13; // 128,0,128 
+    public static final int LED_COLOR_TEAL = 14; // 0,128,128
+    public static final int LED_COLOR_NAVY = 15; // 0,0,128
+
+    //ARDUINO LED STRINGS
+    public static final int LED_STRING_COLLECTOR = 1;
+    public static final int LED_STRING_LIFTER_LEFT = 2;
+    public static final int LED_STRING_LIFTER_RIGHT = 3;
+    public static final int LED_STRING_UNDERBODY = 4;
+    public static final int LED_STRING_UPPERBODY = 5;
+
 }

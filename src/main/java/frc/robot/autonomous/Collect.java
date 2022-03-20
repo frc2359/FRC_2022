@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.*;
 public class Collect {
     private Collector collector;
     private Shooter shooter;
+    private Arduino arduino;
     private int state = 0;
     private int counterTimer = 0; //counter that we use to count time. TeleOP periodic runs 50 times per second, so checking for a count of 50 = 1s
     public UsbCamera frontCamera;
@@ -22,9 +23,10 @@ public class Collect {
     public NetworkTableEntry cameraSelection;
     // public VideoSink vidSink;
 
-    public Collect(Collector col, Shooter shoot) {
+    public Collect(Collector col, Shooter shoot, Arduino ard) {
         collector = col;
         shooter = shoot;
+        arduino = ard;
     }
 
     /** Sets a new state of the collect command. */
@@ -44,7 +46,6 @@ public class Collect {
         // Set the resolution
         frontCamera.setResolution(640, 480);
         rearCamera.setResolution(640, 480);
-
 
         frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
         rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -72,6 +73,7 @@ public class Collect {
                     collector.setBallLifterState(true);
                     // if(!isAuto) {vidSink.setSource(frontCamera);}
                     collector.setIntakeSpeed(0);
+                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
                     shooter.pickBallUp(state);
                     if(IO.aButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {
                        state = STATE_COLLECTING; 
@@ -86,6 +88,7 @@ public class Collect {
 
                     collector.setBallLifterState(false);
                     collector.setIntakeSpeed(.4);
+                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_YELLOW);
                     shooter.pickBallUp(state);
                     if(collector.isBallLoaded()) {
                         state = STATE_SECURE_BALL; 
@@ -103,11 +106,21 @@ public class Collect {
                     collector.setIntakeSpeed(0);
                     shooter.pickBallUp(state);
                     collector.setBallLifterState(true);
+                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_GREEN);
+                    SmartDashboard.putNumber("Ball", arduino.getBallColor());
                     /*
                     if(IO.bButtonIsPressed(false)) { 
                         state = STATE_PREPARE_TO_SHOOT; 
                     } 
                     */
+                    if (IO.isHIDButtonPressed(HID_AUTO_EJECT_MODE, false)) {
+                        if (arduino.getBallColor() != COLOR_UNKNOWN) {
+                            if (arduino.getBallColor() != IO.getAllianceColor()) {
+                                shooter.setShotPower(0.15);
+                                state = STATE_PREPARE_TO_SHOOT;
+                            }
+                        }
+                    }
                     if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
                         state = STATE_REVERSE_COLLECTOR;
                     }
@@ -134,6 +147,7 @@ public class Collect {
                     if(counterTimer == 0) {
                         collector.setBallLifterState(false);
                         collector.setIntakeSpeed(0);
+                        arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLUE);
                         shooter.pickBallUp(state);
                     }   
                     
@@ -149,6 +163,7 @@ public class Collect {
 
             case STATE_SHOOT: // Shooting
             // if(!isAuto) {vidSink.setSource(rearCamera);}
+                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_PURPLE);
                     shooter.pickBallUp(state);
                     if(counterTimer == 10) {
                         collector.setBallLifterState(true);
@@ -166,6 +181,7 @@ public class Collect {
             case STATE_REVERSE_COLLECTOR:
                 collector.setBallLifterState(true);
                 collector.setIntakeSpeed(-.4);
+                arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_RED);
                 shooter.pickBallUp(state);
                 if(IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
                     state = STATE_NOT_COLLECTING;

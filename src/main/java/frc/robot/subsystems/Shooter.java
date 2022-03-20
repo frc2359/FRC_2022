@@ -145,22 +145,25 @@ public class Shooter implements Subsystem {
                     speed = SmartDashboard.getNumber("Speed", 0);
                     break;
 
-            case STATE_COLLECTING: setPercentPower(0,2);
-                    setPercentPower(0,1);
-                    setPercentPower(0.1, 0);
+            case STATE_COLLECTING:
+                    setPercentPower(0,2);      // Shooter motor off
+                    setPercentPower(0,1);      // Shooter motor off
+                    setPercentPower(0.1, 0);   // Shooter motor on top set to low speed to help collect ball
                     // setPercentPower(SmartDashboard.getNumber("ShootSpeed", 0), 0);
                     break;
 
             case STATE_SECURE_BALL:
-                    setPercentPower(0);
+                    setPercentPower(0);         // Shooter motors off
                     break;
 
             case STATE_PREPARE_TO_SHOOT: // Ready to Shoot
+                    /*
                     if(IO.yButtonIsPressed(false)) {
                         lowPower = !lowPower;
                         SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
                     }
-                    setPercentPower(0);
+                    */
+                    setPercentPower(0);         // Shooter motors off; should be waiting for the velocity to be correct and then shooting
                     break;
             case STATE_SHOOT: // Shoot
                     /*
@@ -178,14 +181,12 @@ public class Shooter implements Subsystem {
                     break;
 
             case STATE_REVERSE_COLLECTOR:
-                    setPercentPower(-0.1, 2);
+                    setPercentPower(-0.1, 2);       // Run motors backwards to send ball out the collector
                     setPercentPower(-0.1, 1);
                     setPercentPower(-0.1, 0);
                     break;
         }
-        // setPercentPower(0,0);
-        // setPercentPower(0,1);
-        // setPercentPower(0.2, 2);
+        
     }
 
     /**Stops all motors */
