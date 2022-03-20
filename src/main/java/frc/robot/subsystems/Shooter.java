@@ -28,6 +28,7 @@ public class Shooter implements Subsystem {
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
     private boolean lowPower = false;
     double speed;
+    double shotPowerLevel;
     //private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
     //private PneumaticHub pneumatics = new PneumaticHub(ID_PNEUMATIC_HUB);
 
@@ -60,6 +61,7 @@ public class Shooter implements Subsystem {
         kMaxOutput = 1; 
         kMinOutput = -1;
         maxRPM = 5700;
+        shotPowerLevel = 0;
         
         for (int i = 0; i < shootMotors.length; i++ ) {
             shootPIDs[i] = shootMotors[i].getPIDController();
@@ -82,6 +84,10 @@ public class Shooter implements Subsystem {
         //Prime Pneumatics
         
     }
+    /**Sets the shot power level */
+    public void setShotPower(double pwr) {
+        shotPowerLevel = pwr;
+    } 
 
     /**Sets the speed of all three motors (for usage with percent power control mode) */
     public void setPower(double pwr) {
@@ -130,27 +136,34 @@ public class Shooter implements Subsystem {
     /**Shooter mode for what to do upon being given to command to pick a ball up */
     public void pickBallUp(int state) {
         switch(state) {
-            case 0: break;
-            case 1: setPercentPower(0);
+            case STATE_UNKNOWN:
+                    break;
+
+            case STATE_NOT_COLLECTING:
+                    setPercentPower(0);
                     SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
                     speed = SmartDashboard.getNumber("Speed", 0);
                     break;
-            case 2: setPercentPower(0,2);
+
+            case STATE_COLLECTING: setPercentPower(0,2);
                     setPercentPower(0,1);
                     setPercentPower(0.1, 0);
                     // setPercentPower(SmartDashboard.getNumber("ShootSpeed", 0), 0);
                     break;
-            case 3: setPercentPower(0);
+
+            case STATE_SECURE_BALL:
+                    setPercentPower(0);
                     break;
-            case 4: // Ready to Shoot
+
+            case STATE_PREPARE_TO_SHOOT: // Ready to Shoot
                     if(IO.yButtonIsPressed(false)) {
                         lowPower = !lowPower;
                         SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
-                        
                     }
                     setPercentPower(0);
                     break;
-            case 5: // Shoot
+            case STATE_SHOOT: // Shoot
+                    /*
                     if(lowPower) { 
                         setPercentPower(0.3);
                     } else { 
@@ -160,8 +173,15 @@ public class Shooter implements Subsystem {
                         shootPIDs[1].setReference(speed, CANSparkMax.ControlType.kVelocity);
                         shootPIDs[2].setReference(speed, CANSparkMax.ControlType.kVelocity);
                     }
+                    */
+                    setPercentPower(shotPowerLevel);
                     break;
 
+            case STATE_REVERSE_COLLECTOR:
+                    setPercentPower(-0.1, 2);
+                    setPercentPower(-0.1, 1);
+                    setPercentPower(-0.1, 0);
+                    break;
         }
         // setPercentPower(0,0);
         // setPercentPower(0,1);
@@ -172,7 +192,6 @@ public class Shooter implements Subsystem {
     public void stopSys() {
         for(int i=0; i<shootPIDs.length; i++) {
             shootPIDs[i].setReference(0, CANSparkMax.ControlType.kVoltage);
-
         }
     }
 

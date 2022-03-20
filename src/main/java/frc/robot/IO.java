@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID;
 // import edu.wpi.first.wpilibj.GenericHID.*;
 // import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +22,7 @@ public class IO {
     //Driver Controller
     private static XboxController driver = new XboxController(DRIVE_PORT);
     private static XboxController shootController = new XboxController(SHOOT_PORT);
+    private static GenericHID otherController = new GenericHID(HID_PORT);
     //NetworkTables values
     private static NetworkTableInstance rpi3;
     private static NetworkTable table;
@@ -107,6 +109,11 @@ public class IO {
     public static void initNetworkTables() {
         rpi3 = NetworkTableInstance.getDefault();
         table = rpi3.getTable("datatable");
+    }
+
+    /**gets whether the A button on the controller has been released**/
+    public static boolean isHIDButtonPressed(int button, boolean isDriver) {
+        return (isDriver ? driver : otherController).getRawButton(button);
     }
 
     /**Gets distance calculated by LiDAR sensors on the robot - we used this for our goal detection */

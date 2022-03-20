@@ -58,8 +58,8 @@ public class Collect {
     public void collect(boolean isAuto) {
         SmartDashboard.putNumber("Collect State", state);
         System.out.println("Collect State " + state);
-        if(IO.xButtonIsPressed(false)) {
-            state = 1;
+        if(IO.xButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
+            state = STATE_COLLECTING;
         }
         switch(state) {
 
@@ -73,8 +73,11 @@ public class Collect {
                     // if(!isAuto) {vidSink.setSource(frontCamera);}
                     collector.setIntakeSpeed(0);
                     shooter.pickBallUp(state);
-                    if(IO.aButtonIsPressed(false)) {
+                    if(IO.aButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {
                        state = STATE_COLLECTING; 
+                    }
+                    if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
+                        state = STATE_REVERSE_COLLECTOR;
                     }
                     break;
 
@@ -87,6 +90,11 @@ public class Collect {
                     if(collector.isBallLoaded()) {
                         state = STATE_SECURE_BALL; 
                     }
+                    if(IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
+                        state = STATE_NOT_COLLECTING;
+                    }if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
+                        state = STATE_REVERSE_COLLECTOR;
+                    }
                     break;
 
             case STATE_SECURE_BALL: // Secure ball
@@ -95,9 +103,30 @@ public class Collect {
                     collector.setIntakeSpeed(0);
                     shooter.pickBallUp(state);
                     collector.setBallLifterState(true);
+                    /*
                     if(IO.bButtonIsPressed(false)) { 
                         state = STATE_PREPARE_TO_SHOOT; 
                     } 
+                    */
+                    if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
+                        state = STATE_REVERSE_COLLECTOR;
+                    }
+                    if(IO.isHIDButtonPressed(HID_SHOOT_HIGH, false)) {
+                        shooter.setShotPower(0.6);
+                        state = STATE_PREPARE_TO_SHOOT;
+                    }
+                    if(IO.isHIDButtonPressed(HID_SHOOT_LOW, false)) {
+                        shooter.setShotPower(0.3);
+                        state = STATE_PREPARE_TO_SHOOT;
+                    }
+                    if(IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {
+                        shooter.setShotPower(0.7);  // .9 or 1?
+                        state = STATE_PREPARE_TO_SHOOT;
+                    }
+                    if(IO.isHIDButtonPressed(HID_SHOOT_EJECT, false)) {
+                        shooter.setShotPower(0.15);
+                        state = STATE_PREPARE_TO_SHOOT;
+                    }
                     break;
 
             case STATE_PREPARE_TO_SHOOT: // Prepare to Shoot
@@ -132,7 +161,18 @@ public class Collect {
                         // vidSink.setSource(rearCamera);
                         counterTimer++;
                     }   
-                    break;   
+                    break;  
+                    
+            case STATE_REVERSE_COLLECTOR:
+                collector.setBallLifterState(true);
+                collector.setIntakeSpeed(-.4);
+                shooter.pickBallUp(state);
+                if(IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
+                    state = STATE_NOT_COLLECTING;
+                }if(IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {
+                    state = STATE_COLLECTING;
+                }
+                break;
         }
     }
 }

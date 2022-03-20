@@ -22,7 +22,10 @@ public class Drivetrain implements Subsystem {
 
     Timer timer = new Timer(); //for timing autonomous functions
     private DifferentialDrive drive = new DifferentialDrive(frontLeft, frontRight); //front motors are masters & control inputs for both front and back
-    
+
+    public DifferentialDrive getDiffDrive() {
+        return drive;
+    }
 
     /** drive function that can be called without having to pass in private vairables **/
     public void arcadeDrive() {

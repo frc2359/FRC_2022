@@ -18,6 +18,17 @@ public interface RobotMap { // Change this to an enum
     //This is the mapping of controllers to their ports
     public static final int  DRIVE_PORT = 0;
     public static final int  SHOOT_PORT = 1;
+    public static final int  HID_PORT = 3;
+
+    // HID Buttons
+    public static final int  HID_COLLECTOR_OFF = 1;
+    public static final int  HID_COLLECTOR_ON = 2;
+    public static final int  HID_COLLECTOR_REVERSE = 3;
+    public static final int  HID_SHOOT_AUTO_MODE = 4;
+    public static final int  HID_SHOOT_HIGH = 5;
+    public static final int  HID_SHOOT_LOW = 6;
+    public static final int  HID_SHOOT_LAUNCH_PAD = 7;
+    public static final int  HID_SHOOT_EJECT = 8;
 
     // Drive Behaviors
     public static final boolean BRAKE_MODE_DRIVE = true; //false = coast; true = brake  
@@ -52,6 +63,7 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_SECURE_BALL = 3;
     public static final int STATE_PREPARE_TO_SHOOT = 4;
     public static final int STATE_SHOOT = 5;
+    public static final int STATE_REVERSE_COLLECTOR = 11;
     
     //AUTO ------
     public static final int ST_AUTO_START = 0;
