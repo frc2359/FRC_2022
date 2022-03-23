@@ -86,9 +86,9 @@ public class Robot extends TimedRobot {
     arduino.defineLEDString(LED_STRING_UNDERBODY, 60);
     arduino.defineLEDString(LED_STRING_UPPERBODY, 60);
 
-    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
-    arduino.setLEDColor(LED_STRING_LIFTER_LEFT, LED_COLOR_BLACK);
-    arduino.setLEDColor(LED_STRING_LIFTER_RIGHT, LED_COLOR_BLACK);
+    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_PURPLE);
+    arduino.setLEDColor(LED_STRING_LIFTER_LEFT, LED_COLOR_YELLOW);
+    arduino.setLEDColor(LED_STRING_LIFTER_RIGHT, LED_COLOR_RED);
     arduino.setLEDColor(LED_STRING_UNDERBODY, LED_COLOR_GREEN);
     if (IO.isAllianceBlue()) {
       arduino.setLEDColor(LED_STRING_UPPERBODY, LED_COLOR_BLUE);
@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
     auto.init();
     //repeat = -10;
     gyro.reset();
-    driveCommand.changePIDValues();
+    /*driveCommand.changePIDValues();*/
     
     iter = 0;     // Added by Mr. R.  otherwise you can't run auto more than once in a row...
 
@@ -160,6 +160,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     
+    arduino.setLEDColor(0, LED_COLOR_RED);
 
     collectCommand.setState(1);
     collectCommand.init();

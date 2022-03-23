@@ -35,7 +35,7 @@ public class Drivetrain implements Subsystem {
             // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             if(IO.getThrottle() < 0){
 
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * DRIVE_SPEED_MULT);
+                drive.arcadeDrive(IO.getThrottle() * TURN_SPEED_MULT, IO.getLeftXAxis(true) * DRIVE_SPEED_MULT);
                 IO.putNumberToSmartDashboard(("Velocity R: "), frontRight.getSelectedSensorVelocity());
                 IO.putNumberToSmartDashboard(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
                 
