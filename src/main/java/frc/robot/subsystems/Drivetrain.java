@@ -35,14 +35,14 @@ public class Drivetrain implements Subsystem {
             // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             if(IO.getThrottle() < 0){
 
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * DRIVE_SPEED_MULT);
+                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT, true);
                 IO.putNumberToSmartDashboard(("Velocity R: "), frontRight.getSelectedSensorVelocity());
                 IO.putNumberToSmartDashboard(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
                 
                 // System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
 
             } else {
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * DRIVE_SPEED_MULT);
+                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT, true);
             }
             IO.putNumberToSmartDashboard(("Right Drive Enc Value"),  frontLeft.getSelectedSensorPosition());
             IO.putNumberToSmartDashboard(("Left Drive Enc Value"),  frontRight.getSelectedSensorPosition());
@@ -92,6 +92,11 @@ public class Drivetrain implements Subsystem {
 
     public void turn(double kP, double error) {
         drive.tankDrive(kP * error, -kP * error);
+    }
+
+    public void tankDrive(double left, double right) {
+        drive.tankDrive(left, -right);
+
     }
 
     public void zeroEncoders() {

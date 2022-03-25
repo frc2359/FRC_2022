@@ -140,7 +140,7 @@ public class IO {
             return COLOR_RED;
         }
         else {
-            return COLOR_BLUE; //COLOR_UNKNOWN;
+            return COLOR_UNKNOWN; //COLOR_BLUE;
         }   
     }
 

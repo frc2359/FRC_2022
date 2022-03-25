@@ -57,8 +57,9 @@ public class Robot extends TimedRobot {
   public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   public static Drive driveCommand = new Drive(gyro);
   double kP = 0.05;
+  double integral = 0;
+  double previousError;
   int iter = 0;
-
   
 
   /**
@@ -84,9 +85,9 @@ public class Robot extends TimedRobot {
     arduino.defineLEDString(LED_STRING_UNDERBODY, 60);
     arduino.defineLEDString(LED_STRING_UPPERBODY, 60);
 
-    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
-    arduino.setLEDColor(LED_STRING_LIFTER_LEFT, LED_COLOR_BLACK);
-    arduino.setLEDColor(LED_STRING_LIFTER_RIGHT, LED_COLOR_BLACK);
+    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_PURPLE);
+    arduino.setLEDColor(LED_STRING_LIFTER_LEFT, LED_COLOR_YELLOW);
+    arduino.setLEDColor(LED_STRING_LIFTER_RIGHT, LED_COLOR_RED);
     arduino.setLEDColor(LED_STRING_UNDERBODY, LED_COLOR_GREEN);
     if (IO.isAllianceBlue()) {
       arduino.setLEDColor(LED_STRING_UPPERBODY, LED_COLOR_BLUE);
@@ -112,9 +113,10 @@ public class Robot extends TimedRobot {
     auto.init();
     //repeat = -10;
     gyro.reset();
-    driveCommand.changePIDValues();
+    /*driveCommand.changePIDValues();*/
     
     iter = 0;     // Added by Mr. R.  otherwise you can't run auto more than once in a row...
+    integral = 0;
 
     // collectCommand.init();
 
@@ -127,28 +129,44 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     // auto.autoRun();
     // shooter.shooterPeriodic();
+    double realAngle = (gyro.getAngle() / 150) * 360;
+    System.out.println("angle: " + realAngle);
 
-    //if(gyro.getAngle() < 90) {
-    //  drivetrain.turn(0.05, -0.05);
+    if(realAngle < 90) {
+      double error = 90 - ((gyro.getAngle() / 150) * 360);
+      integral += (error * .02);
 
-    //}
+      double power = 0.03 * error;
+      System.out.println("rcw: " + power);
+
+      drivetrain.tankDrive(-power, -power);
+
+
+    }
+    // previousError = error;
+    // drivetrain.tankDrive(0, 0);
+
     
     // Ahmad stuff start
     // Find the heading error; setpoint is 90
-     if(iter != 400) {
-       double error = 90 - gyro.getAngle();
-       double realAngle = (gyro.getAngle() / 150) * 360;
-       if(iter % 50 == 0){
-        System.out.println("Angle = " + realAngle);
-        driveCommand.execute(drivetrain.getDiffDrive());
+    //  if(iter != 400) {
+      //  double error = 90 - gyro.getAngle();
+      //  double realAngle = (gyro.getAngle() / 150) * 360;
+      //  System.out.println("angle: " + realAngle);
+      //  if(iter % 50 == 0){
+        // System.out.println("Angle = " + realAngle);
+      //  driveCommand.execute(drivetrain.getDiffDrive());
        //System.out.println("Angle2D = " + gyro.getRotation2d());
-       }
+      //  }
+
        // Turns the robot to face the desired direction
        //SmartDashboard.putNumber("angle", error);
-       //drivetrain.turn(0.025 * error, -0.025 * error);
+      //  drivetrain.turn(0.025 * error, -0.025 * error);
        //SmartDashboard.putString("Turned?", "Yes");
-       iter++;
-     }
+      //  iter++;
+    //  }
+    //  System.out.println("iteration: " + iter);
+
     
     // Ahmad stuff end
     
@@ -158,6 +176,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     
+    arduino.setLEDColor(0, LED_COLOR_RED);
 
     collectCommand.setState(1);
     collectCommand.init();

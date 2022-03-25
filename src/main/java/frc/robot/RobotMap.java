@@ -39,6 +39,7 @@ public interface RobotMap { // Change this to an enum
     // Drive Behaviors
     public static final boolean BRAKE_MODE_DRIVE = true; //false = coast; true = brake  
     public static final double DRIVE_SPEED_MULT = 1;
+    public static final double TURN_SPEED_MULT = 0.5;
     //Controls mode for drive    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html
     public static final ControlMode DRIVE_CONTROL_MODE = ControlMode.PercentOutput; //this controls in what unit drive is measured in.
     public static final ControlMode AUTO_CONTROL_MODE = ControlMode.Velocity;
@@ -56,7 +57,7 @@ public interface RobotMap { // Change this to an enum
     public static final int ID_SHOOTER_2 = 5;
     public static final int ID_SHOOTER_3 = 2;
     public static final double MAX_SHOOT_VELOCITY = 7500;
-
+    public static final double MAX_ACCEL = 1500; 
     //COLLECTOR-----------------------------------------------------------------------------------------------------
     public static final int ID_PNEUMATIC_HUB = 1;
     public static final int ID_SOLENOID_CHANNEL = 7;
@@ -70,6 +71,7 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_PREPARE_TO_SHOOT = 4;
     public static final int STATE_SHOOT = 5;
     public static final int STATE_REVERSE_COLLECTOR = 11;
+    
     
     //AUTO ------
     public static final int ST_AUTO_START = 0;
@@ -101,10 +103,10 @@ public interface RobotMap { // Change this to an enum
     public static final int LED_COLOR_NAVY = 15; // 0,0,128
 
     //ARDUINO LED STRINGS
-    public static final int LED_STRING_COLLECTOR = 1;
-    public static final int LED_STRING_LIFTER_LEFT = 2;
-    public static final int LED_STRING_LIFTER_RIGHT = 3;
-    public static final int LED_STRING_UNDERBODY = 4;
-    public static final int LED_STRING_UPPERBODY = 5;
+    public static final int LED_STRING_COLLECTOR = 0;
+    public static final int LED_STRING_LIFTER_LEFT = 1;
+    public static final int LED_STRING_LIFTER_RIGHT = 2;
+    public static final int LED_STRING_UNDERBODY = 3;
+    public static final int LED_STRING_UPPERBODY = 4;
 
 }
