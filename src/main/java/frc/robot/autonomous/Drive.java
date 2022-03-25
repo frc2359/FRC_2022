@@ -1,48 +1,45 @@
 
-package frc.robot;
+package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Drivetrain;
 
 
 
 
 public class Drive{
     
-    double P = 0.05;
+    double P;
     double I;
     double D;
     int integral, previous_error, setpoint = 0;
     ADXRS450_Gyro gyro;
     DifferentialDrive robotDrive;
     double rcw;
+    Drivetrain drivetrain;
 
 
-    public Drive(ADXRS450_Gyro gyro) {
+    public Drive(ADXRS450_Gyro gyro, Drivetrain drivetrain) {
         this.gyro = gyro;
-        double P = 0.05;
-        SmartDashboard.putNumber("Drive P", P);
-        double I = 0.0;
-        SmartDashboard.putNumber("Drive I", I);
-        double D = 0.0;
-        SmartDashboard.putNumber("Drive D", D);
-        System.out.println("here hello");
+        this.drivetrain = drivetrain;
     }
 
     public void setSetpoint(int setpoint) {
         this.setpoint = setpoint;
     }
-/*
+
+    /*
     public void changePIDValues() {
         P = SmartDashboard.getNumber("Drive P", 0.225);
         I = SmartDashboard.getNumber("Drive I", 0.0675);
         D = SmartDashboard.getNumber("Drive D", 0.0);
 
 
-    }
-*/
+    } */
+
     public void PID(){
         double realAngle = (gyro.getAngle() / 150) * 360;
         //double P = 0.05;
@@ -65,5 +62,20 @@ public class Drive{
         PID();
         System.out.println("Executing...");
         robotDrive.arcadeDrive(0, rcw);
+    }
+
+    /**Converts from WPI's 0-300 angle system to a normal 0-360 angle */
+    public double convertToRealAngle(double angle) {
+        return ((angle / 150) * 360);
+    }
+
+    /**Turn robot to a passed angle using a proportional power P */
+    public boolean turnToAngle(double angle, double P) {
+        double error = angle - convertToRealAngle(gyro.getAngle());
+        System.out.println("error: " + error);
+        rcw = error * P;
+        System.out.println("rcw: " + rcw);
+        drivetrain.turn(-rcw);
+        return (convertToRealAngle(gyro.getAngle()) == angle);
     }
 }
