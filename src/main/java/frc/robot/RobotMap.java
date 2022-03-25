@@ -39,7 +39,7 @@ public interface RobotMap { // Change this to an enum
     // Drive Behaviors
     public static final boolean BRAKE_MODE_DRIVE = true; //false = coast; true = brake  
     public static final double DRIVE_SPEED_MULT = 1;
-    public static final double TURN_SPEED_MULT = 0.2;
+    public static final double TURN_SPEED_MULT = 0.5;
     //Controls mode for drive    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html
     public static final ControlMode DRIVE_CONTROL_MODE = ControlMode.PercentOutput; //this controls in what unit drive is measured in.
     public static final ControlMode AUTO_CONTROL_MODE = ControlMode.Velocity;

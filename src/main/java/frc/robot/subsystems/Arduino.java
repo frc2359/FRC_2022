@@ -48,11 +48,11 @@ public class Arduino {
     
     /** Gets sensor data of ball color */
     public boolean isBallRed() {        
-        return sensorBallRed.get();
+        return !sensorBallRed.get();
     }
 
     public boolean isBallBlue() {        
-        return sensorBallBlue.get();
+        return !sensorBallBlue.get();
     }
 
     public int getBallColor() {        
