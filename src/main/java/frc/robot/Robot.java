@@ -54,8 +54,6 @@ public class Robot extends TimedRobot {
   
 
   //This is proactive - I'm not sure we'll end up NEEDING this, but I'm guessing it will be nescessary
-  public static final double DRIVE_SENSITIVITY_MULT = 1;
-
   public static ADXRS450_Gyro gyro = new ADXRS450_Gyro();
   public static Drive driveCommand = new Drive(gyro);
   double kP = 0.05;
