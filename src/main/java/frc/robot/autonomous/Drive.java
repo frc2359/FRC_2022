@@ -69,6 +69,10 @@ public class Drive{
         return ((angle / 150) * 360);
     }
 
+    public double getRealAngle() {
+        return ((gyro.getAngle() / 150) * 360);
+    }
+
     /**Turn robot to a passed angle using a proportional power P */
     public boolean turnToAngle(double angle, double P) {
         double error = angle - convertToRealAngle(gyro.getAngle());
@@ -76,6 +80,8 @@ public class Drive{
         rcw = error * P;
         System.out.println("rcw: " + rcw);
         drivetrain.turn(-rcw);
+        System.out.println("angle: " + convertToRealAngle(gyro.getAngle()));
+        System.out.println("angle raw: " + gyro.getAngle());
         return (convertToRealAngle(gyro.getAngle()) == angle);
     }
 }

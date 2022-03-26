@@ -48,6 +48,8 @@ public class Robot extends TimedRobot {
     public static final Relay led = new Relay(ID_LED);
     public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     public static final Drive driveCommand = new Drive(gyro, drivetrain);
+    boolean isComplete;
+    int rotateState;
 
 
     double kP = 0.05;
@@ -101,6 +103,8 @@ public class Robot extends TimedRobot {
         System.out.println("Init");
         auto.init();
         gyro.reset();
+        isComplete = false;
+
 
         iter = 0; // Added by Mr. R. otherwise you can't run auto more than once in a row...
         integral = 0;
@@ -113,9 +117,10 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         // auto.autoRun();
+        System.out.println(gyro.getAngle());
         // shooter.shooterPeriodic();
         
-        driveCommand.turnToAngle(90, 0.05);
+        driveCommand.turnToAngle(90, 0.02);
 
 
         
@@ -157,6 +162,13 @@ public class Robot extends TimedRobot {
         led.setDirection(Relay.Direction.kForward);
         SmartDashboard.putNumber("Speed", 0);
         SmartDashboard.putNumber("Alliance", IO.getAllianceColor());
+        isComplete = false;
+
+        rotateState = 0;
+
+        iter = 0;
+
+        gyro.reset();
     }
 
     /** This function is called periodically during teleoperated mode. */
@@ -165,6 +177,7 @@ public class Robot extends TimedRobot {
         NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
         NetworkTableEntry ty = limelight.getEntry("ty");
         double targetOffsetAngleVertical = ty.getDouble(0.0);
+        
         double limelightMountAngleDegrees = -7;
         double limelightLensHeightInches = 18.5;
         double goalHeightInches = 33.5;
@@ -185,12 +198,42 @@ public class Robot extends TimedRobot {
         collectCommand.collect(true);
 
         if (collector.isBallLoaded()) {
-            led.set(Relay.Value.kOn);
+          led.set(Relay.Value.kOn);
         } else {
-            led.set(Relay.Value.kOff);
+          led.set(Relay.Value.kOff);
         }
 
         drivetrain.arcadeDrive();
+
+
+        NetworkTableEntry tx = limelight.getEntry("tx");
+        double targetOffsetAngleHorizontal = tx.getDouble(0.0);
+        System.out.println(targetOffsetAngleHorizontal);
+        System.out.println(driveCommand.getRealAngle());
+
+        switch(rotateState) {
+          case 0:
+            if(IO.aButtonIsPressed(true)) {
+              // gyro.reset();
+              rotateState = 1;
+            }
+            break;
+          case 1:
+            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.04);
+            if(isTurned) {
+              if(iter == 50) {
+                rotateState = 2;
+                iter = 0;
+              } else {
+                iter ++;
+              }
+            }
+            break;
+          case 2:
+            // gyro.reset();
+            rotateState = 0;
+            break;
+        }
 
         // shooter.shooterControl();
         SmartDashboard.putBoolean("Ball Loaded?", collector.isBallLoaded());
