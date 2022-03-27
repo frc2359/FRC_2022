@@ -14,10 +14,10 @@ import frc.robot.IO;
 
 
 public class Collector {
-    private DigitalInput sensorBall1 = new DigitalInput(1);
-    private DigitalInput sensorBall2 = new DigitalInput(2);
+    private DigitalInput sensorBall1 = new DigitalInput(DIO_BALL_SENSOR_1);
+    private DigitalInput sensorBall2 = new DigitalInput(DIO_BALL_SENSOR_2);
     private Compressor airCompressor = new Compressor(ID_PNEUMATIC_HUB, PneumaticsModuleType.REVPH);
-    private Solenoid solLifter = new Solenoid(PneumaticsModuleType.REVPH, ID_SOLENOID_CHANNEL);
+    private Solenoid solBallLifter = new Solenoid(PneumaticsModuleType.REVPH, ID_SOL_BALL_LIFTER);
     private WPI_VictorSPX intakeMotor = new WPI_VictorSPX(ID_INTAKE_MOTOR);
 
 
@@ -34,7 +34,7 @@ public class Collector {
 
     /** Sets whether the flippers are up or not */
     public void setBallLifterState(boolean up) {
-        solLifter.set(up);
+        solBallLifter.set(up);
     }
 
     
@@ -61,6 +61,7 @@ public class Collector {
 
 
     // ******************* Can probably delete this function... *********************
+    /*
     public void runPneumatics() {
         if(IO.aButtonIsPressed(false)) {
             setBallLifterState(true);       
@@ -81,11 +82,7 @@ public class Collector {
             SmartDashboard.putBoolean("X Button", false); 
           }
     }
-
+    */
     
-
-
-
-
-    
+       
 }

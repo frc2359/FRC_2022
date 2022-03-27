@@ -66,22 +66,39 @@ public class Drive{
 
     /**Converts from WPI's 0-300 angle system to a normal 0-360 angle */
     public double convertToRealAngle(double angle) {
-        return ((angle / 150) * 360);
+        return ((angle / 300) * 360);
     }
 
     public double getRealAngle() {
-        return ((gyro.getAngle() / 150) * 360);
+        return ((gyro.getAngle() / 300) * 360);
+    }
+
+    public void printAngle() {
+        System.out.println("angle from gyro: " + convertToRealAngle(gyro.getAngle()));
+    }
+
+    public double getAngle() {
+        return -(gyro.getAngle());
+    }
+
+    public double getConvertedRealAngle() {
+        return convertToRealAngle(getAngle());
     }
 
     /**Turn robot to a passed angle using a proportional power P */
     public boolean turnToAngle(double angle, double P) {
-        double error = angle - convertToRealAngle(gyro.getAngle());
+        double error = angle - getAngle();
         System.out.println("error: " + error);
         rcw = error * P;
         System.out.println("rcw: " + rcw);
         drivetrain.turn(-rcw);
-        System.out.println("angle: " + convertToRealAngle(gyro.getAngle()));
-        System.out.println("angle raw: " + gyro.getAngle());
-        return (convertToRealAngle(gyro.getAngle()) == angle);
+        System.out.println("angle from gyro: " + getAngle());
+        System.out.println("angle raw: " + getAngle());
+        return (getAngle() <= angle + 10 && getAngle() >= angle - 10);
+    }
+
+    public boolean cancelTurn() {
+        drivetrain.turn(0);
+        return true;
     }
 }

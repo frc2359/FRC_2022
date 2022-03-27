@@ -46,11 +46,30 @@ public interface RobotMap { // Change this to an enum
 
     final int COUNTS_PER_REV = 2048;
     final double DRIVE_GEAR_RATIO = 1 / 10.71; //1:14.7959 0.0675862069 10.71:1
-    final int DRIVE_DIAMETER = 6;
-    final int DRIVE_RADIUS = DRIVE_DIAMETER / 2;
+    final double DRIVE_DIAMETER = 6;
+    final double DRIVE_RADIUS = DRIVE_DIAMETER / 2;
+    final double DRIVE_RADIUS_FEET = DRIVE_RADIUS / 12;
 
     //LED-----------------
     public static final int ID_LED = 1;
+
+    //ROBORIO DIGITAL IO PORTS ---------------------------------
+    public static final int DIO_BALL_SENSOR_1 = 1;
+    public static final int DIO_BALL_SENSOR_2 = 2;
+    public static final int DIO_BALL_COLOR_BLUE = 3;   // remove - using REV Color Sensor instead
+    public static final int DIO_BALL_COLOR_RED = 4;    // remove - using REV Color Sensor instead
+    public static final int DIO_LIFTER_PADDLE_LEFT = 5;
+    public static final int DIO_LIFTER_PADDLE_RIGHT = 6;
+    public static final int DIO_LIFTER_HOME_LEFT = 7;
+    public static final int DIO_LIFTER_HOME_RIGHT = 8;
+    public static final int DIO_LIFTER_HOOK_OPEN_LEFT = 9;
+    public static final int DIO_LIFTER_HOOK_OPEN_RIGHT = 10;
+    public static final int DIO_LIFTER_HOOK_CLOSED_LEFT = 11;
+    public static final int DIO_LIFTER_HOOK_CLOSED_RIGHT = 12;
+
+    //PNEUMATICS CONTROLLER ---------------------
+    public static final int ID_SOL_BALL_LIFTER = 7;
+    public static final int ID_SOL_LIFTER_HOOK = 8;
 
     /* SHOOTER---------------------------------------------------------------------------------------------------------------------------- */
     public static final int ID_SHOOTER_1 = 6;
@@ -58,9 +77,9 @@ public interface RobotMap { // Change this to an enum
     public static final int ID_SHOOTER_3 = 2;
     public static final double MAX_SHOOT_VELOCITY = 7500;
     public static final double MAX_ACCEL = 1500; 
+    
     //COLLECTOR-----------------------------------------------------------------------------------------------------
     public static final int ID_PNEUMATIC_HUB = 1;
-    public static final int ID_SOLENOID_CHANNEL = 7;
     public static final int ID_INTAKE_MOTOR = 3;
 
     //STATE FOR COLLECTOR AND SHOOTER
@@ -72,7 +91,11 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_SHOOT = 5;
     public static final int STATE_REVERSE_COLLECTOR = 11;
     
-    
+    //LIFTER ------------------------
+    public static final int CAN_ID_LIFTER_LEFT = 11;
+    public static final int CAN_ID_LIFTER_RIGHT = 12;
+    public static final int CAN_ID_LIFTER_ARM = 13;
+
     //AUTO ------
     public static final int ST_AUTO_START = 0;
     public static final int ST_AUTO_DRIVE_BACK1 = 1;

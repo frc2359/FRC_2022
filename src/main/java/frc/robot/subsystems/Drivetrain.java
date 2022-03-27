@@ -35,17 +35,17 @@ public class Drivetrain implements Subsystem {
             // drive.arcadeDrive(IO.getThrottle() * DRIVE_SPEED_MULT, IO.getLeftXAxis() * DRIVE_SPEED_MULT);
             if(IO.getThrottle() < 0){
 
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT, true);
-                IO.putNumberToSmartDashboard(("Velocity R: "), frontRight.getSelectedSensorVelocity());
-                IO.putNumberToSmartDashboard(("Velocity L: "), frontLeft.getSelectedSensorVelocity());
+                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT);
+                IO.putNumberToSmartDashboard(("Vel. R"), frontRight.getSelectedSensorVelocity());
+                IO.putNumberToSmartDashboard(("Vel. L"), frontLeft.getSelectedSensorVelocity());
                 
                 // System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
 
             } else {
                 drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT, true);
             }
-            IO.putNumberToSmartDashboard(("Right Drive Enc Value"),  frontLeft.getSelectedSensorPosition());
-            IO.putNumberToSmartDashboard(("Left Drive Enc Value"),  frontRight.getSelectedSensorPosition());
+            IO.putNumberToSmartDashboard(("R Enc"),  frontLeft.getSelectedSensorPosition());
+            IO.putNumberToSmartDashboard(("L Enc"),  frontRight.getSelectedSensorPosition());
          //   IO.putNumberToSmartDashboard(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
         }
     }
@@ -64,14 +64,15 @@ public class Drivetrain implements Subsystem {
 
     public double getAverageDriveDistanceFeet() {
         System.out.println("encoder distance: " + (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
-        return (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS;
+        System.out.println("encoder distance: " + (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET);
+        return (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET;
     }
 
     /** drive a distance at a speed (uses encoder data)*/
     public boolean autoDistDrive(double dist, double speed) {
-        double encoderAverage = getAverageDriveDistance();
-        System.out.println("We have gone " + nativeUnitsToDistanceFeet(encoderAverage));
-        encoderAverage = nativeUnitsToDistanceFeet(encoderAverage);
+        double encoderAverage = getAverageDriveDistanceFeet();
+        // System.out.println("We have gone " + nativeUnitsToDistanceFeet(encoderAverage));
+        // encoderAverage = nativeUnitsToDistanceFeet(encoderAverage);
         if(dist > encoderAverage) {
             driveAuto(speed);
             System.out.println("Going...");

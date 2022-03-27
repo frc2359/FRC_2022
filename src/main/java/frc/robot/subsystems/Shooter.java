@@ -141,7 +141,7 @@ public class Shooter implements Subsystem {
 
             case STATE_NOT_COLLECTING:
                     setPercentPower(0);
-                    SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
+                    //SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
                     speed = SmartDashboard.getNumber("Speed", 0);
                     break;
 
@@ -203,8 +203,8 @@ public class Shooter implements Subsystem {
     public void setVelocity(double setPoint) {
         for (int i = 0; i < motorEncoders.length; i++) {
         shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVelocity);
-        SmartDashboard.putNumber("Velocity SetPoint", setPoint);
-        SmartDashboard.putNumber("Process Variable", motorEncoders[0].getVelocity());
+        SmartDashboard.putNumber("Vel SetPoint", setPoint);
+        SmartDashboard.putNumber("Pro. Var.", motorEncoders[0].getVelocity());
         }
     }
 
@@ -227,9 +227,9 @@ public class Shooter implements Subsystem {
         newI = IO.getNumberFromSmartDashboard("I Gain", kI);
         newD = IO.getNumberFromSmartDashboard("D Gain", kD);
         newIZone = IO.getNumberFromSmartDashboard("I Zone", kIz);
-        newFF = IO.getNumberFromSmartDashboard("Feed Forward", kFF);
-        newMaxOuput = IO.getNumberFromSmartDashboard("Max Output", kMaxOutput);
-        newMinOutput = IO.getNumberFromSmartDashboard("Min Output", kMinOutput);
+        newFF = IO.getNumberFromSmartDashboard("Feed For.", kFF);
+        newMaxOuput = IO.getNumberFromSmartDashboard("Max Out", kMaxOutput);
+        newMinOutput = IO.getNumberFromSmartDashboard("Min Out", kMinOutput);
         if(newP != kP || newI!= kI || newD!= kD || newIZone!= kIz || newFF !=kFF || newMaxOuput!=kMaxOutput || newMinOutput!=kMinOutput){
             // setPID(newP, newI, newD, newIZone, newFF, newMaxOuput, newMinOutput);
         }

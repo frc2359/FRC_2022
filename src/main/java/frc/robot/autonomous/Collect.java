@@ -57,8 +57,9 @@ public class Collect {
 
     /** The program to collect balls. Each state represents a different part of the process to shoot. */
     public void collect(boolean isAuto) {
-        SmartDashboard.putNumber("Collect State", state);
+        SmartDashboard.putNumber("Col. State", state);
         System.out.println("Collect State " + state);
+        //SmartDashboard.putNumber("Ball Col", arduino.getBallColor());
         if(IO.xButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
             state = STATE_COLLECTING;
         }
@@ -75,7 +76,7 @@ public class Collect {
                     collector.setIntakeSpeed(0);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
                     shooter.pickBallUp(state);
-                    if(IO.aButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {
+                    if(IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {  // IO.aButtonIsPressed(false) || 
                        state = STATE_COLLECTING; 
                     }
                     if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
@@ -107,7 +108,7 @@ public class Collect {
                     shooter.pickBallUp(state);
                     collector.setBallLifterState(true);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_GREEN);
-                    SmartDashboard.putNumber("Ball", arduino.getBallColor());
+                    //SmartDashboard.putNumber("Ball", arduino.getBallColor());
                     /*
                     if(IO.bButtonIsPressed(false)) { 
                         state = STATE_PREPARE_TO_SHOOT; 
@@ -129,7 +130,7 @@ public class Collect {
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     if(IO.isHIDButtonPressed(HID_SHOOT_LOW, false)) {
-                        shooter.setShotPower(0.3);
+                        shooter.setShotPower(0.5);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     if(IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {

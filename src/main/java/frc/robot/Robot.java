@@ -50,6 +50,8 @@ public class Robot extends TimedRobot {
     public static final Drive driveCommand = new Drive(gyro, drivetrain);
     boolean isComplete;
     int rotateState;
+    boolean doneDriving;
+    boolean driven;
 
 
     double kP = 0.05;
@@ -103,11 +105,13 @@ public class Robot extends TimedRobot {
         System.out.println("Init");
         auto.init();
         gyro.reset();
+        // gyro.calibrate();
         isComplete = false;
 
 
         iter = 0; // Added by Mr. R. otherwise you can't run auto more than once in a row...
         integral = 0;
+        doneDriving = false;
 
         // collectCommand.init();
 
@@ -116,36 +120,19 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        // auto.autoRun();
-        System.out.println(gyro.getAngle());
-        // shooter.shooterPeriodic();
-        
-        driveCommand.turnToAngle(90, 0.02);
-
+        // System.out.println("Angle: " + gyro.getAngle());
+        // SmartDashboard.putNumber("Gyro ", gyro.getAngle());
+        // driveCommand.turnToAngle(90, 0.033);
+        if(!doneDriving) {
+          doneDriving = drivetrain.autoDistDrive(24, 0.3);
+        }
 
         
         /*
+        // auto.autoRun();
+        // shooter.shooterPeriodic();
         previousError = error;
-        drivetrain.tankDrive(0, 0);
-        // Ahmad stuff start
-        // Find the heading error; setpoint is 90
-        if(iter != 400) {
-            double error = 90 - gyro.getAngle();
-            double realAngle = (gyro.getAngle() / 150) * 360;
-            System.out.println("angle: " + realAngle);
-            if(iter % 50 == 0){
-                System.out.println("Angle = " + realAngle);
-                driveCommand.execute(drivetrain.getDiffDrive());
-                System.out.println("Angle2D = " + gyro.getRotation2d());
-            }
-            // Turns the robot to face the desired direction
-            SmartDashboard.putNumber("angle", error);
-            drivetrain.turn(0.025 * error, -0.025 * error);
-            SmartDashboard.putString("Turned?", "Yes");
-            iter++;
-        }
-        System.out.println("iteration: " + iter);
-        // Ahmad stuff end */
+        drivetrain.tankDrive(0, 0); */
 
     }
 
@@ -161,7 +148,8 @@ public class Robot extends TimedRobot {
         collectCommand.init();
         led.setDirection(Relay.Direction.kForward);
         SmartDashboard.putNumber("Speed", 0);
-        SmartDashboard.putNumber("Alliance", IO.getAllianceColor());
+        drivetrain.zeroEncoders();
+        //SmartDashboard.putNumber("Alliance", IO.getAllianceColor());
         isComplete = false;
 
         rotateState = 0;
@@ -169,6 +157,8 @@ public class Robot extends TimedRobot {
         iter = 0;
 
         gyro.reset();
+         driven = false;
+
     }
 
     /** This function is called periodically during teleoperated mode. */
@@ -182,14 +172,16 @@ public class Robot extends TimedRobot {
         double limelightLensHeightInches = 18.5;
         double goalHeightInches = 33.5;
 
+        driveCommand.printAngle();
+
         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngleVertical;
         double angleToGoalRadians = Units.degreesToRadians(angleToGoalDegrees);
 
         System.out.println(Math.tan(angleToGoalRadians));
 
         double distanceToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
-        SmartDashboard.putNumber("Measured Distance to Goal (in, radians)", distanceToGoalInches);
-        SmartDashboard.putNumber("Angle to Goal", angleToGoalDegrees);
+        SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
+        SmartDashboard.putNumber("Goal Angle", angleToGoalDegrees);
 
         System.out.println("Distance to Goal: " + distanceToGoalInches);
 
@@ -208,20 +200,33 @@ public class Robot extends TimedRobot {
 
         NetworkTableEntry tx = limelight.getEntry("tx");
         double targetOffsetAngleHorizontal = tx.getDouble(0.0);
+        SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
         System.out.println(targetOffsetAngleHorizontal);
         System.out.println(driveCommand.getRealAngle());
+        SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceFeet());
 
         switch(rotateState) {
           case 0:
+            // drivetrain.zeroEncoders();
+
             if(IO.aButtonIsPressed(true)) {
-              // gyro.reset();
+              gyro.reset();
               rotateState = 1;
             }
             break;
           case 1:
-            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.04);
+            if(!driven) {
+              driven = drivetrain.autoDistDrive(-(distanceToGoalInches - 73), -0.3);
+            } else {
+              rotateState = 2;
+
+            }
+            break;
+          case 2:
+            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.02);
+            System.out.println("Target Offset: " + targetOffsetAngleHorizontal);
             if(isTurned) {
-              if(iter == 50) {
+              if(iter >= 50) {
                 rotateState = 2;
                 iter = 0;
               } else {
@@ -229,14 +234,15 @@ public class Robot extends TimedRobot {
               }
             }
             break;
-          case 2:
+          case 3:
             // gyro.reset();
+            driveCommand.cancelTurn();
             rotateState = 0;
             break;
         }
 
         // shooter.shooterControl();
-        SmartDashboard.putBoolean("Ball Loaded?", collector.isBallLoaded());
+        SmartDashboard.putBoolean("Loaded?", collector.isBallLoaded());
         shooter.shooterPeriodic();
         // IO.putNumberToSmartDashboard("Lidar Distance", IO.getLidarDistance());
         // IO.putNumberToSmartDashboard("Vision Distance", IO.getVisionDistance());
