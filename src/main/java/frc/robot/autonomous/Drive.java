@@ -1,4 +1,3 @@
-
 package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -15,7 +14,7 @@ public class Drive{
     double P;
     double I;
     double D;
-    int integral, previous_error, setpoint = 0;
+    double integral, previous_error, setpoint = 0;
     ADXRS450_Gyro gyro;
     DifferentialDrive robotDrive;
     double rcw;
@@ -36,8 +35,6 @@ public class Drive{
         P = SmartDashboard.getNumber("Drive P", 0.225);
         I = SmartDashboard.getNumber("Drive I", 0.0675);
         D = SmartDashboard.getNumber("Drive D", 0.0);
-
-
     } */
 
     public void PID(){
@@ -97,8 +94,22 @@ public class Drive{
         return (getAngle() <= angle + 10 && getAngle() >= angle - 10);
     }
 
+    /**Turn to angle using a proportional power P and integral value I */
+    public boolean turnToAngle(double angle, double P, double I, double time) {
+        double error = angle - getAngle();
+        System.out.println("error: " + error);
+        integral += I * (time / 60);
+        rcw = error * P;
+        System.out.println("rcw: " + rcw);
+        drivetrain.turn(-rcw);
+        System.out.println("angle from gyro: " + getAngle());
+        System.out.println("angle raw: " + getAngle());
+        return (getAngle() <= angle + 10 && getAngle() >= angle - 10);
+    }
+
     public boolean cancelTurn() {
         drivetrain.turn(0);
+        integral = 0;
         return true;
     }
 }
