@@ -15,7 +15,7 @@ import frc.robot.IO;
 
 public class Collector {
     private DigitalInput sensorBall1 = new DigitalInput(DIO_BALL_SENSOR_1);
-    private DigitalInput sensorBall2 = new DigitalInput(DIO_BALL_SENSOR_2);
+    //private DigitalInput sensorBall2 = new DigitalInput(DIO_BALL_SENSOR_2);
     private Compressor airCompressor = new Compressor(ID_PNEUMATIC_HUB, PneumaticsModuleType.REVPH);
     private Solenoid solBallLifter = new Solenoid(PneumaticsModuleType.REVPH, ID_SOL_BALL_LIFTER);
     private WPI_VictorSPX intakeMotor = new WPI_VictorSPX(ID_INTAKE_MOTOR);
@@ -23,7 +23,7 @@ public class Collector {
 
     /** Gets sensor data of whether the ball is loaded in the shooter or not */
     public boolean isBallLoaded() {        
-        return !sensorBall1.get() || !sensorBall2.get();
+        return !sensorBall1.get(); // || !sensorBall2.get();
     }
 
     public void init() {
