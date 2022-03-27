@@ -121,7 +121,10 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         SmartDashboard.putNumber("Gyro ", gyro.getAngle());
-        driveCommand.turnToAngle(90, 0.033); //  Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
+        // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
+        driveCommand.turnToAngle(90, 0.033); //I've only tested this version without an integral value
+        driveCommand.turnToAngle(90, 0.033, 0.2, iter);
+        iter++;
     }
 
     /**
@@ -129,9 +132,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
-
         arduino.setLEDColor(0, LED_COLOR_RED);
-
         collectCommand.setState(1);
         collectCommand.init();
         led.setDirection(Relay.Direction.kForward);
@@ -139,14 +140,10 @@ public class Robot extends TimedRobot {
         drivetrain.zeroEncoders();
         //SmartDashboard.putNumber("Alliance", IO.getAllianceColor());
         isComplete = false;
-
         rotateState = 0;
-
         iter = 0;
-
         gyro.reset();
-         driven = false;
-
+        driven = false;
     }
 
     /** This function is called periodically during teleoperated mode. */
@@ -161,18 +158,9 @@ public class Robot extends TimedRobot {
         double distanceToGoalInches = IO.calculateDistance(limelightMountAngleDegrees, limelightLensHeightInches, goalHeightInches);
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
         SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
-
         System.out.println("Distance to Goal: " + distanceToGoalInches);
 
-        // collector.runPneumatics();
-
         collectCommand.collect(true);
-
-        if (collector.isBallLoaded()) {
-          led.set(Relay.Value.kOn);
-        } else {
-          led.set(Relay.Value.kOff);
-        }
 
         drivetrain.arcadeDrive();
 
@@ -216,22 +204,43 @@ public class Robot extends TimedRobot {
             break;
         }
 
-        // shooter.shooterControl();
         SmartDashboard.putBoolean("Loaded?", collector.isBallLoaded());
         shooter.shooterPeriodic();
-        // IO.putNumberToSmartDashboard("Lidar Distance", IO.getLidarDistance());
-        // IO.putNumberToSmartDashboard("Vision Distance", IO.getVisionDistance());
+
+        /*
+        if (collector.isBallLoaded()) {
+          led.set(Relay.Value.kOn);
+        } else {
+          led.set(Relay.Value.kOff);
+        }
+        */
 
     }
+
+    // TEST SHOULD NOW BE A MATCH SIMULATION ------------------------------------------------------------------------------------------------------------------
 
     /** This function is called once each time the robot enters test mode. */
     @Override
     public void testInit() {
+        iter = 0;
+        teleopInit();
     }
 
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
+        if(iter < 50 * 15) {
+            SmartDashboard.putString("Match", "Autonomous");
+            autonomousPeriodic();
+        } else if(iter == 50 * 15) {
+            teleopInit();
+            SmartDashboard.putString("Match", "TeleOp");
+        } else if (iter > 50 * 15 && iter < 50 * 135) {
+            teleopPeriodic();
+            SmartDashboard.putString("Match", "TeleOp");
+        } else {
+            SmartDashboard.putString("Match", "Over");
+            drivetrain.stopMotors();
+        }
     }
-
 }
