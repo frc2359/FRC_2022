@@ -96,6 +96,9 @@ public interface RobotMap { // Change this to an enum
     public static final int CAN_ID_LIFTER_RIGHT = 12;
     public static final int CAN_ID_LIFTER_ARM = 13;
 
+    public static final int ST_LIFTER_NOT_LIFTING = 1;
+    
+
     //AUTO ------
     public static final int ST_AUTO_START = 0;
     public static final int ST_AUTO_DRIVE_BACK1 = 1;
