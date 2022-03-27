@@ -1,4 +1,3 @@
-
 package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -36,8 +35,6 @@ public class Drive{
         P = SmartDashboard.getNumber("Drive P", 0.225);
         I = SmartDashboard.getNumber("Drive I", 0.0675);
         D = SmartDashboard.getNumber("Drive D", 0.0);
-
-
     } */
 
     public void PID(){

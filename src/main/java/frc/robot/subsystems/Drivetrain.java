@@ -62,7 +62,7 @@ public class Drivetrain implements Subsystem {
         return (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2;
     }
 
-    public double getAverageDriveDistanceFeet() {
+    public double getAverageDriveDistanceInches() {
         System.out.println("encoder distance: " + (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
         System.out.println("encoder distance: " + (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET);
         return (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET;
@@ -70,11 +70,15 @@ public class Drivetrain implements Subsystem {
 
     /** drive a distance at a speed (uses encoder data)*/
     public boolean autoDistDrive(double dist, double speed) {
-        double encoderAverage = getAverageDriveDistanceFeet();
+        double encoderAverage = getAverageDriveDistanceInches();
         // System.out.println("We have gone " + nativeUnitsToDistanceFeet(encoderAverage));
         // encoderAverage = nativeUnitsToDistanceFeet(encoderAverage);
         if(dist > encoderAverage) {
-            driveAuto(speed);
+            if(dist >= 0) {
+                driveAuto(speed);
+            } else {
+                driveAuto(-speed);
+            }
             System.out.println("Going...");
             return false;
         }

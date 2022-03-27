@@ -90,6 +90,12 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_PREPARE_TO_SHOOT = 4;
     public static final int STATE_SHOOT = 5;
     public static final int STATE_REVERSE_COLLECTOR = 11;
+
+    //STATE FOR AUTOMATED SHOOTING CORRECTION
+    public static final int STATE_DRIVEROP = 0;
+    public static final int STATE_CORRECT_DISTANCE = 1;
+    public static final int STATE_CORRECT_ANGLE = 2;
+    public static final int STATE_RESET = 3;
     
     //LIFTER ------------------------
     public static final int CAN_ID_LIFTER_LEFT = 11;

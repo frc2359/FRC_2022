@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.*;
 import static frc.robot.RobotMap.*;
+import edu.wpi.first.math.util.Units;
+
 // import com.ctre.phoenix.motorcontrol.can.BaseMotorController.*;
 // import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -144,15 +146,23 @@ public class IO {
         }   
     }
 
-    /**Gets distance calculated by LiDAR sensors on the robot - we used this for our goal detection */
-   // public static double getLidarDistance() {
-   //     return table.getEntry("lidardist").getDouble(-1);
-   // }
+    public static double getLimelightXAngle() {
+        NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+        NetworkTableEntry tx = limelight.getEntry("tx");
+        return tx.getDouble(0.0);
+    }
 
-    /**Gets distance caluclated by Microsoft webcams with triangulation (no fancy LiDAR) - we used this for our ball detection */
-   // public static double getVisionDistance() {
-   //     return table.getEntry("visiondist").getDouble(-1);
-   // }
+    public static double getLimelightYAngle() {
+        NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+        NetworkTableEntry ty = limelight.getEntry("ty");
+        return ty.getDouble(0.0);
+    }
+
+    public static double calculateDistance(double limelightMountAngleDegrees, double limelightLensHeightInches, double goalHeightInches) {
+        double angleToGoalDegrees = limelightMountAngleDegrees + getLimelightYAngle();
+        double angleToGoalRadians = Units.degreesToRadians(angleToGoalDegrees);
+        return (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    }
 
     /**Gets the left stick value when a is pushed - mod for setting intake velocity */
     public static double getIntakeX(boolean isLeft) {

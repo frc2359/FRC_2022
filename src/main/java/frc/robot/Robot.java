@@ -120,20 +120,8 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        // System.out.println("Angle: " + gyro.getAngle());
-        // SmartDashboard.putNumber("Gyro ", gyro.getAngle());
-        // driveCommand.turnToAngle(90, 0.033);
-        if(!doneDriving) {
-          doneDriving = drivetrain.autoDistDrive(24, 0.3);
-        }
-
-        
-        /*
-        // auto.autoRun();
-        // shooter.shooterPeriodic();
-        previousError = error;
-        drivetrain.tankDrive(0, 0); */
-
+        SmartDashboard.putNumber("Gyro ", gyro.getAngle());
+        driveCommand.turnToAngle(90, 0.033); //  Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
     }
 
     /**
@@ -164,24 +152,15 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
-        NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry ty = limelight.getEntry("ty");
-        double targetOffsetAngleVertical = ty.getDouble(0.0);
-        
         double limelightMountAngleDegrees = -7;
         double limelightLensHeightInches = 18.5;
         double goalHeightInches = 33.5;
 
         driveCommand.printAngle();
 
-        double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngleVertical;
-        double angleToGoalRadians = Units.degreesToRadians(angleToGoalDegrees);
-
-        System.out.println(Math.tan(angleToGoalRadians));
-
-        double distanceToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+        double distanceToGoalInches = IO.calculateDistance(limelightMountAngleDegrees, limelightLensHeightInches, goalHeightInches);
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
-        SmartDashboard.putNumber("Goal Angle", angleToGoalDegrees);
+        SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
 
         System.out.println("Distance to Goal: " + distanceToGoalInches);
 
@@ -197,44 +176,40 @@ public class Robot extends TimedRobot {
 
         drivetrain.arcadeDrive();
 
-
-        NetworkTableEntry tx = limelight.getEntry("tx");
-        double targetOffsetAngleHorizontal = tx.getDouble(0.0);
+        double targetOffsetAngleHorizontal = IO.getLimelightXAngle();
         SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
         System.out.println(targetOffsetAngleHorizontal);
-        System.out.println(driveCommand.getRealAngle());
-        SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceFeet());
+        SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceInches());
 
+        //This is the code that should correct for distance and angle when the driver pushes "A"
         switch(rotateState) {
-          case 0:
-            // drivetrain.zeroEncoders();
-
+          case STATE_DRIVEROP:
             if(IO.aButtonIsPressed(true)) {
               gyro.reset();
-              rotateState = 1;
+              rotateState = STATE_CORRECT_DISTANCE;
             }
             break;
-          case 1:
+          case STATE_CORRECT_DISTANCE:
             if(!driven) {
-              driven = drivetrain.autoDistDrive(-(distanceToGoalInches - 73), -0.3);
+              driven = drivetrain.autoDistDrive(-(distanceToGoalInches - 73), 0.3); //73 is the distance to goal in inches that shoots in low power mode to into the goal on the stools
             } else {
-              rotateState = 2;
+              rotateState = STATE_CORRECT_ANGLE;
 
             }
             break;
-          case 2:
-            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.02);
+          case STATE_CORRECT_ANGLE:
+            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.02); //Turn to angle has a +/- 10 degree window where it will stop
             System.out.println("Target Offset: " + targetOffsetAngleHorizontal);
             if(isTurned) {
               if(iter >= 50) {
-                rotateState = 2;
+                rotateState = STATE_RESET;
                 iter = 0;
               } else {
                 iter ++;
               }
             }
             break;
-          case 3:
+          case STATE_RESET:
             // gyro.reset();
             driveCommand.cancelTurn();
             rotateState = 0;
