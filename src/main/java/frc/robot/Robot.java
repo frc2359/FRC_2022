@@ -228,7 +228,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         iter = 0;
-        teleopInit();  // ????? SHould this be autoInit(); ?
+        autonomousInit();
     }
 
     /** This function is called periodically during test mode. */
