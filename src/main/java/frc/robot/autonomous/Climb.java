@@ -35,10 +35,10 @@ public class Climb {
         System.out.println("Lifter State " + state);
 
 
-        if(state == 100) {      // What command buttons are we using
+        if(IO.getRightXAxis(false)  >= 1) {      
             state = ST_LIFTER_RAISE;
         }
-        if(state == 100) {      // What command buttons are we using
+        if(IO.getRightXAxis(false) <= -1) {      
             state = ST_LIFTER_LOWER;
         }
 
@@ -50,10 +50,12 @@ public class Climb {
 
             case ST_LIFTER_NOT_CLIMBING: // not climbing
                     lifter.moveLifter(0);
-                    if(IO.isHIDButtonPressed(HID_LIFTER_RAISE, false)) {  // maybe use positional joystick (up - down; left and right) - but not button
-                       state = ST_LIFTER_RAISE; 
+                    //if(IO.isHIDButtonPressed(HID_LIFTER_RAISE, false)) {  // maybe use positional joystick (up - down; left and right) - but not button
+                    if(IO.getRightXAxis(false)  >= 1) { 
+                        state = ST_LIFTER_RAISE; 
                     }
-                    if(IO.isHIDButtonPressed(HID_LIFTER_LOWER, false)) {
+                    //if(IO.isHIDButtonPressed(HID_LIFTER_LOWER, false)) {
+                    if(IO.getRightXAxis(false)  <= -1) {
                         state = ST_LIFTER_LOWER;
                     }
                     break;

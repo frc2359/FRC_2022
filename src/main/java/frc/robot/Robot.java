@@ -149,6 +149,9 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
+
+        SmartDashboard.putNumber("POV",IO.getPOV(false));
+
         double limelightMountAngleDegrees = -7;
         double limelightLensHeightInches = 18.5;
         double goalHeightInches = 33.5;
@@ -158,7 +161,7 @@ public class Robot extends TimedRobot {
         double distanceToGoalInches = IO.calculateDistance(limelightMountAngleDegrees, limelightLensHeightInches, goalHeightInches);
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
         SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
-        System.out.println("Distance to Goal: " + distanceToGoalInches);
+        //System.out.println("Distance to Goal: " + distanceToGoalInches);
 
         collectCommand.collect(true);
 
@@ -166,7 +169,7 @@ public class Robot extends TimedRobot {
 
         double targetOffsetAngleHorizontal = IO.getLimelightXAngle();
         SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
-        System.out.println(targetOffsetAngleHorizontal);
+        //System.out.println(targetOffsetAngleHorizontal);
         SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceInches());
 
         //This is the code that should correct for distance and angle when the driver pushes "A"
@@ -223,7 +226,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         iter = 0;
-        teleopInit();
+        teleopInit();  // ????? SHould this be autoInit(); ?
     }
 
     /** This function is called periodically during test mode. */

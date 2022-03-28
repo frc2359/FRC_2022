@@ -3,19 +3,17 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Encoder;
 import static frc.robot.RobotMap.*;
-
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+//import com.revrobotics.SparkMaxPIDController;
 
-import frc.robot.IO;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+//import frc.robot.IO;
 
 
 public class Lifter {
@@ -25,8 +23,8 @@ public class Lifter {
     private TalonSRX lifterArm = new TalonSRX(CAN_ID_LIFTER_ARM_ROTATE);
     private TalonSRX armRoller = new TalonSRX(CAN_ID_LIFTER_ARM_ROLLER);
  
-    private Encoder lifterLeftEncoder = new Encoder(9,10); // Replace with encoder connected to Spark
-    private Encoder lifterRightEncoder = new Encoder(7,8); // Replace with encoder connected to spark
+    private RelativeEncoder lifterLeftEncoder = lifterLeft.getEncoder();
+    private RelativeEncoder lifterRightEncoder = lifterRight.getEncoder(); 
 
     private DigitalInput sensorPaddleLeft = new DigitalInput(DIO_LIFTER_PADDLE_LEFT);
     private DigitalInput sensorPaddleRight = new DigitalInput(DIO_LIFTER_PADDLE_RIGHT);
@@ -69,7 +67,7 @@ public class Lifter {
     public void moveLifter(double spd) {  // pos spd is up; neg spd is down
         lifterMotorSpeed = spd;
         if (lifterMotorSpeed > 0) {  // Move Up
-            if (lifterLeftEncoder.get() < maxLifterHeight && lifterRightEncoder.get() < maxLifterHeight) {
+            if (lifterLeftEncoder.getPosition() < maxLifterHeight && lifterRightEncoder.getPosition() < maxLifterHeight) {  // if less than max height
                 lifterMotorSpeed = spd;
             } else {
                 lifterMotorSpeed = 0;  // stop lifter -- reached upper limit
@@ -82,8 +80,8 @@ public class Lifter {
             if (!sensorHomeLeft.get() || !sensorHomeRight.get()) { // reached home position
                 lifterMotorSpeed = 0;
                 aboveBar = false;
-                lifterLeftEncoder.reset();  // Reset Lifter Encoder value
-                lifterRightEncoder.reset();
+                lifterLeftEncoder.setPosition(0);  // Reset Lifter Encoder value
+                lifterRightEncoder.setPosition(0);
             }
             else {
                 lifterMotorSpeed = spd;

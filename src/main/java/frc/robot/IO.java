@@ -119,6 +119,10 @@ public class IO {
         return (isDriver ? driver : otherController).getRawButton(button);
     }
 
+    public static int getPOV(boolean isDriver){
+        return (isDriver ? driver : otherController).getPOV();
+    }
+
     /**gets the team color from FMS**/
     public static boolean isAllianceBlue() {
         if (DriverStation.getAlliance() == DriverStation.Alliance.Blue)
