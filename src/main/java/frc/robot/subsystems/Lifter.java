@@ -60,6 +60,10 @@ public class Lifter {
         return (sensorHomeLeft.get() || sensorHomeRight.get());
     }
 
+    public double getHeight() {
+        return ((lifterLeftEncoder.getPosition() + lifterRightEncoder.getPosition()) / 2); // Average of both Encoders
+    }
+
     public void stopLifter() {
          moveLifter(0);
     }

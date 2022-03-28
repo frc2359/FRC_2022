@@ -33,6 +33,7 @@ public class Climb {
     public void climb(boolean isAuto) {
         SmartDashboard.putNumber("Lift St", state);
         System.out.println("Lifter State " + state);
+        SmartDashboard.putNumber("L. Height",lifter.getHeight());
 
 
         if(IO.getRightXAxis(false)  >= 1) {      

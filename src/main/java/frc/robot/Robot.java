@@ -19,6 +19,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.Arduino;
+import frc.robot.subsystems.Lifter;
 import frc.robot.autonomous.*;
 import static frc.robot.RobotMap.*;
 import frc.robot.IO;
@@ -43,8 +44,10 @@ public class Robot extends TimedRobot {
     public static final Shooter shooter = new Shooter();
     public static final Collector collector = new Collector();
     public static final Arduino arduino = new Arduino();
+    public static final Lifter lifter = new Lifter();
     public static final Collect collectCommand = new Collect(collector, shooter, arduino);
     public static final StartAutonomous auto = new StartAutonomous(shooter, drivetrain, collector, arduino);
+    public static final Climb climbCommand = new Climb(lifter);
     public static final Relay led = new Relay(ID_LED);
     public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     public static final Drive driveCommand = new Drive(gyro, drivetrain);
@@ -71,6 +74,7 @@ public class Robot extends TimedRobot {
         drivetrain.init();
         shooter.init();
         collector.init();
+        lifter.init();
         arduino.init();
 
         // Calibrate Gyro
@@ -149,8 +153,6 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
-
-        SmartDashboard.putNumber("POV",IO.getPOV(false));
 
         double limelightMountAngleDegrees = -7;
         double limelightLensHeightInches = 18.5;
