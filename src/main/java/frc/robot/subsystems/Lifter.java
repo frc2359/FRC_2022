@@ -35,7 +35,7 @@ public class Lifter {
     private DigitalInput sensorHookOpenLeft = new DigitalInput(DIO_LIFTER_HOOK_OPEN_LEFT);
     private DigitalInput sensorHookOpenRight = new DigitalInput(DIO_LIFTER_HOOK_OPEN_RIGHT);
     private DigitalInput sensorHookClosedLeft = new DigitalInput(DIO_LIFTER_HOOK_CLOSED_LEFT);
-    private DigitalInput sensorHookClosedRight = new DigitalInput(DIO_LIFTER_HOOK_CLOSED_RIGHT);
+    //private DigitalInput sensorHookClosedRight = new DigitalInput(DIO_LIFTER_HOOK_CLOSED_RIGHT);
  
     private Solenoid solLifterHook = new Solenoid(PneumaticsModuleType.REVPH, ID_SOL_LIFTER_HOOK);
 

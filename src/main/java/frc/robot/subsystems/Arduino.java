@@ -16,8 +16,8 @@ import com.revrobotics.ColorMatch;
 
 public class Arduino {
     
-    private DigitalInput sensorBallRed = new DigitalInput(3);
-    private DigitalInput sensorBallBlue = new DigitalInput(4);
+    //private DigitalInput sensorBallRed = new DigitalInput(3);
+    //private DigitalInput sensorBallBlue = new DigitalInput(4);
 
     private SerialPort arduinoUSB;
     private Timer timer; 

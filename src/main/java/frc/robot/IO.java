@@ -119,6 +119,11 @@ public class IO {
         return (isDriver ? driver : otherController).getRawButton(button);
     }
 
+    /**gets the amount of tilt in the x-axis for directional steering**/
+    public static double getHIDAxis(int axis) {
+        return otherController.getRawAxis(axis);
+    }
+    
     public static int getPOV(boolean isDriver){
         return (isDriver ? driver : otherController).getPOV();
     }

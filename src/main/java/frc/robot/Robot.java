@@ -154,6 +154,11 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
 
+        // TEMP
+        SmartDashboard.putNumber("HID Ax 0", IO.getHIDAxis(0));
+        SmartDashboard.putNumber("HID Ax 1", IO.getHIDAxis(1));
+        climbCommand.climb(false);
+        
         double limelightMountAngleDegrees = -7;
         double limelightLensHeightInches = 18.5;
         double goalHeightInches = 33.5;

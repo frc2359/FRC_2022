@@ -36,10 +36,10 @@ public class Climb {
         SmartDashboard.putNumber("L. Height",lifter.getHeight());
 
 
-        if(IO.getRightXAxis(false)  >= 1) {      
+        if(IO.getHIDAxis(0)  >= 1) {      
             state = ST_LIFTER_RAISE;
         }
-        if(IO.getRightXAxis(false) <= -1) {      
+        if(IO.getHIDAxis(0) <= -1) {      
             state = ST_LIFTER_LOWER;
         }
 
@@ -52,11 +52,11 @@ public class Climb {
             case ST_LIFTER_NOT_CLIMBING: // not climbing
                     lifter.moveLifter(0);
                     //if(IO.isHIDButtonPressed(HID_LIFTER_RAISE, false)) {  // maybe use positional joystick (up - down; left and right) - but not button
-                    if(IO.getRightXAxis(false)  >= 1) { 
+                    if(IO.getHIDAxis(0)  >= 1) { 
                         state = ST_LIFTER_RAISE; 
                     }
                     //if(IO.isHIDButtonPressed(HID_LIFTER_LOWER, false)) {
-                    if(IO.getRightXAxis(false)  <= -1) {
+                    if(IO.getHIDAxis(0)  <= -1) {
                         state = ST_LIFTER_LOWER;
                     }
                     break;
@@ -70,7 +70,7 @@ public class Climb {
 
             case ST_LIFTER_RAISED:
                     lifter.moveLifter(0);
-                    if(IO.isHIDButtonPressed(HID_LIFTER_LOWER, false)) {
+                    if(IO.getHIDAxis(0)  <= -1) {
                         state = ST_LIFTER_LOWER;
                     }
                     break;          
@@ -84,7 +84,7 @@ public class Climb {
 
             case ST_LIFTER_HOME:
                     lifter.moveLifter(0);
-                    if(IO.isHIDButtonPressed(HID_LIFTER_RAISE, false)) {  // maybe use positional joystick (up - down; left and right) - but not button
+                    if(IO.getHIDAxis(0)  >= 1) { 
                         state = ST_LIFTER_RAISE; 
                     }
                     break;        
