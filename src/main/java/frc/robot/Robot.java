@@ -22,6 +22,9 @@ import frc.robot.subsystems.Arduino;
 import frc.robot.subsystems.Lifter;
 import frc.robot.autonomous.*;
 import static frc.robot.RobotMap.*;
+
+import org.ejml.dense.row.linsol.AdjustableLinearSolver_FDRM;
+
 import frc.robot.IO;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
@@ -50,8 +53,10 @@ public class Robot extends TimedRobot {
     public static final Relay led = new Relay(ID_LED);
     public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     public static final Drive driveCommand = new Drive(gyro, drivetrain);
+
     public static final Collect collectCommand = new Collect(collector, shooter, arduino, drivetrain, gyro, driveCommand);
 
+    int Timer = 0;
     boolean isComplete;
     int rotateState;
     boolean doneDriving;
@@ -59,6 +64,7 @@ public class Robot extends TimedRobot {
 
     boolean drive = false;
     double kP = 0.05;
+    int autoCase = 0;
     double integral = 0;
     double previousError;
     int iter = 0;
@@ -124,12 +130,44 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-      // switch  
-        SmartDashboard.putNumber("Gyro ", gyro.getAngle());
-        // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
-        driveCommand.turnToAngle(45, 0.033); //I've only tested this version without an integral value
-        driveCommand.turnToAngle(45, 0.033, 0.2, iter);
-        iter++;
+      
+      switch (autoCase){
+        case AUTO_TURN:
+          SmartDashboard.putNumber("Gyro ", gyro.getAngle());
+          boolean isTurnComplete = driveCommand.turnToAngle(45, 0.033);
+          if (isTurnComplete) {
+
+            // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
+            /*driveCommand.turnToAngle(45, 0.033); //I've only tested this version without an integral value
+            driveCommand.turnToAngle(45, 0.033, 0.2, iter);
+            iter ++;
+            autoCase = 1;*/
+            if(iter >= 50) {
+              autoCase = AUTO_DRIVE_BACK;
+              iter = 0;
+            } else {
+              iter ++;
+            }
+          }
+          break;
+        case AUTO_DRIVE_BACK:
+          //Timer ++;
+          if (Timer < 50) {
+            drivetrain.getAverageDriveDistanceInches(); //conditional should include this instead of a timer
+            drivetrain.driveAuto(-.5);
+          } else {
+            autoCase = AUTO_CANCEL_TURN;
+          }
+          break;
+        case AUTO_CANCEL_TURN:
+          drivetrain.driveAuto(0);
+          driveCommand.cancelTurn();
+          autoCase = AUTO_SIVEN_DRIVE;
+          break;
+        case AUTO_SIVEN_DRIVE:
+          collectCommand.correctDistance();
+          break;
+      }
     }
 
     /**

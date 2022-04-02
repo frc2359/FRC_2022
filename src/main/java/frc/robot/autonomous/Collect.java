@@ -133,7 +133,7 @@ public class Collect {
             rotateState = 0;
             break;
         }
-        
+
         SmartDashboard.putNumber("Rotate State", rotateState);
     }
 
@@ -229,8 +229,7 @@ public class Collect {
                     }   
                     
                     setCorrectState(1);
-                    if(counterTimer == 50) {
-                        counterTimer = 0;
+                    if(getCorrectState() == STATE_RESET) {
                         state = STATE_SHOOT;
                     }
                     else {
