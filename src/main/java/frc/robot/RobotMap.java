@@ -102,6 +102,12 @@ public interface RobotMap { // Change this to an enum
     public static final double LIMELIGHT_MOUNT_ANGLE = -7;
     public static final double LIMELIGHT_MOUNT_HEIGHT = 18.5;
 
+    //STATE FOR AUTONOMOUS OPERATIONS
+    public static final int AUTO_TURN = 0;
+    public static final int AUTO_DRIVE_BACK = 1;
+    public static final int AUTO_CANCEL_TURN = 2;
+    public static final int AUTO_SIVEN_DRIVE = 3;
+
     //cases
     public static final int STATE_DRIVEROP = 0;
     public static final int STATE_PREPARE = 1;
