@@ -37,7 +37,7 @@ public class Drive{
         D = SmartDashboard.getNumber("Drive D", 0.0);
     } */
 
-    public void PID(){
+    public void PID() {
         double realAngle = (gyro.getAngle() / 150) * 360;
         //double P = 0.05;
        

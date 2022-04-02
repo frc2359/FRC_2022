@@ -73,7 +73,7 @@ public class Drivetrain implements Subsystem {
         double encoderAverage = getAverageDriveDistanceInches();
         // System.out.println("We have gone " + nativeUnitsToDistanceFeet(encoderAverage));
         // encoderAverage = nativeUnitsToDistanceFeet(encoderAverage);
-        if(dist > encoderAverage) {
+        if(dist < (encoderAverage - 2) && dist > (encoderAverage + 2)) {
             if(dist >= 0) {
                 driveAuto(speed);
             } else {

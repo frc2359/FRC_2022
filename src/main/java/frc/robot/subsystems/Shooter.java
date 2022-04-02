@@ -94,7 +94,7 @@ public class Shooter implements Subsystem {
         for (int i = 0; i < shootMotors.length; i++) {
             shootPIDs[i].setReference(pwr, CANSparkMax.ControlType.kVoltage);
         }
-    } 
+    }
 
     /**Set a specific motor at a percent power */
     public void setPower(double pwr, int ind) {

@@ -46,6 +46,9 @@ public class Lifter {
     private static final double maxLifterHeight = 100; // replace with Encoder Value at Max Height
 
 
+    public void show() {
+        SmartDashboard.putBoolean("Sens", sensorPaddleLeft.get());
+    }
 
     public void init() {
         lifterRight.setInverted(true);  // invert right motor

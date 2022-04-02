@@ -97,10 +97,17 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_REVERSE_COLLECTOR = 11;
 
     //STATE FOR AUTOMATED SHOOTING CORRECTION
+    public static final double LOW_GOAL_DISTANCE = 33.5;
+    public static final double HIGH_GOAL_DISTANCE = 104;
+    public static final double LIMELIGHT_MOUNT_ANGLE = -7;
+    public static final double LIMELIGHT_MOUNT_HEIGHT = 18.5;
+
+    //cases
     public static final int STATE_DRIVEROP = 0;
-    public static final int STATE_CORRECT_DISTANCE = 1;
-    public static final int STATE_CORRECT_ANGLE = 2;
-    public static final int STATE_RESET = 3;
+    public static final int STATE_PREPARE = 1;
+    public static final int STATE_CORRECT_DISTANCE = 2;
+    public static final int STATE_CORRECT_ANGLE = 3;
+    public static final int STATE_RESET = 4;
     
     //LIFTER / CLIMBER ------------------------
     public static final int CAN_ID_LIFTER_LEFT = 11;

@@ -42,7 +42,7 @@ public class StartAutonomous {
     }
 
     public void init() {
-        collect.setState(0);
+        collect.setCollectorState(0);
         collect.collect(true);
         drivetrain.zeroEncoders();
         state = 0;
@@ -114,7 +114,7 @@ public class StartAutonomous {
         switch(state) {
             case ST_AUTO_START:
                 drivetrain.zeroEncoders();
-                collect.setState(3);
+                collect.setCollectorState(3);
                 System.out.println("In Case 0");
                 state = ST_AUTO_DRIVE_BACK1;
                 break;
@@ -147,7 +147,7 @@ public class StartAutonomous {
 
             case ST_AUTO_SHOOT1: //shoot
                 if (counterTimer == 0) {
-                    collect.setState(4);
+                    collect.setCollectorState(4);
                     counterTimer++;
                     break;
                 }
@@ -163,7 +163,7 @@ public class StartAutonomous {
                 
             case ST_AUTO_DRIVE_BACK2: //drive back a little more
                 if(counterTimer == 0) {
-                    collect.setState(2);
+                    collect.setCollectorState(2);
                 }
                 else if(counterTimer < 25) {
                     drivetrain.driveAuto(0.5);
@@ -175,7 +175,7 @@ public class StartAutonomous {
                     if(collector.isBallLoaded()){
                         state = ST_AUTO_PAUSE;
                     } else {
-                        collect.setState(4);
+                        collect.setCollectorState(4);
                         state = ST_AUTO_DONE;
                     }
                 }
@@ -207,7 +207,7 @@ public class StartAutonomous {
             case ST_AUTO_SHOOT2:
                 if (counterTimer == 0) {
                     drivetrain.driveAuto(0);
-                    collect.setState(4);
+                    collect.setCollectorState(4);
                     counterTimer++;   
                 }
                 if(counterTimer < 50) {
@@ -220,7 +220,7 @@ public class StartAutonomous {
 
             case ST_AUTO_DONE:
                 drivetrain.driveAuto(0);
-                collect.setState(4);
+                collect.setCollectorState(4);
                 break;
              
         }

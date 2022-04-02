@@ -124,7 +124,7 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-      // switch 
+      // switch  
         SmartDashboard.putNumber("Gyro ", gyro.getAngle());
         // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
         driveCommand.turnToAngle(45, 0.033); //I've only tested this version without an integral value
