@@ -45,18 +45,19 @@ public class Robot extends TimedRobot {
     public static final Collector collector = new Collector();
     public static final Arduino arduino = new Arduino();
     public static final Lifter lifter = new Lifter();
-    public static final Collect collectCommand = new Collect(collector, shooter, arduino);
     public static final StartAutonomous auto = new StartAutonomous(shooter, drivetrain, collector, arduino);
     public static final Climb climbCommand = new Climb(lifter);
     public static final Relay led = new Relay(ID_LED);
     public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     public static final Drive driveCommand = new Drive(gyro, drivetrain);
+    public static final Collect collectCommand = new Collect(collector, shooter, arduino, drivetrain, gyro, driveCommand);
+
     boolean isComplete;
     int rotateState;
     boolean doneDriving;
     boolean driven;
 
-
+    boolean drive = false;
     double kP = 0.05;
     double integral = 0;
     double previousError;
@@ -104,7 +105,7 @@ public class Robot extends TimedRobot {
     /** This function is run once each time the robot enters autonomous mode. */
     @Override
     public void autonomousInit() {
-        collectCommand.setState(0);
+        collectCommand.setCollectorState(0);
         drivetrain.zeroEncoders();
         System.out.println("Init");
         auto.init();
@@ -120,14 +121,14 @@ public class Robot extends TimedRobot {
         // collectCommand.init();
 
     }
-
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
+      // switch 
         SmartDashboard.putNumber("Gyro ", gyro.getAngle());
         // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
-        driveCommand.turnToAngle(90, 0.033); //I've only tested this version without an integral value
-        driveCommand.turnToAngle(90, 0.033, 0.2, iter);
+        driveCommand.turnToAngle(45, 0.033); //I've only tested this version without an integral value
+        driveCommand.turnToAngle(45, 0.033, 0.2, iter);
         iter++;
     }
 
@@ -137,7 +138,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         arduino.setLEDColor(0, LED_COLOR_RED);
-        collectCommand.setState(1);
+        collectCommand.setCollectorState(1);
         collectCommand.init();
         led.setDirection(Relay.Direction.kForward);
         SmartDashboard.putNumber("Speed", 0);
@@ -153,65 +154,21 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
-
         // TEMP
         SmartDashboard.putNumber("HID Ax 0", IO.getHIDAxis(0));
         SmartDashboard.putNumber("HID Ax 1", IO.getHIDAxis(1));
         climbCommand.climb(false);
         
-        double limelightMountAngleDegrees = -7;
-        double limelightLensHeightInches = 18.5;
-        double goalHeightInches = 33.5;
-
         driveCommand.printAngle();
-
-        double distanceToGoalInches = IO.calculateDistance(limelightMountAngleDegrees, limelightLensHeightInches, goalHeightInches);
-        SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
-        SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
-        //System.out.println("Distance to Goal: " + distanceToGoalInches);
 
         collectCommand.collect(true);
 
         drivetrain.arcadeDrive();
 
-        double targetOffsetAngleHorizontal = IO.getLimelightXAngle();
-        SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
-        //System.out.println(targetOffsetAngleHorizontal);
-        SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceInches());
+        lifter.show();
 
-        //This is the code that should correct for distance and angle when the driver pushes "A"
-        switch(rotateState) {
-          case STATE_DRIVEROP:
-            if(IO.aButtonIsPressed(true)) {
-              gyro.reset();
-              rotateState = STATE_CORRECT_DISTANCE;
-            }
-            break;
-          case STATE_CORRECT_DISTANCE:
-            if(!driven) {
-              driven = drivetrain.autoDistDrive(-(distanceToGoalInches - 73), 0.3); //73 is the distance to goal in inches that shoots in low power mode to into the goal on the stools
-            } else {
-              rotateState = STATE_CORRECT_ANGLE;
-
-            }
-            break;
-          case STATE_CORRECT_ANGLE:
-            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.02); //Turn to angle has a +/- 10 degree window where it will stop
-            System.out.println("Target Offset: " + targetOffsetAngleHorizontal);
-            if(isTurned) {
-              if(iter >= 50) {
-                rotateState = STATE_RESET;
-                iter = 0;
-              } else {
-                iter ++;
-              }
-            }
-            break;
-          case STATE_RESET:
-            // gyro.reset();
-            driveCommand.cancelTurn();
-            rotateState = 0;
-            break;
+        if (IO.xButtonIsPressed(true)) {
+          collectCommand.setCollectorState(STATE_RESET);
         }
 
         SmartDashboard.putBoolean("Loaded?", collector.isBallLoaded());
@@ -242,7 +199,7 @@ public class Robot extends TimedRobot {
         if(iter < 50 * 15) {
             SmartDashboard.putString("Match", "Autonomous");
             autonomousPeriodic();
-        } else if(iter == 50 * 15) {
+        } else if(iter >= 50 * 15 && iter < 50 * 20) {
             teleopInit();
             SmartDashboard.putString("Match", "TeleOp");
         } else if (iter > 50 * 15 && iter < 50 * 135) {
@@ -252,5 +209,6 @@ public class Robot extends TimedRobot {
             SmartDashboard.putString("Match", "Over");
             drivetrain.stopMotors();
         }
+        iter++;
     }
 }
