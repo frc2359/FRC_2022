@@ -24,6 +24,10 @@ public class Collect {
     private int rotateState = 0;
     private int counterTimer = 0; //counter that we use to count time. TeleOP periodic runs 50 times per second, so checking for a count of 50 = 1s
     private Drive driveCommand;
+
+    //autoshoot variables
+    double desiredDistance;
+    double threshold;
     
     public UsbCamera frontCamera;
     public UsbCamera rearCamera;
@@ -51,14 +55,17 @@ public class Collect {
         state = setPoint;
     }
     
+    /**Gets the state of the collect comman */
     public int getCollectorState() {
         return state;
     }
 
+    /**Sets a new state for the correct distance command */
     public void setCorrectState(int setPoint) {
         rotateState = setPoint;
     }
     
+    /**Gets the state for the correct distance command */
     public int getCorrectState() {
         return rotateState;
     }
@@ -80,6 +87,25 @@ public class Collect {
         rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     }
 
+
+    /**Sets the distance away from the goal we want to shoot from */
+    public void setDesiredDistance(double dist) {
+        desiredDistance = dist;
+    }
+
+    /**Sets the threshold forward and backwards that is our safezone for shooting */
+    public void setShootThreshold(double thresh) {
+        threshold = thresh;
+    }
+
+    /**Set both desired distance and threshold */
+    public void setAutoShootConstraints(double dist, double thresh) {
+        setDesiredDistance(dist);
+        setShootThreshold(thresh);
+    }
+
+
+    /**Corrects distance and angle to goal before shooting */
     public void correctDistance() {
         double distanceToGoalInches = IO.calculateDistance(LIMELIGHT_MOUNT_ANGLE, LIMELIGHT_MOUNT_HEIGHT, LOW_GOAL_DISTANCE);
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
@@ -93,18 +119,18 @@ public class Collect {
         //System.out.println(targetOffsetAngleHorizontal);
         SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceInches());
       
-        double desiredDistance = 73;
-        double threshold = 3;
         double minDistance = desiredDistance - threshold;
         double maxDistance = desiredDistance + threshold;
         
-        //This is the code that should correct for distance and angle when the driver pushes "A"
+        //This is the code that should correct for distance and angle
         switch(rotateState) {
           case STATE_DRIVEROP:
             //reset stuff 
+            break;
           case STATE_PREPARE:
             gyro.reset();
             drivetrain.zeroEncoders();
+            break;
           case STATE_CORRECT_DISTANCE:
             if(distanceToGoalInches < minDistance && distanceToGoalInches > maxDistance) {
               drivetrain.driveAuto(0);

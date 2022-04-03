@@ -130,13 +130,11 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-      
       switch (autoCase){
         case AUTO_TURN:
           SmartDashboard.putNumber("Gyro ", gyro.getAngle());
-          boolean isTurnComplete = driveCommand.turnToAngle(45, 0.033);
+          boolean isTurnComplete = driveCommand.turnToAngle(-45, 0.043);
           if (isTurnComplete) {
-
             // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
             /*driveCommand.turnToAngle(45, 0.033); //I've only tested this version without an integral value
             driveCommand.turnToAngle(45, 0.033, 0.2, iter);
@@ -151,10 +149,8 @@ public class Robot extends TimedRobot {
           }
           break;
         case AUTO_DRIVE_BACK:
-          //Timer ++;
-          if (Timer < 50) {
-            drivetrain.getAverageDriveDistanceInches(); //conditional should include this instead of a timer
-            drivetrain.driveAuto(-.5);
+          if (drivetrain.getAverageDriveDistanceInches() < 20) {
+            drivetrain.driveAuto(-0.5);
           } else {
             autoCase = AUTO_CANCEL_TURN;
           }
@@ -166,6 +162,7 @@ public class Robot extends TimedRobot {
           break;
         case AUTO_SIVEN_DRIVE:
           collectCommand.correctDistance();
+          collectCommand.setCorrectState(STATE_DRIVEROP);
           break;
       }
     }
@@ -187,6 +184,10 @@ public class Robot extends TimedRobot {
         iter = 0;
         gyro.reset();
         driven = false;
+
+
+        //FOR TESTING --------------------------------
+        collectCommand.setAutoShootConstraints(73, 3);
     }
 
     /** This function is called periodically during teleoperated mode. */
@@ -199,6 +200,7 @@ public class Robot extends TimedRobot {
         
         driveCommand.printAngle();
 
+        collectCommand.correctDistance();
         collectCommand.collect(true);
 
         drivetrain.arcadeDrive();
