@@ -99,8 +99,8 @@ public interface RobotMap { // Change this to an enum
     //STATE FOR AUTOMATED SHOOTING CORRECTION
     public static final double LOW_GOAL_DISTANCE = 33.5;
     public static final double HIGH_GOAL_DISTANCE = 104;
-    public static final double LIMELIGHT_MOUNT_ANGLE = -7;
-    public static final double LIMELIGHT_MOUNT_HEIGHT = 18.5;
+    public static final double LIMELIGHT_MOUNT_ANGLE = 22;
+    public static final double LIMELIGHT_MOUNT_HEIGHT = 15.2;
 
     //STATE FOR AUTONOMOUS OPERATIONS
     public static final int AUTO_TURN = 0;

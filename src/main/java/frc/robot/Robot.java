@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
       switch (autoCase){
         case AUTO_TURN:
           SmartDashboard.putNumber("Gyro ", gyro.getAngle());
-          boolean isTurnComplete = driveCommand.turnToAngle(45, 0.033);
+          boolean isTurnComplete = driveCommand.turnToAngle(-45, 0.033);
           if (isTurnComplete) {
 
             // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
@@ -198,6 +198,9 @@ public class Robot extends TimedRobot {
         climbCommand.climb(false);
         
         driveCommand.printAngle();
+
+        // shooter.setShotPower(0.6);
+        // shooter.pickBallUp(STATE_SHOOT);
 
         collectCommand.collect(true);
 

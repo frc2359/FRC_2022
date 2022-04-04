@@ -204,18 +204,22 @@ public class Collect {
                     }
                     if(IO.isHIDButtonPressed(HID_SHOOT_HIGH, false)) {
                         shooter.setShotPower(0.6);
+                        SmartDashboard.putNumber("Shooter Power", 1);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     if(IO.isHIDButtonPressed(HID_SHOOT_LOW, false)) {
                         shooter.setShotPower(0.5);
+                        SmartDashboard.putNumber("Shooter Power", 2);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     if(IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {
                         shooter.setShotPower(0.7);  // .9 or 1?
+                        SmartDashboard.putNumber("Shooter Power", 3);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     if(IO.isHIDButtonPressed(HID_SHOOT_EJECT, false)) {
                         shooter.setShotPower(0.15);
+                        SmartDashboard.putNumber("Shooter Power", 4);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     break;
@@ -225,11 +229,14 @@ public class Collect {
                         collector.setBallLifterState(false);
                         collector.setIntakeSpeed(0);
                         arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLUE);
-                        shooter.pickBallUp(state);
+                        shooter.pickBallUp(STATE_SHOOT);
                     }   
                     
-                    setCorrectState(1);
-                    if(getCorrectState() == STATE_RESET) {
+                    // setCorrectState(1);
+                    // if(getCorrectState() == STATE_RESET) {
+                    //     state = STATE_SHOOT;
+                    // }
+                    if(counterTimer == 50) {
                         state = STATE_SHOOT;
                     }
                     else {
