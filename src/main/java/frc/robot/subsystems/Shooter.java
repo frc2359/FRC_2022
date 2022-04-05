@@ -141,7 +141,7 @@ public class Shooter implements Subsystem {
 
             case STATE_NOT_COLLECTING:
                     setPercentPower(0);
-                    SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
+                    //SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
                     speed = SmartDashboard.getNumber("Speed", 0);
                     break;
 
@@ -160,7 +160,7 @@ public class Shooter implements Subsystem {
                     /*
                     if(IO.yButtonIsPressed(false)) {
                         lowPower = !lowPower;
-                        SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
+                        //SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
                     }
                     */
                     setPercentPower(0);         // Shooter motors off; should be waiting for the velocity to be correct and then shooting
@@ -203,8 +203,8 @@ public class Shooter implements Subsystem {
     public void setVelocity(double setPoint) {
         for (int i = 0; i < motorEncoders.length; i++) {
         shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVelocity);
-        SmartDashboard.putNumber("Velocity SetPoint", setPoint);
-        SmartDashboard.putNumber("Process Variable", motorEncoders[0].getVelocity());
+        SmartDashboard.putNumber("Vel SetPoint", setPoint);
+        SmartDashboard.putNumber("Pro. Var.", motorEncoders[0].getVelocity());
         }
     }
 

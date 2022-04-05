@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 import static frc.robot.RobotMap.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
@@ -29,8 +29,11 @@ public class Arduino {
     private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 
     private final ColorMatch m_colorMatcher = new ColorMatch();
-    private final Color kBlueTarget = new Color(0.143, 0.427, 0.429);
-    private final Color kRedTarget = new Color(0.561, 0.232, 0.114);
+    private final Color kBlueTarget = new Color(0.19, 0.427, 0.38);
+    private final Color kRedTarget = new Color(0.456, 0.378, 0.166);
+    private final Color kBlankTarget = new Color(0.273, 0.479, 0.240);
+    
+    private int ballColor;
 
 
     /** Arduino Init */
@@ -65,39 +68,31 @@ public class Arduino {
     }  
     
     
-    /** Gets sensor data of ball color */
-    /*
-    public boolean isBallRed() {        
-        return !sensorBallRed.get();
-    }
-
-    public boolean isBallBlue() {        
-        return !sensorBallBlue.get();
-    }
-    */
-    
+     
     public int getBallColor() {     
-
-        int colRet;
-                
+            
         Color detectedColor = m_colorSensor.getColor();
 
         /**
          * Run the color match algorithm on our detected color
          */
-        String colorString;
+        String colorString = "Unknown";
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
     
-        if (match.color == kBlueTarget) {
+        if (match.color == kBlueTarget && detectedColor.blue > .37) {
           colorString = "Blue";
-          colRet = COLOR_BLUE;
-        } else if (match.color == kRedTarget) {
+          ballColor = COLOR_BLUE;
+        } else if (match.color == kRedTarget && detectedColor.red > .44) {
           colorString = "Red";
-          colRet = COLOR_RED;
+          ballColor = COLOR_RED;
+        } else if (match.color == kBlankTarget || detectedColor.green > .47) {
+            colorString = "Empty";
+            ballColor = COLOR_UNKNOWN;
         } else {
           colorString = "Unknown";
-          colRet = COLOR_UNKNOWN;
+          ballColor = COLOR_UNKNOWN;
         }
+        
     
         /**
          * Open Smart Dashboard or Shuffleboard to see the color detected by the 
@@ -109,18 +104,7 @@ public class Arduino {
         SmartDashboard.putNumber("Conf.", match.confidence);
         SmartDashboard.putString("Detected", colorString);
       
-        /*
-        if (isBallBlue()) {
-            return COLOR_BLUE;
-        }
-        else if (isBallRed()) {
-            return COLOR_RED;
-        }
-        else {
-            return COLOR_UNKNOWN;
-        }
-        */
-        return colRet;
+        return ballColor;
     }
 
 
@@ -132,7 +116,7 @@ public class Arduino {
     public void defineLEDString (int port, int numLEDs) {
        // send to Arduino the port and numLEDs
         cmd = "D"+Integer.toString(port)+","+Integer.toString(numLEDs);
-        System.out.println(cmd);
+        //System.out.println(cmd);
         if (arduinoFound) {
             arduinoUSB.writeString(cmd);
             arduinoUSB.write(new byte[]{0x0A}, 1);
@@ -142,7 +126,7 @@ public class Arduino {
     public void setLEDColor (int port, int colorCode) {
         // send port and colorCode to Arduino
         cmd = "S"+Integer.toString(port)+","+Integer.toString(colorCode);
-        System.out.println(cmd);
+        //System.out.println(cmd);
         if (arduinoFound) {
             arduinoUSB.writeString(cmd);
             arduinoUSB.write(new byte[]{0x0A}, 1);

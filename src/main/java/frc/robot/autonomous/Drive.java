@@ -1,7 +1,7 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.SPI;
+//import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivetrain;
@@ -71,7 +71,8 @@ public class Drive{
     }
 
     public void printAngle() {
-        System.out.println("angle from gyro: " + convertToRealAngle(gyro.getAngle()));
+        //System.out.println("angle from gyro: " + convertToRealAngle(gyro.getAngle()));
+        SmartDashboard.putNumber("Gyro", convertToRealAngle(gyro.getAngle()) );
     }
 
     public double getAngle() {

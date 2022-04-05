@@ -32,9 +32,7 @@ public class Climb {
     /** The program to climb */
     public void climb(boolean isAuto) {
         SmartDashboard.putNumber("Lift St", state);
-        System.out.println("Lifter State " + state);
-        SmartDashboard.putNumber("L. Height",lifter.getHeight());
-
+        //  System.out.println("Lifter State " + state);          
 
         if(IO.getHIDAxis(0)  >= 1) {      
             state = ST_LIFTER_RAISE;
@@ -46,9 +44,10 @@ public class Climb {
         switch(state) {
 
             case ST_LIFTER_UNKNOWN: // unknown
-                    lifter.stopLifter();
-                    break;
-
+                lifter.stopLifter();
+                break;
+            case ST_LIFTER_CALIBRATE:
+                //calibrate things
             case ST_LIFTER_NOT_CLIMBING: // not climbing
                     lifter.moveLifter(0);
                     //if(IO.isHIDButtonPressed(HID_LIFTER_RAISE, false)) {  // maybe use positional joystick (up - down; left and right) - but not button

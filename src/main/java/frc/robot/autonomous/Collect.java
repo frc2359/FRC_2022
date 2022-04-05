@@ -24,6 +24,10 @@ public class Collect {
     private int rotateState = 0;
     private int counterTimer = 0; //counter that we use to count time. TeleOP periodic runs 50 times per second, so checking for a count of 50 = 1s
     private Drive driveCommand;
+
+    //autoshoot variables
+    double desiredDistance;
+    double threshold;
     
     public UsbCamera frontCamera;
     public UsbCamera rearCamera;
@@ -51,35 +55,57 @@ public class Collect {
         state = setPoint;
     }
     
+    /**Gets the state of the collect comman */
     public int getCollectorState() {
         return state;
     }
 
+    /**Sets a new state for the correct distance command */
     public void setCorrectState(int setPoint) {
         rotateState = setPoint;
     }
     
+    /**Gets the state for the correct distance command */
     public int getCorrectState() {
         return rotateState;
     }
 
     public void init() {
-        frontCamera = CameraServer.startAutomaticCapture(0);
-        rearCamera = CameraServer.startAutomaticCapture(1);
+   //     frontCamera = CameraServer.startAutomaticCapture(0);
+   //     rearCamera = CameraServer.startAutomaticCapture(1);
         // vidSink = CameraServer.getServer();
         // vidSink.setSource(frontCamera);
 
     
-        cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+   //     cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
 
         // Set the resolution
-        frontCamera.setResolution(640, 480);
-        rearCamera.setResolution(640, 480);
+   //     frontCamera.setResolution(640, 480);
+   //     rearCamera.setResolution(640, 480);
 
-        frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-        rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+   //     frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+   //     rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     }
 
+
+    /**Sets the distance away from the goal we want to shoot from */
+    public void setDesiredDistance(double dist) {
+        desiredDistance = dist;
+    }
+
+    /**Sets the threshold forward and backwards that is our safezone for shooting */
+    public void setShootThreshold(double thresh) {
+        threshold = thresh;
+    }
+
+    /**Set both desired distance and threshold */
+    public void setAutoShootConstraints(double dist, double thresh) {
+        setDesiredDistance(dist);
+        setShootThreshold(thresh);
+    }
+
+
+    /**Corrects distance and angle to goal before shooting */
     public void correctDistance() {
         double distanceToGoalInches = IO.calculateDistance(LIMELIGHT_MOUNT_ANGLE, LIMELIGHT_MOUNT_HEIGHT, LOW_GOAL_DISTANCE);
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
@@ -93,18 +119,18 @@ public class Collect {
         //System.out.println(targetOffsetAngleHorizontal);
         SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceInches());
       
-        double desiredDistance = 73;
-        double threshold = 3;
         double minDistance = desiredDistance - threshold;
         double maxDistance = desiredDistance + threshold;
         
-        //This is the code that should correct for distance and angle when the driver pushes "A"
+        //This is the code that should correct for distance and angle
         switch(rotateState) {
           case STATE_DRIVEROP:
             //reset stuff 
+            break;
           case STATE_PREPARE:
             gyro.reset();
             drivetrain.zeroEncoders();
+            break;
           case STATE_CORRECT_DISTANCE:
             if(distanceToGoalInches < minDistance && distanceToGoalInches > maxDistance) {
               drivetrain.driveAuto(0);
@@ -140,11 +166,12 @@ public class Collect {
     /** The program to collect balls. Each state represents a different part of the process to shoot. */
     public void collect(boolean isAuto) {
         SmartDashboard.putNumber("Col. State", state);
-        System.out.println("Collect State " + state);
-        //SmartDashboard.putNumber("Ball Col", arduino.getBallColor());
+        //System.out.println("Collect State " + state);
+        SmartDashboard.putNumber("Ball Col", arduino.getBallColor());
         if(IO.xButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
             state = STATE_COLLECTING;
         }
+        int ballColor = arduino.getBallColor();
         switch(state) {
             case STATE_UNKNOWN:
                     collector.setIntakeSpeed(0);
@@ -153,7 +180,6 @@ public class Collect {
 
             case STATE_NOT_COLLECTING:
                     collector.setBallLifterState(true);
-                    // if(!isAuto) {vidSink.setSource(frontCamera);}
                     collector.setIntakeSpeed(0);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
                     shooter.pickBallUp(state);
@@ -181,19 +207,14 @@ public class Collect {
                     break;
 
             case STATE_SECURE_BALL:
+                    counterTimer = 0;
                     collector.setIntakeSpeed(0);
                     shooter.pickBallUp(state);
                     collector.setBallLifterState(true);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_GREEN);
-                    //SmartDashboard.putNumber("Ball", arduino.getBallColor());
-                    /*
-                    if(IO.bButtonIsPressed(false)) { 
-                        state = STATE_PREPARE_TO_SHOOT; 
-                    } 
-                    */
                     if (IO.isHIDButtonPressed(HID_AUTO_EJECT_MODE, false)) {
-                        if (arduino.getBallColor() != COLOR_UNKNOWN) {
-                            if (arduino.getBallColor() != IO.getAllianceColor()) {
+                        if (ballColor != COLOR_UNKNOWN) {
+                            if (ballColor != IO.getAllianceColor()) {
                                 shooter.setShotPower(0.15);
                                 state = STATE_PREPARE_TO_SHOOT;
                             }
@@ -236,7 +257,8 @@ public class Collect {
                     // if(getCorrectState() == STATE_RESET) {
                     //     state = STATE_SHOOT;
                     // }
-                    if(counterTimer == 50) {
+                    if(counterTimer == 75) {
+                        counterTimer = 0;
                         state = STATE_SHOOT;
                     }
                     else {

@@ -59,19 +59,15 @@ public interface RobotMap { // Change this to an enum
     // Management of the available ports will be critical
     public static final int DIO_BALL_SENSOR_1 = 0;  // Moved to DIO 0 on robot
     //public static final int DIO_BALL_SENSOR_2 = 2;  // Not using second ball sensor
-    //public static final int DIO_BALL_COLOR_BLUE = 3;   // remove - using REV Color Sensor instead
-    //public static final int DIO_BALL_COLOR_RED = 4;    // remove - using REV Color Sensor instead
-    public static final int DIO_LIFTER_PADDLE_LEFT = 1;
-    public static final int DIO_LIFTER_PADDLE_RIGHT = 2;
-    public static final int DIO_LIFTER_ARMS_HOME_LEFT = 3;
-    public static final int DIO_LIFTER_ARMS_HOME_RIGHT = 4;
-    public static final int DIO_LIFTER_ARMS_ABOVE_BAR_LEFT = 5;
-    public static final int DIO_LIFTER_ARMS_ABOVE_BAR_RIGHT = 6;
-    public static final int DIO_LIFTER_HOOK_OPEN_LEFT = 7;
-    public static final int DIO_LIFTER_HOOK_OPEN_RIGHT = 8;
-    public static final int DIO_LIFTER_HOOK_CLOSED_LEFT = 9;
-    public static final int DIO_LIFTER_HOOK_CLOSED_RIGHT = 10;   // May not have a 10... may need to use 1 instead of 2 limit switches elsewhere or using motor controller ports
-
+    public static final int DIO_LIFTER_LOW_HOOK_ROT_HOME = 1; 
+    public static final int DIO_LIFTER_LIFTING_HOOK_VERT_HOME = 2; 
+    public static final int DIO_LIFTER_LEFT_HOOK_CLOSED = 3; 
+    public static final int DIO_LIFTER_RIGHT_HOOK_CLOSED = 4;  
+    public static final int DIO_LIFTER_LEFT_HOOK_LIMIT = 5;
+    public static final int DIO_LIFTER_VERT_PIPE_DETECT = 6;
+    public static final int DIO_LIFTER_HORIZ_PIPE_DETECT_LEFT = 7;
+    public static final int DIO_LIFTER_HORIZ_PIPE_DETECT_RIGHT = 8;
+    
     //PNEUMATICS CONTROLLER ---------------------
     public static final int ID_SOL_BALL_LIFTER = 7;
     public static final int ID_SOL_LIFTER_HOOK = 8;
@@ -116,17 +112,18 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_RESET = 4;
     
     //LIFTER / CLIMBER ------------------------
-    public static final int CAN_ID_LIFTER_LEFT = 11;
-    public static final int CAN_ID_LIFTER_RIGHT = 12;
+    public static final int CAN_ID_LIFTER_LEFT = 12;
+    public static final int CAN_ID_LIFTER_RIGHT = 11;
     public static final int CAN_ID_LIFTER_ARM_ROTATE = 13;  // TBD for TalonSRX  -- motor that rotates the arms
     public static final int CAN_ID_LIFTER_ARM_ROLLER = 14;  // TBD for TalonSRX  -- motor that moves robot left or right on bar
 
     public static final int ST_LIFTER_UNKNOWN = 0;
     public static final int ST_LIFTER_NOT_CLIMBING = 1; // not climbing, so driving, etc.
-    public static final int ST_LIFTER_RAISE = 2;  // raise lifter abover bar
-    public static final int ST_LIFTER_RAISED = 3;  // lifter raised
-    public static final int ST_LIFTER_LOWER = 4;  // lower lifter to home position
-    public static final int ST_LIFTER_HOME = 5;  // lifter at home position
+    public static final int ST_LIFTER_CALIBRATE = 2;
+    public static final int ST_LIFTER_RAISE = 3;  // raise lifter abover bar
+    public static final int ST_LIFTER_RAISED = 4;  // lifter raised
+    public static final int ST_LIFTER_LOWER = 5;  // lower lifter to home position
+    public static final int ST_LIFTER_HOME = 6;  // lifter at home position
 
 
 

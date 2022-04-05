@@ -11,7 +11,7 @@ import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Arduino;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.autonomous.*;
+//import frc.robot.autonomous.*;
 
 public class StartAutonomous {
     Shooter shooter;
