@@ -43,9 +43,10 @@ public class Lifter {
 
     private boolean aboveBar = false;
 
-    private static final double minLifterHeight = -4; // replace with Encoder Value at min height
-    private static final double maxLifterHeight = 146; // replace with Encoder Value at max height
-    private static final double barHeight = 131; // replace with Encoder Value at above bar height
+    private static final double minLifterHeight = -1; // replace with Encoder Value at min height
+    private static final double maxLifterHeight = 137; // replace with Encoder Value at max height
+    private static final double barHeight = 120; // replace with Encoder Value at above bar height
+    private static final double lifterSlowRange = 20; // buffer range at each end to go slow
 
     public void show() {
   
@@ -72,7 +73,11 @@ public class Lifter {
         lifterRightEncoder.setPositionConversionFactor(1);
          /* Home Lifter */
 
+         lifterCalibrated = false;
+    }
 
+    public void setLifterHookState(boolean open) {
+        solLifterHook.set(open);
     }
 
     public boolean isAboveBar () {
@@ -109,13 +114,21 @@ public class Lifter {
         if (lifterCalibrated) {
             if (lifterMotorSpeed > 0) {  // Move Up
                 if (getHeight() < maxLifterHeight) {  // if less than max height
-                    lifterMotorSpeed = spd;
+                    if (getHeight() > maxLifterHeight - lifterSlowRange) {
+                        lifterMotorSpeed = .15;
+                    } else {
+                        lifterMotorSpeed = spd;
+                    }
                 } else {
                     lifterMotorSpeed = 0;  // stop lifter -- reached upper limit
                 } 
             } else { // move down
-                if (getHeight() > minLifterHeight) {  // if greater than min height
-                    lifterMotorSpeed = spd;
+                if (getHeight() > minLifterHeight && !isHome()) {  // if greater than min height
+                    if (getHeight()> lifterSlowRange) {
+                        lifterMotorSpeed = spd;
+                    } else {
+                        lifterMotorSpeed = -.1;
+                    }
                 } else {
                     lifterMotorSpeed = 0;  // stop lifter -- reached upper limit
                 }

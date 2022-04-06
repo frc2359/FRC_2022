@@ -108,6 +108,11 @@ public class IO {
         return (isDriver ? driver : shootController).getYButtonReleased();
     }
 
+    /**gets whether the A button on the controller has been released**/
+    public static boolean startButtonIsPressed(boolean isDriver) {
+        return (isDriver ? driver : shootController).getStartButtonPressed();
+    }
+
     /**Initialize the NetworkTables for reading camera and distance data. */
     public static void initNetworkTables() {
         rpi3 = NetworkTableInstance.getDefault();

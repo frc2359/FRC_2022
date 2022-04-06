@@ -19,6 +19,7 @@ public class Drivetrain implements Subsystem {
     //The Falcon 500s are a unit that include Talon FXs as their base motors, in which there is an encoder built in.
     WPI_TalonFX frontLeft = new WPI_TalonFX(ID_DRIVE_FL);
     WPI_TalonFX frontRight = new WPI_TalonFX(ID_DRIVE_FR);
+    boolean autoDrive = false;
 
     Timer timer = new Timer(); //for timing autonomous functions
     private DifferentialDrive drive = new DifferentialDrive(frontLeft, frontRight); //front motors are masters & control inputs for both front and back
@@ -49,7 +50,19 @@ public class Drivetrain implements Subsystem {
          //   IO.putNumberToSmartDashboard(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
         }
     }
+
+    public boolean getAutoDrive() {
+        return autoDrive;
+    }
+
+    public void setAutoDrive(boolean setpoint) {
+        autoDrive = setpoint;
+    }
     
+    public void tankDrive(double speedL, double speedR) {
+        drive.tankDrive(speedL, speedR);
+    }
+
     public void driveAuto(double speed) {
         drive.arcadeDrive(speed, 0);
     }

@@ -133,6 +133,12 @@ public class Shooter implements Subsystem {
         }
     }
 
+    /**Sets the percent power to the set shot power level */
+    public void setPercentPowerToShotPowerLevel() {
+        setPercentPower(shotPowerLevel);
+
+    }
+
     /**Shooter mode for what to do upon being given to command to pick a ball up */
     public void pickBallUp(int state) {
         switch(state) {

@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
     public static final Arduino arduino = new Arduino();
     public static final Lifter lifter = new Lifter();
     public static final StartAutonomous auto = new StartAutonomous(shooter, drivetrain, collector, arduino);
-    public static final Climb climbCommand = new Climb(lifter);
+    public static final Climb climbCommand = new Climb(lifter, drivetrain);
     public static final Relay led = new Relay(ID_LED);
     public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     public static final Drive driveCommand = new Drive(gyro, drivetrain);
@@ -61,6 +61,7 @@ public class Robot extends TimedRobot {
     int rotateState;
     boolean doneDriving;
     boolean driven;
+    boolean lhc; //for testing
 
     boolean drive = false;
     double kP = 0.05;
@@ -151,6 +152,7 @@ public class Robot extends TimedRobot {
         case AUTO_DRIVE_BACK:
           if (drivetrain.getAverageDriveDistanceInches() < 20) {
             drivetrain.driveAuto(-0.5);
+            collectCommand.setCollectorState(STATE_COLLECTING);
           } else {
             autoCase = AUTO_CANCEL_TURN;
           }
@@ -162,7 +164,7 @@ public class Robot extends TimedRobot {
           break;
         case AUTO_SIVEN_DRIVE:
           collectCommand.correctDistance();
-          collectCommand.setCorrectState(STATE_DRIVEROP);
+          collectCommand.setCorrectState(STATE_PREPARE);
           break;
       }
     }
@@ -184,6 +186,7 @@ public class Robot extends TimedRobot {
         iter = 0;
         gyro.reset();
         driven = false;
+        lhc = false;
 
 
         //FOR TESTING --------------------------------
@@ -203,12 +206,22 @@ public class Robot extends TimedRobot {
         // shooter.setShotPower(0.6);
         // shooter.pickBallUp(STATE_SHOOT);
 
+        collectCommand.correctDistance();
+        collectCommand.setCorrectState(STATE_DRIVEROP);
+
         collectCommand.collect(true);
 
-        drivetrain.arcadeDrive();
+        if(IO.startButtonIsPressed(true)) {
+          drivetrain.setAutoDrive(false);
+        }
+        
+        if(!drivetrain.getAutoDrive()) {
+          drivetrain.arcadeDrive();
+        }
 
         lifter.show();
         // Run Lifter
+        /*
         if (IO.getHIDAxis(1) >= 1) {
           lifter.moveLifter(.25);
         } else if (IO.getHIDAxis(1) <= -1) {
@@ -216,9 +229,18 @@ public class Robot extends TimedRobot {
         } else {
           lifter.stopLifter();
         }
+        */
 
         if (IO.xButtonIsPressed(true)) {
           collectCommand.setCollectorState(STATE_RESET);
+        }
+
+        SmartDashboard.putBoolean("lifter hook state", lhc);
+
+
+        if(IO.aButtonIsPressed(true)) {
+          lhc = !lhc;
+          lifter.setLifterHookState(lhc);
         }
 
         SmartDashboard.putBoolean("Loaded?", collector.isBallLoaded());

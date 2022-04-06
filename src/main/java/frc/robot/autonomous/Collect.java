@@ -130,6 +130,7 @@ public class Collect {
           case STATE_PREPARE:
             gyro.reset();
             drivetrain.zeroEncoders();
+            state = STATE_CORRECT_DISTANCE;
             break;
           case STATE_CORRECT_DISTANCE:
             if(distanceToGoalInches < minDistance && distanceToGoalInches > maxDistance) {
@@ -175,18 +176,22 @@ public class Collect {
         switch(state) {
             case STATE_UNKNOWN:
                     collector.setIntakeSpeed(0);
-                    shooter.pickBallUp(state);
+                    // shooter.pickBallUp(state);
                     break;
 
             case STATE_NOT_COLLECTING:
                     collector.setBallLifterState(true);
                     collector.setIntakeSpeed(0);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
-                    shooter.pickBallUp(state);
+                    
+                    //SHOOTER-----
+                    shooter.setPercentPower(0);
+                    //SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
+
+                    //MOVE INTO THE NEXT STATE ---------
                     if(IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {  // IO.aButtonIsPressed(false) || 
                        state = STATE_COLLECTING; 
-                    }
-                    if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
+                    } if (IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
                         state = STATE_REVERSE_COLLECTOR;
                     }
                     break;
@@ -195,7 +200,12 @@ public class Collect {
                     collector.setBallLifterState(false);
                     collector.setIntakeSpeed(.4);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_YELLOW);
-                    shooter.pickBallUp(state);
+                    // SHOOTER----------
+                    shooter.setPercentPower(0,2);      // Shooter motor 2 off
+                    shooter.setPercentPower(0,1);      // Shooter motor 1  off
+                    shooter.setPercentPower(0.1, 0); 
+
+                    //MOVE INTO THE NEXT STATE
                     if(collector.isBallLoaded()) {
                         state = STATE_SECURE_BALL; 
                     }
@@ -209,7 +219,7 @@ public class Collect {
             case STATE_SECURE_BALL:
                     counterTimer = 0;
                     collector.setIntakeSpeed(0);
-                    shooter.pickBallUp(state);
+                    shooter.setPercentPower(0); // Shooter motors off
                     collector.setBallLifterState(true);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_GREEN);
                     if (IO.isHIDButtonPressed(HID_AUTO_EJECT_MODE, false)) {
@@ -220,25 +230,25 @@ public class Collect {
                             }
                         }
                     }
-                    if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
+                    if (IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
                         state = STATE_REVERSE_COLLECTOR;
                     }
-                    if(IO.isHIDButtonPressed(HID_SHOOT_HIGH, false)) {
+                    if (IO.isHIDButtonPressed(HID_SHOOT_HIGH, false)) {
                         shooter.setShotPower(0.6);
                         SmartDashboard.putNumber("Shooter Power", 1);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
-                    if(IO.isHIDButtonPressed(HID_SHOOT_LOW, false)) {
+                    if (IO.isHIDButtonPressed(HID_SHOOT_LOW, false)) {
                         shooter.setShotPower(0.5);
                         SmartDashboard.putNumber("Shooter Power", 2);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
-                    if(IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {
+                    if (IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {
                         shooter.setShotPower(0.7);  // .9 or 1?
                         SmartDashboard.putNumber("Shooter Power", 3);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
-                    if(IO.isHIDButtonPressed(HID_SHOOT_EJECT, false)) {
+                    if (IO.isHIDButtonPressed(HID_SHOOT_EJECT, false)) {
                         shooter.setShotPower(0.15);
                         SmartDashboard.putNumber("Shooter Power", 4);
                         state = STATE_PREPARE_TO_SHOOT;
@@ -250,14 +260,14 @@ public class Collect {
                         collector.setBallLifterState(false);
                         collector.setIntakeSpeed(0);
                         arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLUE);
-                        shooter.pickBallUp(STATE_SHOOT);
+                        shooter.setPercentPowerToShotPowerLevel();
                     }   
                     
                     // setCorrectState(1);
                     // if(getCorrectState() == STATE_RESET) {
                     //     state = STATE_SHOOT;
                     // }
-                    if(counterTimer == 75) {
+                    if(counterTimer == 50) {
                         counterTimer = 0;
                         state = STATE_SHOOT;
                     }
@@ -268,7 +278,6 @@ public class Collect {
 
             case STATE_SHOOT: 
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_PURPLE);
-                    shooter.pickBallUp(state);
                     if(counterTimer == 10) {
                         collector.setBallLifterState(true);
                     }
@@ -280,12 +289,17 @@ public class Collect {
                         counterTimer++;
                     }   
                     break;  
-                    
+            case STATE_POSITION_SHOT:
+                setCorrectState(STATE_PREPARE);
             case STATE_REVERSE_COLLECTOR:
                 collector.setBallLifterState(true);
                 collector.setIntakeSpeed(-.4);
                 arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_RED);
-                shooter.pickBallUp(state);
+                //SHOOTER----
+                shooter.setPercentPower(-0.1, 2);       // Run motors backwards to send ball out the collector
+                shooter.setPercentPower(-0.1, 1);
+                shooter.setPercentPower(-0.1, 0);
+                // shooter.pickBallUp(state);
                 if(IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
                     state = STATE_NOT_COLLECTING;
                 }if(IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {

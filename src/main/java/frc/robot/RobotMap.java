@@ -70,7 +70,7 @@ public interface RobotMap { // Change this to an enum
     
     //PNEUMATICS CONTROLLER ---------------------
     public static final int ID_SOL_BALL_LIFTER = 7;
-    public static final int ID_SOL_LIFTER_HOOK = 8;
+    public static final int ID_SOL_LIFTER_HOOK = 6;
 
     /* SHOOTER---------------------------------------------------------------------------------------------------------------------------- */
     public static final int ID_SHOOTER_1 = 6;
@@ -90,6 +90,7 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_SECURE_BALL = 3;
     public static final int STATE_PREPARE_TO_SHOOT = 4;
     public static final int STATE_SHOOT = 5;
+    public static final int STATE_POSITION_SHOT = 10;
     public static final int STATE_REVERSE_COLLECTOR = 11;
 
     //STATE FOR AUTOMATED SHOOTING CORRECTION
@@ -117,6 +118,8 @@ public interface RobotMap { // Change this to an enum
     public static final int CAN_ID_LIFTER_ARM_ROTATE = 13;  // TBD for TalonSRX  -- motor that rotates the arms
     public static final int CAN_ID_LIFTER_ARM_ROLLER = 14;  // TBD for TalonSRX  -- motor that moves robot left or right on bar
 
+    
+    /*
     public static final int ST_LIFTER_UNKNOWN = 0;
     public static final int ST_LIFTER_NOT_CLIMBING = 1; // not climbing, so driving, etc.
     public static final int ST_LIFTER_CALIBRATE = 2;
@@ -124,6 +127,20 @@ public interface RobotMap { // Change this to an enum
     public static final int ST_LIFTER_RAISED = 4;  // lifter raised
     public static final int ST_LIFTER_LOWER = 5;  // lower lifter to home position
     public static final int ST_LIFTER_HOME = 6;  // lifter at home position
+    // public static final int ST_
+    public static final int ST_LINE_UP = 7; */
+    public static final int ST_LIFTER_UNKNOWN = 0;
+    public static final int ST_LIFTER_PREPARE = 1;
+    public static final int ST_TO_BAR = 2;
+    public static final int ST_ABOVE_BAR = 3;
+    public static final int ST_LIFT_INITIAL = 4;
+    public static final int ST_TRAVERSE_GRAB_NEXT = 6;
+    public static final int ST_SECURE_NEXT = 7;
+
+    public static final int ST_LIFTER_CALIBRATE = 12;
+    public static final int ST_LIFTER_NOT_CLIMBING = 13;
+    public static final int ST_LIFTER_ON_BAR = 14;
+    
 
 
 
