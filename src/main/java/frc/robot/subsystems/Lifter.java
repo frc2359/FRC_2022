@@ -45,7 +45,7 @@ public class Lifter {
 
     private static final double minLifterHeight = -1; // replace with Encoder Value at min height
     private static final double maxLifterHeight = 137; // replace with Encoder Value at max height
-    private static final double barHeight = 120; // replace with Encoder Value at above bar height
+    private static final double barHeight = 134; // replace with Encoder Value at above bar height
     private static final double lifterSlowRange = 20; // buffer range at each end to go slow
 
     public void show() {
@@ -74,6 +74,7 @@ public class Lifter {
          /* Home Lifter */
 
          lifterCalibrated = false;
+         setLifterHookState(true);
     }
 
     public void setLifterHookState(boolean open) {
@@ -127,7 +128,7 @@ public class Lifter {
                     if (getHeight()> lifterSlowRange) {
                         lifterMotorSpeed = spd;
                     } else {
-                        lifterMotorSpeed = -.1;
+                        lifterMotorSpeed = -.15;
                     }
                 } else {
                     lifterMotorSpeed = 0;  // stop lifter -- reached upper limit
