@@ -41,7 +41,7 @@ public interface RobotMap { // Change this to an enum
     // Drive Behaviors
     public static final boolean BRAKE_MODE_DRIVE = true; //false = coast; true = brake  
     public static final double DRIVE_SPEED_MULT = 1;
-    public static final double TURN_SPEED_MULT = 0.5;
+    public static final double TURN_SPEED_MULT = 1;
     //Controls mode for drive    -    https://store.ctr-electronics.com/content/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_talon_f_x_control_mode.html
     public static final ControlMode DRIVE_CONTROL_MODE = ControlMode.PercentOutput; //this controls in what unit drive is measured in.
     public static final ControlMode AUTO_CONTROL_MODE = ControlMode.Velocity;
@@ -58,6 +58,8 @@ public interface RobotMap { // Change this to an enum
     //ROBORIO DIGITAL IO PORTS ---------------------------------
     // Management of the available ports will be critical
     public static final int DIO_BALL_SENSOR_1 = 0;  // Moved to DIO 0 on robot
+    public static final int DIO_LED = 1;
+    
     //public static final int DIO_BALL_SENSOR_2 = 2;  // Not using second ball sensor
     public static final int DIO_LIFTER_LOW_HOOK_ROT_HOME = 1; 
     public static final int DIO_LIFTER_LIFTING_HOOK_VERT_HOME = 2; 
@@ -93,6 +95,12 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_POSITION_SHOT = 10;
     public static final int STATE_REVERSE_COLLECTOR = 11;
 
+
+    public static final double SHOOT_HIGH_POWER = 0.7;
+    public static final double SHOOT_LOW_POWER = 0.5;
+    public static final double SHOOT_LAUNCH_POWER = 1;
+    public static final double SHOOT_AUTO = 0.8;
+
     //STATE FOR AUTOMATED SHOOTING CORRECTION
     public static final double LOW_GOAL_DISTANCE = 33.5;
     public static final double HIGH_GOAL_DISTANCE = 104;
@@ -100,17 +108,23 @@ public interface RobotMap { // Change this to an enum
     public static final double LIMELIGHT_MOUNT_HEIGHT = 15.2;
 
     //STATE FOR AUTONOMOUS OPERATIONS
-    public static final int AUTO_TURN = 0;
-    public static final int AUTO_DRIVE_BACK = 1;
-    public static final int AUTO_CANCEL_TURN = 2;
-    public static final int AUTO_SIVEN_DRIVE = 3;
+    public static final int AUTO_LEAVE_TARMAC = 1;
+    public static final int AUTO_SHOOT_1 = 2;
+    public static final int AUTO_TURN = 3;
+    public static final int AUTO_DRIVE_BACK = 4;
+    public static final int AUTO_TURN_BACK = 5;
+    public static final int AUTO_LIMELIGHT_DRIVE = 6;
 
-    //cases
+    public static final int AUTO_CANCEL_TURN = 10;
+
+
+    //cases for autoshoot
     public static final int STATE_DRIVEROP = 0;
     public static final int STATE_PREPARE = 1;
     public static final int STATE_CORRECT_DISTANCE = 2;
     public static final int STATE_CORRECT_ANGLE = 3;
     public static final int STATE_RESET = 4;
+    public static final int STATE_CORRECT_DONE = 5;
     
     //LIFTER / CLIMBER ------------------------
     public static final int CAN_ID_LIFTER_LEFT = 12;
@@ -140,6 +154,7 @@ public interface RobotMap { // Change this to an enum
     public static final int ST_LIFTER_CALIBRATE = 12;
     public static final int ST_LIFTER_NOT_CLIMBING = 13;
     public static final int ST_LIFTER_ON_BAR = 14;
+    public static final int ST_TRAVERSE = 15;
     
 
 
