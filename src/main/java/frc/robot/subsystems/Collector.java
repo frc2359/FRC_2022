@@ -59,6 +59,8 @@ public class Collector {
         intakeMotor.set(spd);
     }
 
+    
+
 
     // ******************* Can probably delete this function... *********************
     /*

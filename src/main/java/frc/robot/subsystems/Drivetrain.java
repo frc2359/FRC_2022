@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -37,16 +39,16 @@ public class Drivetrain implements Subsystem {
             if(IO.getThrottle() < 0){
 
                 drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT);
-                IO.putNumberToSmartDashboard(("Vel. R"), frontRight.getSelectedSensorVelocity());
-                IO.putNumberToSmartDashboard(("Vel. L"), frontLeft.getSelectedSensorVelocity());
+               // IO.putNumberToSmartDashboard(("Vel. R"), frontRight.getSelectedSensorVelocity());
+               // IO.putNumberToSmartDashboard(("Vel. L"), frontLeft.getSelectedSensorVelocity());
                 
                 // System.out.println("Throttle: " + (Math.pow(IO.getThrottle(), 2) / 10));
 
             } else {
                 drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT, true);
             }
-            IO.putNumberToSmartDashboard(("R Enc"),  frontLeft.getSelectedSensorPosition());
-            IO.putNumberToSmartDashboard(("L Enc"),  frontRight.getSelectedSensorPosition());
+           // IO.putNumberToSmartDashboard(("R Enc"),  frontLeft.getSelectedSensorPosition());
+           // IO.putNumberToSmartDashboard(("L Enc"),  frontRight.getSelectedSensorPosition());
          //   IO.putNumberToSmartDashboard(("Average Drive Enc Value"),  IO.getDriveDistance(frontRight.getSelectedSensorPosition(), frontLeft.getSelectedSensorPosition(), true));
         }
     }
@@ -67,6 +69,12 @@ public class Drivetrain implements Subsystem {
         drive.arcadeDrive(speed, 0);
     }
 
+    public void driveAuto(double kP, double dist, double FF) {
+        
+        double error = dist * kP;
+        SmartDashboard.putNumber("error drive", error);
+        drive.arcadeDrive((error + FF), 0);
+    }
     public double getAverageDriveDistance() {
         return ((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
     }
@@ -76,8 +84,8 @@ public class Drivetrain implements Subsystem {
     }
 
     public double getAverageDriveDistanceInches() {
-        System.out.println("encoder distance: " + (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
-        System.out.println("encoder distance: " + (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET);
+        //System.out.println("encoder distance: " + (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
+        //System.out.println("encoder distance: " + (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET);
         return (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET;
     }
 
@@ -117,6 +125,7 @@ public class Drivetrain implements Subsystem {
         frontLeft.setSelectedSensorPosition(0);
         frontRight.setSelectedSensorPosition(0);
     }
+
 
 
 

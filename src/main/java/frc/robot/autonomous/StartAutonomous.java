@@ -49,22 +49,23 @@ public class StartAutonomous {
         counterTimer = 0;
     }
 
-/*
+
     public void autoRun(){
         SmartDashboard.putNumber("Autonomous State", state);
 
         switch(state) {
             case ST_AUTO_START:
                 drivetrain.zeroEncoders();
-                collect.setState(3);
+                collect.setCollectorState(3);
                 System.out.println("In Case 0");
+                collect.setCollectorState(STATE_SECURE_BALL);
                 state = ST_AUTO_DRIVE_BACK1;
                 break;
             case ST_AUTO_DRIVE_BACK1: //drive back
                 if(counterTimer < 70) {
-                        drivetrain.driveAuto(0.5);
+                        drivetrain.driveAuto(0.55);
                         counterTimer++;
-                        System.out.println("herere");
+                        System.out.println("driving back...");
                         break;
                     } 
                     // SmartDashboard.putBoolean("is dist acheived?", (drivetrain.getAverageDriveDistanceFeet() < 6));
@@ -80,25 +81,18 @@ public class StartAutonomous {
                     //}
 
                 else {
+                    shooter.setShotPower(SHOOT_AUTO);
+                    SmartDashboard.putNumber("Shooter Power", 1);
                     state=ST_AUTO_SHOOT1;
                     break;
                 }
             case ST_AUTO_SHOOT1: //shoot
-                collect.setState(4);
                 drivetrain.driveAuto(0);
-                drivetrain.zeroEncoders();           
+                drivetrain.zeroEncoders();  
+                collect.setCollectorState(STATE_PREPARE_TO_SHOOT);
                 state = 3;
                 break;
-            case 3: //drive back a little more
-            if(drivetrain.getAverageDriveDistanceFeet() < 6) {
-                System.out.println("In Case 3");
-                break;
-            } else {
-                state = 4;
-                break;
-            }
-                
-            case 4: // done
+            case 3: // done
                 drivetrain.driveAuto(0);
                 break;
         }
@@ -106,8 +100,9 @@ public class StartAutonomous {
         shooter.shooterPeriodic();
     }
 
-*/
 
+
+/*
     public void autoRun(){
         SmartDashboard.putNumber("Autonomous State", state);
 
@@ -228,7 +223,7 @@ public class StartAutonomous {
         collect.collect(true);
         shooter.shooterPeriodic();
     }
-
+*/
     
     private void shoot() {
         //code to run when in shoot mode

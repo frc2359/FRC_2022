@@ -28,6 +28,7 @@ public class Collect {
     //autoshoot variables
     double desiredDistance;
     double threshold;
+    boolean autoShoot;
     
     public UsbCamera frontCamera;
     public UsbCamera rearCamera;
@@ -98,26 +99,35 @@ public class Collect {
         threshold = thresh;
     }
 
+    public void setAutoShoot(boolean auto) {
+        autoShoot = auto;
+    }
+
     /**Set both desired distance and threshold */
     public void setAutoShootConstraints(double dist, double thresh) {
         setDesiredDistance(dist);
         setShootThreshold(thresh);
     }
 
+    
+    
+
+    
+
 
     /**Corrects distance and angle to goal before shooting */
     public void correctDistance() {
-        double distanceToGoalInches = IO.calculateDistance(LIMELIGHT_MOUNT_ANGLE, LIMELIGHT_MOUNT_HEIGHT, LOW_GOAL_DISTANCE);
+        double distanceToGoalInches = IO.calculateDistance(LIMELIGHT_MOUNT_ANGLE, LIMELIGHT_MOUNT_HEIGHT, HIGH_GOAL_DISTANCE);
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
         System.out.println("Goal Dist " + distanceToGoalInches);
         SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
         //System.out.println("Distance to Goal: " + distanceToGoalInches);
+        SmartDashboard.putNumber("Rotate State", rotateState);
         
         
         double targetOffsetAngleHorizontal = IO.getLimelightXAngle();
         SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
         //System.out.println(targetOffsetAngleHorizontal);
-        SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceInches());
       
         double minDistance = desiredDistance - threshold;
         double maxDistance = desiredDistance + threshold;
@@ -130,34 +140,47 @@ public class Collect {
           case STATE_PREPARE:
             gyro.reset();
             drivetrain.zeroEncoders();
-            state = STATE_CORRECT_DISTANCE;
+            rotateState = STATE_CORRECT_DISTANCE;
             break;
-          case STATE_CORRECT_DISTANCE:
-            if(distanceToGoalInches < minDistance && distanceToGoalInches > maxDistance) {
+          case STATE_CORRECT_DISTANCE: /*
+            if(distanceToGoalInches > minDistance && distanceToGoalInches < maxDistance) {
               drivetrain.driveAuto(0);
               rotateState = STATE_CORRECT_ANGLE;
             } else if(distanceToGoalInches > maxDistance) {  //73 is the distance to goal in inches that shoots in low power mode to into the goal on the stools
-              drivetrain.driveAuto(-0.5); 
+              drivetrain.driveAuto(-0.7); 
             } else if (distanceToGoalInches < minDistance) {
-              drivetrain.driveAuto(0.5);
+              drivetrain.driveAuto(0.7);
             } 
-              break;
+
+            */
+            SmartDashboard.putNumber("Desired", desiredDistance);
+            SmartDashboard.putNumber("TO Goal", distanceToGoalInches);
+
+            drivetrain.driveAuto(5, (desiredDistance - distanceToGoalInches), 0);
+            if(distanceToGoalInches > minDistance && distanceToGoalInches < maxDistance) {
+                rotateState = STATE_CORRECT_ANGLE;
+            }
+            break;
           case STATE_CORRECT_ANGLE:
-            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.043); //Turn to angle has a +/- 10 degree window where it will stop
+            // driveCommand.turnToAngle(driveCommand.getRotationalPower(0.043, -targetOffsetAngleHorizontal)); //Turn to angle has a +/- 10 degree window where it will stop
             System.out.println("Target Offset: " + targetOffsetAngleHorizontal);
-            if(isTurned) {
-              if(iter >= 50) {
+            double rotateRCW = driveCommand.getRotationalPower(0.043, targetOffsetAngleHorizontal);
+            SmartDashboard.putNumber("RCW", rotateRCW);
+            if(Math.abs(rotateRCW) <= 0.01) {
                 rotateState = STATE_RESET;
                 iter = 0;
               } else {
+                driveCommand.turnToAngle(rotateRCW);
                 iter ++;
               }
-            }
+            
             break;
           case STATE_RESET:
             drivetrain.driveAuto(0);
             driveCommand.cancelTurn();
-            rotateState = 0;
+            rotateState = STATE_DRIVEROP;
+            break;
+          case STATE_CORRECT_DONE:
             break;
         }
 
@@ -168,11 +191,10 @@ public class Collect {
     public void collect(boolean isAuto) {
         SmartDashboard.putNumber("Col. State", state);
         //System.out.println("Collect State " + state);
-        SmartDashboard.putNumber("Ball Col", arduino.getBallColor());
         if(IO.xButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
-            state = STATE_COLLECTING;
+            state = STATE_NOT_COLLECTING;
         }
-        int ballColor = arduino.getBallColor();
+        // int ballColor = arduino.getBallColor();
         switch(state) {
             case STATE_UNKNOWN:
                     collector.setIntakeSpeed(0);
@@ -182,7 +204,7 @@ public class Collect {
             case STATE_NOT_COLLECTING:
                     collector.setBallLifterState(true);
                     collector.setIntakeSpeed(0);
-                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
+                    //arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
                     
                     //SHOOTER-----
                     shooter.setPercentPower(0);
@@ -197,9 +219,10 @@ public class Collect {
                     break;
 
             case STATE_COLLECTING:
+                    //SmartDashboard.putNumber("Ball Col", arduino.getBallColor());
                     collector.setBallLifterState(false);
                     collector.setIntakeSpeed(.4);
-                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_YELLOW);
+                    //arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_YELLOW);
                     // SHOOTER----------
                     shooter.setPercentPower(0,2);      // Shooter motor 2 off
                     shooter.setPercentPower(0,1);      // Shooter motor 1  off
@@ -217,12 +240,14 @@ public class Collect {
                     break;
 
             case STATE_SECURE_BALL:
+                    //SmartDashboard.putNumber("Ball Col", arduino.getBallColor());
                     counterTimer = 0;
                     collector.setIntakeSpeed(0);
                     shooter.setPercentPower(0); // Shooter motors off
                     collector.setBallLifterState(true);
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_GREEN);
-                    if (IO.isHIDButtonPressed(HID_AUTO_EJECT_MODE, false)) {
+                    /*
+                    if (false) {
                         if (ballColor != COLOR_UNKNOWN) {
                             if (ballColor != IO.getAllianceColor()) {
                                 shooter.setShotPower(0.15);
@@ -230,27 +255,32 @@ public class Collect {
                             }
                         }
                     }
+                    */
                     if (IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
                         state = STATE_REVERSE_COLLECTOR;
                     }
                     if (IO.isHIDButtonPressed(HID_SHOOT_HIGH, false)) {
-                        shooter.setShotPower(0.6);
-                        SmartDashboard.putNumber("Shooter Power", 1);
+                        shooter.setShotPower(SHOOT_HIGH_POWER);
+                        //SmartDashboard.putNumber("Shooter Power", 1);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     if (IO.isHIDButtonPressed(HID_SHOOT_LOW, false)) {
-                        shooter.setShotPower(0.5);
-                        SmartDashboard.putNumber("Shooter Power", 2);
-                        state = STATE_PREPARE_TO_SHOOT;
+                        shooter.setShotPower(SHOOT_LOW_POWER);
+                        //SmartDashboard.putNumber("Shooter Power", 2);
+                        if(autoShoot) {
+                            state = STATE_POSITION_SHOT;
+                        } else {
+                            state = STATE_PREPARE_TO_SHOOT;
+                        }
                     }
                     if (IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {
-                        shooter.setShotPower(0.7);  // .9 or 1?
-                        SmartDashboard.putNumber("Shooter Power", 3);
+                        shooter.setShotPower(SHOOT_LAUNCH_POWER);  // .9 or 1?
+                        //SmartDashboard.putNumber("Shooter Power", 3);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     if (IO.isHIDButtonPressed(HID_SHOOT_EJECT, false)) {
                         shooter.setShotPower(0.15);
-                        SmartDashboard.putNumber("Shooter Power", 4);
+                        //SmartDashboard.putNumber("Shooter Power", 4);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
                     break;
@@ -280,6 +310,7 @@ public class Collect {
                     arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_PURPLE);
                     if(counterTimer == 10) {
                         collector.setBallLifterState(true);
+                        setCorrectState(STATE_DRIVEROP);
                     }
                     if(counterTimer == 50){
                         counterTimer = 0;
@@ -287,10 +318,10 @@ public class Collect {
                     }
                     else {
                         counterTimer++;
-                    }   
+                    }
                     break;  
             case STATE_POSITION_SHOT:
-                setCorrectState(STATE_PREPARE);
+                break;
             case STATE_REVERSE_COLLECTOR:
                 collector.setBallLifterState(true);
                 collector.setIntakeSpeed(-.4);

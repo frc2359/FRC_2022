@@ -44,20 +44,20 @@ public class Drive{
         double error = 60 - gyro.getAngle(); // Error = Target - Actual
         this.integral += (error * .02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
         double derivative = (error - this.previous_error) / .02;
-        System.out.println("P: " + P);
-        System.out.println("I: " + I);
-        System.out.println("D: " + D);
+        //System.out.println("P: " + P);
+        //System.out.println("I: " + I);
+        //System.out.println("D: " + D);
 
         rcw = P * error + I * this.integral + D * derivative;
-        System.out.println("rcw: " + rcw);
+        //System.out.println("rcw: " + rcw);
 
     }
 
     public void execute(DifferentialDrive robotDrive)
     {
-        System.out.println("rcw: " + rcw);
+        //System.out.println("rcw: " + rcw);
         PID();
-        System.out.println("Executing...");
+        //System.out.println("Executing...");
         robotDrive.arcadeDrive(0, rcw);
     }
 
@@ -84,27 +84,31 @@ public class Drive{
     }
 
     /**Turn robot to a passed angle using a proportional power P */
-    public boolean turnToAngle(double angle, double P) {
-        double error = angle - getAngle();
-        System.out.println("error: " + error);
-        rcw = error * P;
-        System.out.println("rcw: " + rcw);
+    public void turnToAngle(double rcw) {
+        //System.out.println("rcw: " + rcw);
         drivetrain.turn(-rcw);
-        System.out.println("angle from gyro: " + getAngle());
-        System.out.println("angle raw: " + getAngle());
-        return (getAngle() <= angle + 10 && getAngle() >= angle - 10);
+        //System.out.println("angle from gyro: " + getAngle());
+        //System.out.println("angle raw: " + getAngle());
+    }
+
+    public double getRotationalPower(double P, double angle) {
+        // double error = angle;
+        //System.out.println("error: " + error);
+        rcw = angle * P;
+        return rcw;
+
     }
 
     /**Turn to angle using a proportional power P and integral value I */
     public boolean turnToAngle(double angle, double P, double I, double time) {
         double error = angle - getAngle();
-        System.out.println("error: " + error);
+        //System.out.println("error: " + error);
         integral += I * (time / 60);
         rcw = error * P;
-        System.out.println("rcw: " + rcw);
+        //System.out.println("rcw: " + rcw);
         drivetrain.turn(-rcw);
-        System.out.println("angle from gyro: " + getAngle());
-        System.out.println("angle raw: " + getAngle());
+        //System.out.println("angle from gyro: " + getAngle());
+        //System.out.println("angle raw: " + getAngle());
         return (getAngle() <= angle + 10 && getAngle() >= angle - 10);
     }
 

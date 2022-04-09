@@ -28,6 +28,7 @@ public class Shooter implements Subsystem {
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
     private boolean lowPower = false;
     double speed;
+    double rcw;
     double shotPowerLevel;
     //private CANSparkMax.ControlType velocityMode = CANSparkMax.ControlType.kVelocity;
     //private PneumaticHub pneumatics = new PneumaticHub(ID_PNEUMATIC_HUB);
@@ -78,7 +79,7 @@ public class Shooter implements Subsystem {
         SmartDashboard.putNumber("Feed Forward", kFF);
         SmartDashboard.putNumber("Max Output", kMaxOutput);
         SmartDashboard.putNumber("Min Output", kMinOutput);
-        setVelocity(0);
+        setVelocity(0, 0);
         setPercentPower(0);
 
         //Prime Pneumatics
@@ -206,11 +207,12 @@ public class Shooter implements Subsystem {
 
 
     /**Sets the velocity of each of the shooter motors using PID controls */
-    public void setVelocity(double setPoint) {
+    public void setVelocity(double setPoint, double P) {
+        calculateShootPID(setPoint, P);
         for (int i = 0; i < motorEncoders.length; i++) {
-        shootPIDs[i].setReference(setPoint, CANSparkMax.ControlType.kVelocity);
-        SmartDashboard.putNumber("Vel SetPoint", setPoint);
-        SmartDashboard.putNumber("Pro. Var.", motorEncoders[0].getVelocity());
+            setPercentPower(setPoint);
+            SmartDashboard.putNumber("Vel SetPoint", setPoint);
+            SmartDashboard.putNumber("Pro. Var.", motorEncoders[0].getVelocity());
         }
     }
 
@@ -224,6 +226,21 @@ public class Shooter implements Subsystem {
             shootPIDs[i].setFF(kFF);
             shootPIDs[i].setOutputRange(kMinOutput, kMaxOutput);
         }
+    }
+
+    public double calculateShootPID(double speed, double P) {
+        double error = speed - getAverageSpeed();
+        System.out.println("error: " + error);
+        rcw = error * P;
+        return rcw;
+    } 
+
+    public double getAverageSpeed() {
+        double sum = 0;
+        for(int i = 0; i < shootMotors.length; i++){
+            sum += motorEncoders[i].getVelocity();
+        }
+        return sum / 3;
     }
 
     /**Get PID Coefficients from the Smart Dashboard entered on-the-fly */

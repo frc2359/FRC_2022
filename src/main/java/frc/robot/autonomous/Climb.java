@@ -16,7 +16,9 @@ public class Climb {
     private int iter = 0;
     
     private int counterTimer = 0; //counter that we use to count time. TeleOP periodic runs 50 times per second, so checking for a count of 50 = 1s
+    private int counterArmsTimer = 0;
     private boolean calibrateDir = false;
+    private boolean calibrateArmsDir = false;
  
     public Climb(Lifter lif, Drivetrain dr) {
         lifter = lif;
@@ -57,7 +59,6 @@ public class Climb {
             }
         }
     }
-
     
     public void climb(boolean isAuto) {
         if(IO.xButtonIsPressed(true)) {
@@ -67,34 +68,91 @@ public class Climb {
         }
         SmartDashboard.putNumber("Lift St", state);
         switch(state) {
+            // Lifter Unknown State when first powered on
             case ST_LIFTER_UNKNOWN:
                 lifter.stopLifter();
+                counterArmsTimer = 0;
                 counterTimer = 0;
                 calibrateDir = false;
-                state = ST_LIFTER_CALIBRATE;
+                calibrateArmsDir = false;
+                // state = ST_LIFTER_CALIBRATE;
+                state = ST_LIFTER_NOT_CLIMBING;
                 break;
+            // Calibrate Lifter and Arms
             case ST_LIFTER_CALIBRATE:
-                if(lifter.isHome()) {
+                lifter.setAutoMode(true);
+                if(lifter.isHome() && lifter.isLifterCalibrated() && lifter.isArmsHome() && lifter.isArmsCalibrated()) {
                     lifter.stopLifter();
+                    lifter.stopSpin();
                     state = ST_LIFTER_NOT_CLIMBING;
                     counterTimer = 0;
                 } else {
+                    /* Calibrate Lifter */
+                    /*if(!lifter.isHome()) {
+                        counterTimer++;
+                        if (calibrateDir) { // Down
+                            lifter.moveLifter(-.15);
+                        } else { // Up
+                            lifter.moveLifter(.15);
+                            if (counterTimer > 50) { // Up for 1 Second
+                                calibrateDir = true;
+                            }    
+                        }
+                    } else {
+                        counterTimer = 0;
+                        lifter.stopLifter();
+                    }*/
                     counterTimer++;
                     if (calibrateDir) { // Down
                         lifter.moveLifter(-.15);
+                        if (lifter.isHome()) {
+                            lifter.stopLifter();
+                            counterTimer = 0;
+                        }
                     } else { // Up
                         lifter.moveLifter(.15);
                         if (counterTimer > 50) { // Up for 1 Second
                             calibrateDir = true;
                         }    
                     }
+                    /* Calibrate Arms */
+                    /*if(lifter.isArmsHome()) {
+                        lifter.stopSpin();
+                        counterArmsTimer = 0;
+                    } else {
+                        counterArmsTimer++;
+                        if (calibrateArmsDir) { // Reverse until home
+                            lifter.spin(-.15);
+                        } else { // Forward
+                            lifter.spin(.15);
+                            if (counterArmsTimer > 50) { // forward for 1 Second
+                                calibrateArmsDir = true;
+                            }    
+                        }
+                    }*/
+                    counterArmsTimer++;
+                    if (calibrateArmsDir) { // Reverse until home
+                        lifter.spin(-.15);
+                        if(lifter.isArmsHome()) {
+                            lifter.stopSpin();
+                            counterArmsTimer = 0;
+                        }
+                    } else { // Forward
+                        lifter.spin(.15);
+                        if (counterArmsTimer > 50) { // forward for 1 Second
+                            calibrateArmsDir = true;
+                        }    
+                    }
                 }
                 break;
+            // Lifter is not climbing (until button pressed) or is in manual operation
             case ST_LIFTER_NOT_CLIMBING:
-                lifter.stopLifter();
+                lifter.setAutoMode(false);
                 break;
+
             case ST_LIFTER_PREPARE:
-            drivetrain.setAutoDrive(true);
+                drivetrain.setAutoDrive(true);
+                lifter.setAutoMode(true);
                 lifter.moveLifter(0.25);
                 if(lifter.isAboveBar()) {
                     lifter.stopLifter();
@@ -102,7 +160,9 @@ public class Climb {
                     state = ST_ABOVE_BAR;
                 }
                 break;
+
             case ST_ABOVE_BAR:
+                lifter.setAutoMode(false);
                 if(isLinedUp()) {
                     drivetrain.setAutoDrive(false);
                     state = ST_LIFT_INITIAL;
@@ -110,17 +170,26 @@ public class Climb {
                     lineUp();
                 }
                 break;
+
             case ST_LIFT_INITIAL:
+                lifter.setAutoMode(true);
                 if(lifter.isHome()) {
-                    lifter.stopLifter();
+                    lifter.setLifterHookState(false);  // Close Hook at Home position
+                }
+                if(lifter.getHeight() < -2 || lifter.isHookOpen()) {
+                    lifter.stopLifter();               // Stop Motors just past Home
                     state = ST_LIFTER_ON_BAR;
                 }
                 lifter.moveLifter(-0.6);
                 break;
+
             case ST_LIFTER_ON_BAR:
+                lifter.setAutoMode(false);
                 lifter.stopLifter();
                 lifter.setLifterHookState(false);
                 break;
+            //case ST_TRAVERSE:
+                
         }
 
     } /*

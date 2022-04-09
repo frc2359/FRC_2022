@@ -23,7 +23,7 @@ public interface RobotMap { // Change this to an enum
     // HID Buttons
     public static final int  HID_COLLECTOR_OFF = 1;
     public static final int  HID_COLLECTOR_ON = 2;
-    public static final int  HID_COLLECTOR_REVERSE = 3;
+     public static final int  HID_COLLECTOR_REVERSE = 3;
     public static final int  HID_SHOOT_AUTO_MODE = 4;
     public static final int  HID_SHOOT_HIGH = 5;
     public static final int  HID_SHOOT_LOW = 6;
@@ -99,13 +99,13 @@ public interface RobotMap { // Change this to an enum
     public static final double SHOOT_HIGH_POWER = 0.7;
     public static final double SHOOT_LOW_POWER = 0.5;
     public static final double SHOOT_LAUNCH_POWER = 1;
-    public static final double SHOOT_AUTO = 0.8;
+    public static final double SHOOT_AUTO = 0.7;
 
     //STATE FOR AUTOMATED SHOOTING CORRECTION
     public static final double LOW_GOAL_DISTANCE = 33.5;
     public static final double HIGH_GOAL_DISTANCE = 104;
-    public static final double LIMELIGHT_MOUNT_ANGLE = 22;
-    public static final double LIMELIGHT_MOUNT_HEIGHT = 15.2;
+    public static final double LIMELIGHT_MOUNT_ANGLE = 28;
+    public static final double LIMELIGHT_MOUNT_HEIGHT = 35.8;
 
     //STATE FOR AUTONOMOUS OPERATIONS
     public static final int AUTO_LEAVE_TARMAC = 1;
