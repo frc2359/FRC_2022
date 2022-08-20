@@ -18,7 +18,7 @@ public class Collect {
     private Shooter shooter;
     private ADXRS450_Gyro gyro;
     private Drivetrain drivetrain;
-    private Arduino arduino;
+    // private Arduino arduino;
     private int state = 0;
     private int iter = 0;
     private int rotateState = 0;
@@ -35,19 +35,17 @@ public class Collect {
     public NetworkTableEntry cameraSelection;
     // public VideoSink vidSink;
 
-    public Collect(Collector col, Shooter shoot, Arduino ard, Drivetrain dr, ADXRS450_Gyro gy, Drive drCom) {
+    public Collect(Collector col, Shooter shoot, Drivetrain dr, ADXRS450_Gyro gy, Drive drCom) {
         collector = col;
         shooter = shoot;
-        arduino = ard;
         drivetrain = dr;
         gyro = gy;
         driveCommand = drCom;
     }
 
-    public Collect(Collector col, Shooter shoot, Arduino ard) {
+    public Collect(Collector col, Shooter shoot) {
         collector = col;
         shooter = shoot;
-        arduino = ard;
     }
 
     /** Sets a new state of the collect command. */
@@ -68,23 +66,6 @@ public class Collect {
     /**Gets the state for the correct distance command */
     public int getCorrectState() {
         return rotateState;
-    }
-
-    public void init() {
-   //     frontCamera = CameraServer.startAutomaticCapture(0);
-   //     rearCamera = CameraServer.startAutomaticCapture(1);
-        // vidSink = CameraServer.getServer();
-        // vidSink.setSource(frontCamera);
-
-    
-   //     cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
-
-        // Set the resolution
-   //     frontCamera.setResolution(640, 480);
-   //     rearCamera.setResolution(640, 480);
-
-   //     frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-   //     rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     }
 
 
@@ -111,12 +92,10 @@ public class Collect {
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
         System.out.println("Goal Dist " + distanceToGoalInches);
         SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
-        //System.out.println("Distance to Goal: " + distanceToGoalInches);
         
         
         double targetOffsetAngleHorizontal = IO.getLimelightXAngle();
         SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
-        //System.out.println(targetOffsetAngleHorizontal);
         SmartDashboard.putNumber("Drive Distance", drivetrain.getAverageDriveDistanceInches());
       
         double minDistance = desiredDistance - threshold;
@@ -143,7 +122,7 @@ public class Collect {
             } 
               break;
           case STATE_CORRECT_ANGLE:
-            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.043); //Turn to angle has a +/- 10 degree window where it will stop
+            boolean isTurned = driveCommand.turnToAngle(-targetOffsetAngleHorizontal, 0.043, 0); //Turn to angle has a +/- 10 degree window where it will stop
             System.out.println("Target Offset: " + targetOffsetAngleHorizontal);
             if(isTurned) {
               if(iter >= 50) {
@@ -168,11 +147,9 @@ public class Collect {
     public void collect(boolean isAuto) {
         SmartDashboard.putNumber("Col. State", state);
         //System.out.println("Collect State " + state);
-        SmartDashboard.putNumber("Ball Col", arduino.getBallColor());
         if(IO.xButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
             state = STATE_COLLECTING;
         }
-        int ballColor = arduino.getBallColor();
         switch(state) {
             case STATE_UNKNOWN:
                     collector.setIntakeSpeed(0);
@@ -182,7 +159,6 @@ public class Collect {
             case STATE_NOT_COLLECTING:
                     collector.setBallLifterState(true);
                     collector.setIntakeSpeed(0);
-                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLACK);
                     
                     //SHOOTER-----
                     shooter.setPercentPower(0);
@@ -199,7 +175,6 @@ public class Collect {
             case STATE_COLLECTING:
                     collector.setBallLifterState(false);
                     collector.setIntakeSpeed(.4);
-                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_YELLOW);
                     // SHOOTER----------
                     shooter.setPercentPower(0,2);      // Shooter motor 2 off
                     shooter.setPercentPower(0,1);      // Shooter motor 1  off
@@ -221,15 +196,6 @@ public class Collect {
                     collector.setIntakeSpeed(0);
                     shooter.setPercentPower(0); // Shooter motors off
                     collector.setBallLifterState(true);
-                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_GREEN);
-                    if (IO.isHIDButtonPressed(HID_AUTO_EJECT_MODE, false)) {
-                        if (ballColor != COLOR_UNKNOWN) {
-                            if (ballColor != IO.getAllianceColor()) {
-                                shooter.setShotPower(0.15);
-                                state = STATE_PREPARE_TO_SHOOT;
-                            }
-                        }
-                    }
                     if (IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
                         state = STATE_REVERSE_COLLECTOR;
                     }
@@ -259,7 +225,6 @@ public class Collect {
                     if(counterTimer == 0) {
                         collector.setBallLifterState(false);
                         collector.setIntakeSpeed(0);
-                        arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_BLUE);
                         shooter.setPercentPowerToShotPowerLevel();
                     }   
                     
@@ -277,7 +242,6 @@ public class Collect {
                     break;
 
             case STATE_SHOOT: 
-                    arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_PURPLE);
                     if(counterTimer == 10) {
                         collector.setBallLifterState(true);
                     }
@@ -294,7 +258,6 @@ public class Collect {
             case STATE_REVERSE_COLLECTOR:
                 collector.setBallLifterState(true);
                 collector.setIntakeSpeed(-.4);
-                arduino.setLEDColor(LED_STRING_COLLECTOR, LED_COLOR_RED);
                 //SHOOTER----
                 shooter.setPercentPower(-0.1, 2);       // Run motors backwards to send ball out the collector
                 shooter.setPercentPower(-0.1, 1);

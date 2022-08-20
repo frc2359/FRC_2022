@@ -26,11 +26,8 @@ public class IO {
     private static XboxController driver = new XboxController(DRIVE_PORT);
     private static XboxController shootController = new XboxController(SHOOT_PORT);
     private static GenericHID otherController = new GenericHID(HID_PORT);
-    //NetworkTables values
-    private static NetworkTableInstance rpi3;
-    private static NetworkTable table;
-    private static NetworkTableEntry ultrasonicReading;
 
+    
     /**Returns whether or not the trigger mapped to the throttle is pressed.**/
     public static boolean throttleTriggerIsPressed(boolean isDriver) {
         return (isDriver ? driver : shootController).getRightTriggerAxis() > 0 ? true : false;
@@ -113,12 +110,6 @@ public class IO {
         return (isDriver ? driver : shootController).getStartButtonPressed();
     }
 
-    /**Initialize the NetworkTables for reading camera and distance data. */
-    public static void initNetworkTables() {
-        rpi3 = NetworkTableInstance.getDefault();
-        table = rpi3.getTable("datatable");
-    }
-
     /**gets whether the A button on the controller has been released**/
     public static boolean isHIDButtonPressed(int button, boolean isDriver) {
         return (isDriver ? driver : otherController).getRawButton(button);
@@ -135,17 +126,11 @@ public class IO {
 
     /**gets the team color from FMS**/
     public static boolean isAllianceBlue() {
-        if (DriverStation.getAlliance() == DriverStation.Alliance.Blue)
-            return true;
-        else
-            return false;
+        return (DriverStation.getAlliance() == DriverStation.Alliance.Blue ? true : false); 
     }
 
-    public static boolean isAllianceRed() {
-        if (DriverStation.getAlliance() == DriverStation.Alliance.Red)
-            return true;
-        else
-            return false;     
+    public static boolean isAllianceRed() { 
+        return (DriverStation.getAlliance() == DriverStation.Alliance.Red ? true : false);    
     }
 
     public static int getAllianceColor() {
