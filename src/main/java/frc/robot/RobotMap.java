@@ -30,8 +30,6 @@ public interface RobotMap { // Change this to an enum
     public static final int  HID_SHOOT_LAUNCH_PAD = 7;
     public static final int  HID_SHOOT_EJECT = 8;
     public static final int  HID_AUTO_EJECT_MODE = 9;
-    public static final int  HID_LIFTER_LOWER = 11; // Check Button
-    public static final int  HID_LIFTER_RAISE = 12; // Check Button
 
     // ALLIANCE & BALL COLORS
     public static final int  COLOR_UNKNOWN = 0;
@@ -58,7 +56,7 @@ public interface RobotMap { // Change this to an enum
     //ROBORIO DIGITAL IO PORTS ---------------------------------
     // Management of the available ports will be critical
     public static final int DIO_BALL_SENSOR_1 = 0;  // Moved to DIO 0 on robot
-    //public static final int DIO_BALL_SENSOR_2 = 2;  // Not using second ball sensor
+    public static final int DIO_BALL_SENSOR_2 = 2;  // Not using second ball sensor
     public static final int DIO_LIFTER_LOW_HOOK_ROT_HOME = 1; 
     public static final int DIO_LIFTER_LIFTING_HOOK_VERT_HOME = 2; 
     public static final int DIO_LIFTER_LEFT_HOOK_CLOSED = 3; 
@@ -93,17 +91,6 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_POSITION_SHOT = 10;
     public static final int STATE_REVERSE_COLLECTOR = 11;
 
-    //STATE FOR AUTOMATED SHOOTING CORRECTION
-    public static final double LOW_GOAL_DISTANCE = 33.5;
-    public static final double HIGH_GOAL_DISTANCE = 104;
-    public static final double LIMELIGHT_MOUNT_ANGLE = 22;
-    public static final double LIMELIGHT_MOUNT_HEIGHT = 15.2;
-
-    //STATE FOR AUTONOMOUS OPERATIONS
-    public static final int AUTO_TURN = 0;
-    public static final int AUTO_DRIVE_BACK = 1;
-    public static final int AUTO_CANCEL_TURN = 2;
-    public static final int AUTO_SIVEN_DRIVE = 3;
 
     //cases
     public static final int STATE_DRIVEROP = 0;
@@ -111,73 +98,5 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_CORRECT_DISTANCE = 2;
     public static final int STATE_CORRECT_ANGLE = 3;
     public static final int STATE_RESET = 4;
-    
-    //LIFTER / CLIMBER ------------------------
-    public static final int CAN_ID_LIFTER_LEFT = 12;
-    public static final int CAN_ID_LIFTER_RIGHT = 11;
-    public static final int CAN_ID_LIFTER_ARM_ROTATE = 13;  // TBD for TalonSRX  -- motor that rotates the arms
-    public static final int CAN_ID_LIFTER_ARM_ROLLER = 14;  // TBD for TalonSRX  -- motor that moves robot left or right on bar
-
-    
-    /*
-    public static final int ST_LIFTER_UNKNOWN = 0;
-    public static final int ST_LIFTER_NOT_CLIMBING = 1; // not climbing, so driving, etc.
-    public static final int ST_LIFTER_CALIBRATE = 2;
-    public static final int ST_LIFTER_RAISE = 3;  // raise lifter abover bar
-    public static final int ST_LIFTER_RAISED = 4;  // lifter raised
-    public static final int ST_LIFTER_LOWER = 5;  // lower lifter to home position
-    public static final int ST_LIFTER_HOME = 6;  // lifter at home position
-    // public static final int ST_
-    public static final int ST_LINE_UP = 7; */
-    public static final int ST_LIFTER_UNKNOWN = 0;
-    public static final int ST_LIFTER_PREPARE = 1;
-    public static final int ST_TO_BAR = 2;
-    public static final int ST_ABOVE_BAR = 3;
-    public static final int ST_LIFT_INITIAL = 4;
-    public static final int ST_TRAVERSE_GRAB_NEXT = 6;
-    public static final int ST_SECURE_NEXT = 7;
-
-    public static final int ST_LIFTER_CALIBRATE = 12;
-    public static final int ST_LIFTER_NOT_CLIMBING = 13;
-    public static final int ST_LIFTER_ON_BAR = 14;
-    
-
-
-
-    //AUTO ------
-    public static final int ST_AUTO_START = 0;
-    public static final int ST_AUTO_DRIVE_BACK1 = 1;
-    public static final int ST_AUTO_SHOOT1 = 2;
-    public static final int ST_AUTO_DRIVE_BACK2 = 3;
-    public static final int ST_AUTO_CHECK_2ND_BALL = 4;
-    public static final int ST_AUTO_PAUSE = 5;
-    public static final int ST_AUTO_DRIVE_FORWARD = 6;
-    public static final int ST_AUTO_SHOOT2 = 7;
-    public static final int ST_AUTO_DONE = 8;
-
-    //ARDUINO LED COLOR MAP
-    public static final int LED_COLOR_BLACK = 0; // 0,0,0
-    public static final int LED_COLOR_WHITE = 1; // 255,255,255
-    public static final int LED_COLOR_RED = 2; // 255,0,0
-    public static final int LED_COLOR_LIME = 3; // 0,255,0
-    public static final int LED_COLOR_BLUE = 4; // 0,0,255
-    public static final int LED_COLOR_YELLOW = 5; // 255,255,0
-    public static final int LED_COLOR_CYAN = 6; // 0,255,255
-    public static final int LED_COLOR_MAGENTA = 7; // 255,0,255 
-    public static final int LED_COLOR_SILVER = 8; // 192,192,192
-    public static final int LED_COLOR_GRAY = 9; // 128,128,128
-    public static final int LED_COLOR_MAROON = 10; // 128,0,0
-    public static final int LED_COLOR_OLIVE = 11; // 128,128,0
-    public static final int LED_COLOR_GREEN = 12; // 128,128,0
-    public static final int LED_COLOR_PURPLE = 13; // 128,0,128 
-    public static final int LED_COLOR_TEAL = 14; // 0,128,128
-    public static final int LED_COLOR_NAVY = 15; // 0,0,128
-
-    //ARDUINO LED STRINGS
-    public static final int LED_STRING_COLLECTOR = 0;
-    public static final int LED_STRING_LIFTER_LEFT = 1;
-    public static final int LED_STRING_LIFTER_RIGHT = 2;
-    public static final int LED_STRING_UNDERBODY = 3;
-    public static final int LED_STRING_UPPERBODY = 4;
 
 }

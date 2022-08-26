@@ -4,7 +4,6 @@ import static frc.robot.RobotMap.*;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Arduino;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class StartAutonomous {

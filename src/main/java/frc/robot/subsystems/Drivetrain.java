@@ -21,83 +21,60 @@ public class Drivetrain implements Subsystem {
     boolean autoDrive = false;
 
     private DifferentialDrive drive = new DifferentialDrive(frontLeft, frontRight); //front motors are masters & control inputs for both front and back
-
-    public DifferentialDrive getDiffDrive() {
-        return drive;
-    }
-
+    
     /** drive function that can be called without having to pass in private vairables **/
     public void arcadeDrive() {
         if ((IO.getDriveTrigger(true) - IO.getReverseTrigger(true)) > 1 || (IO.getDriveTrigger(true) - IO.getReverseTrigger(true)) < -1) {
-            System.out.println("out of bounds drive value. go to Drivetrain.java line 34 and edit to an in-bounds expression");
+            System.out.println("out of bounds drive value.");
         } else {
-            if(IO.getThrottle() < 0){
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT);
-                IO.putNumberToSmartDashboard(("Vel. R"), frontRight.getSelectedSensorVelocity());
-                IO.putNumberToSmartDashboard(("Vel. L"), frontLeft.getSelectedSensorVelocity());
-            } else {
-                drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT, true);
-            }
-            IO.putNumberToSmartDashboard(("R Enc"),  frontLeft.getSelectedSensorPosition());
-            IO.putNumberToSmartDashboard(("L Enc"),  frontRight.getSelectedSensorPosition());
+            drive.arcadeDrive(IO.getThrottle(), IO.getLeftXAxis(true) * TURN_SPEED_MULT);
         }
     }
 
-    public boolean getAutoDrive() {
-        return autoDrive;
-    }
-
-    public void setAutoDrive(boolean setpoint) {
-        autoDrive = setpoint;
-    }
-    
-    public void tankDrive(double speedL, double speedR) {
-        drive.tankDrive(speedL, speedR);
-    }
-
+    /** Drives forward at set speed parameter
+     * @param speed
+     * The percent power to set the motor to
+     */
     public void driveAuto(double speed) {
         drive.arcadeDrive(speed, 0);
     }
 
+    /** Gets the average calculated distance from the drive motors */
     public double getAverageDriveDistance() {
         return ((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
     }
 
+    /** Gets the average of the number of rotations between the drive motors */
     public double getRotations() {
         return (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2;
     }
 
+    /** Gets the average calculated distance in inches from the drive motors */
     public double getAverageDriveDistanceInches() {
-        System.out.println("encoder distance: " + (frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2);
-        System.out.println("encoder distance: " + (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET);
         return (((frontLeft.getSelectedSensorPosition() + frontRight.getSelectedSensorPosition()) / 2) / COUNTS_PER_REV) * 2 * Math.PI * DRIVE_RADIUS_FEET;
     }
-
-    public void turn(double power) {
-        drive.arcadeDrive(0, power);
-    }
-
 
     public void zeroEncoders() {
         frontLeft.setSelectedSensorPosition(0);
         frontRight.setSelectedSensorPosition(0);
     }
 
-    /**initialize the drivetrain**/
+    /** initialize the drivetrain **/
     public void init() {
         //Reset Motor Controllers to Factory Configuration
         frontLeft.configFactoryDefault();
         frontRight.configFactoryDefault();
 
 
-        //Set Motor Direction and Encoder Sensor Phase
-        frontLeft.setInverted(false);      // Positive is forward
-        frontRight.setInverted(true);      // Invert so positive is forward
+        //Sets the motor's direction to the actual movement of the robot
+        frontLeft.setInverted(false);
+        frontRight.setInverted(true); 
 
-        frontLeft.setSensorPhase(false); // Check
-        frontRight.setSensorPhase(true); // Check
+        //Sets the sensor's detection of direction to the actual movement of the robot
+        frontLeft.setSensorPhase(false);
+        frontRight.setSensorPhase(true);
 
-        //init sensor position
+        //reset motor sensors
         frontLeft.setSelectedSensorPosition(0);
         frontRight.setSelectedSensorPosition(0);
 
@@ -112,7 +89,7 @@ public class Drivetrain implements Subsystem {
         frontRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, kTimeoutMs);
     }
 
-
+    /** Converts distance to native encoder units */
     private int distanceToNativeUnits(double positionInches){
         double wheelRotations = positionInches/(2 * Math.PI * DRIVE_RADIUS);
         double motorRotations = wheelRotations * DRIVE_GEAR_RATIO;
@@ -120,13 +97,7 @@ public class Drivetrain implements Subsystem {
         return sensorCounts;
     }
     
-    private double nativeUnitsToDistanceMeters(double sensorCounts){
-        double motorRotations = (double)sensorCounts / COUNTS_PER_REV;
-        double wheelRotations = motorRotations / DRIVE_GEAR_RATIO;
-        double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(DRIVE_RADIUS));
-        return positionMeters;
-    }
-
+    /** Converts native encoder units to distance in feet */
     private double nativeUnitsToDistanceFeet(double sensorCounts){
         double motorRotations = (double)sensorCounts / COUNTS_PER_REV;
         double wheelRotations = motorRotations / DRIVE_GEAR_RATIO;
@@ -140,4 +111,3 @@ public class Drivetrain implements Subsystem {
         frontRight.stopMotor();
     }
 }
-
