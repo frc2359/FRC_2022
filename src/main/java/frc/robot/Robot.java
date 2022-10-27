@@ -26,6 +26,7 @@ import static frc.robot.RobotMap.*;
 import org.ejml.dense.row.linsol.AdjustableLinearSolver_FDRM;
 
 import frc.robot.IO;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -43,6 +44,10 @@ import edu.wpi.first.wpilibj.SPI;
  * directory.
  */
 public class Robot extends TimedRobot {
+
+    // swerve call
+    // private SwerveDrive swerveDrive = new SwerveDrive (backRight, backLeft, frontRight, frontLeft);
+
     public static final Drivetrain drivetrain = new Drivetrain();
     public static final Shooter shooter = new Shooter();
     public static final Collector collector = new Collector();
@@ -75,6 +80,10 @@ public class Robot extends TimedRobot {
     boolean shootingAuto;
     boolean isTurnComplete;
     boolean isShooting;
+
+    // swerce joystick
+    // private Joystick joystick = new Joystick (0);
+
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -257,6 +266,16 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
+
+        // swerve
+        // swerveDrive.drive (joystick.getRawAxis (1), joystick.getRawAxis (0), joystick.getRawAxis (4));
+
+
+        // TEMP
+        SmartDashboard.putNumber("HID Ax 0", IO.getHIDAxis(0));
+        SmartDashboard.putNumber("HID Ax 1", IO.getHIDAxis(1));
+        climbCommand.climb(false);
+        
         driveCommand.printAngle();
         double distanceToGoalInches = IO.calculateDistance(LIMELIGHT_MOUNT_ANGLE, LIMELIGHT_MOUNT_HEIGHT, HIGH_GOAL_DISTANCE);
         SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
