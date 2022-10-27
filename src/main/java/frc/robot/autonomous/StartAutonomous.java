@@ -41,6 +41,87 @@ public class StartAutonomous {
 
     }
 
+    /*
+    public void multiBallAuto() {
+        // switch (autoCase){
+      //   case ST_AUTO_START:
+      //     drivetrain.zeroEncoders();
+      //     collectCommand.setCollectorState(STATE_SECURE_BALL);
+      //     System.out.println("In Case 0");
+      //     autoCase = ST_AUTO_DRIVE_BACK1;
+      //     break;
+
+      //   case AUTO_LEAVE_TARMAC:
+      //     collectCommand.setCorrectState(STATE_PREPARE);
+      //     if(collectCommand.getCorrectState() == STATE_CORRECT_DONE) {
+      //       collectCommand.setCorrectState(STATE_DRIVEROP);
+      //       shooter.setShotPower(0.6);
+      //       SmartDashboard.putNumber("Shooter Power", 1);
+      //       autoCase = AUTO_SHOOT_1;
+      //     }
+      //     break;
+
+      //   case AUTO_SHOOT_1:
+      //     collectCommand.setCollectorState(STATE_PREPARE_TO_SHOOT);
+      //     break;  
+
+      //   case AUTO_TURN:
+      //     SmartDashboard.putNumber("Gyro ", gyro.getAngle());
+      //     boolean isTurnComplete = driveCommand.turnToAngle(130, 0.043);
+      //     if (isTurnComplete) {
+      //       // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
+      //       //driveCommand.turnToAngle(45, 0.033); //I've only tested this version without an integral value
+      //       //driveCommand.turnToAngle(45, 0.033, 0.2, iter);
+      //       //iter ++;
+      //       //autoCase = 1;
+      //       //if(iter >= 50) {
+      //         drivetrain.zeroEncoders();
+      //         nextAutoCase = AUTO_DRIVE_BACK;
+      //         autoCase = AUTO_CANCEL_TURN;
+      //         iter = 0;
+      //       } else {
+      //         iter ++;
+      //       }
+      //     }
+      //     break;
+        
+      //   case AUTO_DRIVE_BACK:
+      //     if (drivetrain.getAverageDriveDistanceInches() < 36) {
+      //       drivetrain.driveAuto(0.5);
+      //       collectCommand.setCollectorState(STATE_COLLECTING);
+      //     } else {
+      //       gyro.reset();
+      //       autoCase = AUTO_TURN_BACK;
+      //     }
+      //     break;
+        
+      //   case AUTO_TURN_BACK:
+      //     isTurnComplete = driveCommand.turnToAngle(100, 0.043);
+      //     if(iter >= 50) {
+      //       drivetrain.zeroEncoders();
+      //       nextAutoCase = AUTO_LIMELIGHT_DRIVE;
+      //       autoCase = AUTO_CANCEL_TURN;
+      //       iter = 0;
+      //     } else {
+      //       iter ++;
+      //     }
+      //   case AUTO_LIMELIGHT_DRIVE:
+      //     collectCommand.correctDistance();
+      //     collectCommand.setCorrectState(STATE_PREPARE);
+      //     break;
+
+      //   case AUTO_CANCEL_TURN:
+      //     drivetrain.driveAuto(0);
+      //     driveCommand.cancelTurn();
+      //     autoCase = nextAutoCase;
+      //     nextAutoCase = 0;
+      //     break;
+        
+          
+      // }
+    }
+    */
+
     public void init() {
         collect.setCollectorState(0);
         collect.collect(true);
@@ -68,6 +149,7 @@ public class StartAutonomous {
                         System.out.println("driving back...");
                         break;
                     } 
+                    /*
                     // SmartDashboard.putBoolean("is dist acheived?", (drivetrain.getAverageDriveDistanceFeet() < 6));
                     // System.out.println("is dist acheived? " + (drivetrain.getAverageDriveDistanceFeet() < 6));
                     // System.out.println("dist " + drivetrain.getAverageDriveDistanceFeet());
@@ -78,7 +160,7 @@ public class StartAutonomous {
                     //     drivetrain.driveAuto(0.6);
                     //     System.out.println("In Case 1");
                     //     break;
-                    //}
+                    //} */
 
                 else {
                     shooter.setShotPower(SHOOT_AUTO);
@@ -100,6 +182,58 @@ public class StartAutonomous {
         shooter.shooterPeriodic();
     }
 
+    public void newAutoRun() {
+        SmartDashboard.putNumber("Autonomous State", state);
+
+        switch(state) {
+            case ST_AUTO_START:
+                drivetrain.zeroEncoders();
+                collect.setCollectorState(3);
+                System.out.println("In Case 0");
+                collect.setCollectorState(STATE_SECURE_BALL);
+                shooter.setShotPower(0.5);
+                state = ST_AUTO_SHOOT1;
+                break;
+            case ST_AUTO_SHOOT1:
+                collect.setCollectorState(STATE_PREPARE_TO_SHOOT);
+                counterTimer++;
+                if(counterTimer > 65) {
+                    counterTimer = 0;
+                    state = ST_AUTO_DRIVE_BACK1;
+                }
+                break;
+            case ST_AUTO_DRIVE_BACK1: //drive back
+                if(counterTimer < 70) {
+                        drivetrain.driveAuto(0.55);
+                        collect.setCollectorState(STATE_COLLECTING);
+                        counterTimer++;   
+                        System.out.println("driving back...");
+                        break;
+                    } 
+
+                else {
+                    shooter.setShotPower(SHOOT_AUTO);
+                    // SmartDashboard.putNumber("Shooter Power", 1);
+                    if(collect.getCollectorState() == STATE_SECURE_BALL){
+                        state = ST_AUTO_SHOOT2;
+                    } else {
+                        state = ST_AUTO_DONE;
+                    }
+                    break;
+                }
+            case ST_AUTO_SHOOT2: //shoot
+                drivetrain.driveAuto(0);
+                drivetrain.zeroEncoders();  
+                collect.setCollectorState(STATE_PREPARE_TO_SHOOT);
+                state = 3;
+                break;
+            case ST_AUTO_DONE: // done
+                drivetrain.driveAuto(0);
+                break;
+        }
+        collect.collect(true);
+        shooter.shooterPeriodic();
+    }
 
 
 /*

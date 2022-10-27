@@ -55,10 +55,11 @@ public class Robot extends TimedRobot {
     public static final Drive driveCommand = new Drive(gyro, drivetrain);
 
     public static final Collect collectCommand = new Collect(collector, shooter, arduino, drivetrain, gyro, driveCommand);
+    
 
     int Timer = 0;
     boolean isComplete;
-    int rotateState;
+    int rotateState = 0;
     boolean doneDriving;
     boolean driven;
     boolean lhc; //for testing
@@ -70,8 +71,10 @@ public class Robot extends TimedRobot {
     double integral = 0;
     double previousError;
     int iter = 0;
+    int rumbleTimer = 0;
     boolean shootingAuto;
     boolean isTurnComplete;
+    boolean isShooting;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -80,7 +83,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-
         // initiate subsystems
         drivetrain.init();
         shooter.init();
@@ -109,6 +111,7 @@ public class Robot extends TimedRobot {
         } else {
             arduino.setLEDColor(LED_STRING_UPPERBODY, LED_COLOR_BLACK);
         }
+        
         String testString = "Init2";
         System.out.print("Init2 nessage - ");
         System.out.println(arduino.writeArduino(testString));
@@ -119,103 +122,26 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         collectCommand.setCollectorState(0);
         drivetrain.zeroEncoders();
-        System.out.println("Init");
         auto.init();
-        gyro.reset();
         collectCommand.correctDistance();
-        // gyro.calibrate();
         isComplete = false;
-
-
-        iter = 0; // Added by Mr. R. otherwise you can't run auto more than once in a row...
+        iter = 0;
         integral = 0;
         doneDriving = false;
         nextAutoCase = 0;
 
+        /*
+        // gyro.calibrate();
+        // gyro.reset();
         // collectCommand.init();
+        */
 
     }
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
       auto.autoRun();
-      // switch (autoCase){
-      //   case ST_AUTO_START:
-      //     drivetrain.zeroEncoders();
-      //     collectCommand.setCollectorState(STATE_SECURE_BALL);
-      //     System.out.println("In Case 0");
-      //     autoCase = ST_AUTO_DRIVE_BACK1;
-      //     break;
-
-      //   case AUTO_LEAVE_TARMAC:
-      //     collectCommand.setCorrectState(STATE_PREPARE);
-      //     if(collectCommand.getCorrectState() == STATE_CORRECT_DONE) {
-      //       collectCommand.setCorrectState(STATE_DRIVEROP);
-      //       shooter.setShotPower(0.6);
-      //       SmartDashboard.putNumber("Shooter Power", 1);
-      //       autoCase = AUTO_SHOOT_1;
-      //     }
-      //     break;
-
-      //   case AUTO_SHOOT_1:
-      //     collectCommand.setCollectorState(STATE_PREPARE_TO_SHOOT);
-      //     break;  
-
-      //   case AUTO_TURN:
-      //     SmartDashboard.putNumber("Gyro ", gyro.getAngle());
-      //     boolean isTurnComplete = driveCommand.turnToAngle(130, 0.043);
-      //     if (isTurnComplete) {
-      //       // Gyro occastionally fails to return values, causing an infinite spin. I'm not sure why.
-      //       /*driveCommand.turnToAngle(45, 0.033); //I've only tested this version without an integral value
-      //       driveCommand.turnToAngle(45, 0.033, 0.2, iter);
-      //       iter ++;
-      //       autoCase = 1;*/
-      //       if(iter >= 50) {
-      //         drivetrain.zeroEncoders();
-      //         nextAutoCase = AUTO_DRIVE_BACK;
-      //         autoCase = AUTO_CANCEL_TURN;
-      //         iter = 0;
-      //       } else {
-      //         iter ++;
-      //       }
-      //     }
-      //     break;
-        
-      //   case AUTO_DRIVE_BACK:
-      //     if (drivetrain.getAverageDriveDistanceInches() < 36) {
-      //       drivetrain.driveAuto(0.5);
-      //       collectCommand.setCollectorState(STATE_COLLECTING);
-      //     } else {
-      //       gyro.reset();
-      //       autoCase = AUTO_TURN_BACK;
-      //     }
-      //     break;
-        
-      //   case AUTO_TURN_BACK:
-      //     isTurnComplete = driveCommand.turnToAngle(100, 0.043);
-      //     if(iter >= 50) {
-      //       drivetrain.zeroEncoders();
-      //       nextAutoCase = AUTO_LIMELIGHT_DRIVE;
-      //       autoCase = AUTO_CANCEL_TURN;
-      //       iter = 0;
-      //     } else {
-      //       iter ++;
-      //     }
-      //   case AUTO_LIMELIGHT_DRIVE:
-      //     collectCommand.correctDistance();
-      //     collectCommand.setCorrectState(STATE_PREPARE);
-      //     break;
-
-      //   case AUTO_CANCEL_TURN:
-      //     drivetrain.driveAuto(0);
-      //     driveCommand.cancelTurn();
-      //     autoCase = nextAutoCase;
-      //     nextAutoCase = 0;
-      //     break;
-        
-          
-      // }
-
+      // auto.newAutoRun();
     }
 
     /**
@@ -223,86 +149,201 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
+      /*
         //String testString = "Teleop";
         //System.out.print("Telop nessage - ");
         //System.out.println(arduino.writeArduino(testString));
         //arduino.setLEDColor(0, LED_COLOR_RED);
-        collectCommand.init();
+        //SmartDashboard.putNumber("Speed", 0);
+        //SmartDashboard.putNumber("Alliance", IO.getAllianceColor());
+        
+        collectCommand.init();*/
+
+        
+
         collectCommand.setCollectorState(1);
         led.setDirection(Relay.Direction.kForward);
-        //SmartDashboard.putNumber("Speed", 0);
+        gyro.reset();
         drivetrain.zeroEncoders();
-        //SmartDashboard.putNumber("Alliance", IO.getAllianceColor());
         isComplete = false;
         collectCommand.setAutoShootConstraints(125, 5);
-        rotateState = 0;
         collectCommand.setCorrectState(STATE_DRIVEROP);
         iter = 0;
-        gyro.reset();
         driven = false;
         lhc = false;
 
+        rotateState = STATE_DRIVEROP;
+
+
         shootingAuto = IO.isHIDButtonPressed(HID_SHOOT_AUTO_MODE, false);
-
-
-        //FOR TESTING --------------------------------
-        // collectCommand.setAutoShootConstraints(73, 2);
+        
+        isShooting = false;
     }
+
+
+    public void correctDist() {
+      double distanceToGoalInches = IO.calculateDistance(LIMELIGHT_MOUNT_ANGLE, LIMELIGHT_MOUNT_HEIGHT, HIGH_GOAL_DISTANCE);
+        SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
+        SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
+        //System.out.println("Distance to Goal: " + distanceToGoalInches);
+        SmartDashboard.putNumber("Rotate State", rotateState);
+        int maxDistance = 170;
+        int desiredDistance = 150;
+        int minDistance = 130;
+        SmartDashboard.putNumber("Max", minDistance);
+        SmartDashboard.putNumber("Min", maxDistance);
+        
+        
+        double targetOffsetAngleHorizontal = IO.getLimelightXAngle();
+        SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
+
+        switch(rotateState) {
+          case STATE_DRIVEROP:
+            isShooting = false;
+
+            //reset stuff 
+            break;
+          case STATE_PREPARE:
+            gyro.reset();
+            drivetrain.zeroEncoders();
+            rotateState = STATE_CORRECT_DISTANCE;
+            break;
+          case STATE_CORRECT_DISTANCE: 
+            if(distanceToGoalInches > minDistance && distanceToGoalInches < maxDistance) {
+              drivetrain.driveAuto(0);
+              rotateState = STATE_CORRECT_ANGLE;
+            } else {
+              drivetrain.driveAuto(0.015 * (desiredDistance - distanceToGoalInches));
+            }
+            /*else if(distanceToGoalInches > maxDistance) { 
+              drivetrain.driveAuto(-0.7); 
+            } else if (distanceToGoalInches < minDistance) {
+              drivetrain.driveAuto(0.7);
+            } */
+
+            
+            SmartDashboard.putNumber("Desired", desiredDistance);
+            SmartDashboard.putNumber("TO Goal", distanceToGoalInches);
+
+            /*drivetrain.driveAuto(5, (desiredDistance - distanceToGoalInches), 0);
+            if(distanceToGoalInches > minDistance && distanceToGoalInches < maxDistance) {
+                rotateState = STATE_CORRECT_ANGLE;
+            }*/
+            break;
+          case STATE_CORRECT_ANGLE:
+            // driveCommand.turnToAngle(driveCommand.getRotationalPower(0.043, -targetOffsetAngleHorizontal)); //Turn to angle has a +/- 10 degree window where it will stop
+            double rotateRCW = 0.001 * -targetOffsetAngleHorizontal;
+            SmartDashboard.putNumber("RCW", rotateRCW);
+            if(0 >= (targetOffsetAngleHorizontal - 2) && 0 <= (targetOffsetAngleHorizontal + 2)) {
+                driveCommand.turnToAngle(rotateRCW);
+                iter++;
+            } else {
+                rotateState = STATE_RESET;
+                iter = 0;
+            }
+            break;
+          case STATE_RESET:
+            drivetrain.driveAuto(0);
+            driveCommand.cancelTurn();
+            rotateState = STATE_DRIVEROP;
+            break;
+          case STATE_CORRECT_DONE:
+            break;
+        }
+
+    }
+
 
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
-        // drivetrain.setAutoDrive(true);
-        // drivetrain.driveAuto(0.25);
-        // TEMP
-        //SmartDashboard.putNumber("HID Ax 0", IO.getHIDAxis(0));
-        //SmartDashboard.putNumber("HID Ax 1", IO.getHIDAxis(1));
-        // climbCommand.climb(false);
-        
         driveCommand.printAngle();
+        double distanceToGoalInches = IO.calculateDistance(LIMELIGHT_MOUNT_ANGLE, LIMELIGHT_MOUNT_HEIGHT, HIGH_GOAL_DISTANCE);
+        SmartDashboard.putNumber("Goal Dist", distanceToGoalInches);
 
-
-
-        // shooter.setShotPower(0.6);
-        // shooter.pickBallUp(STATE_SHOOT);
-
-        collectCommand.correctDistance();
-        // collectCommand.setCorrectState(STATE_DRIVEROP);
-
-        if(IO.aButtonIsPressed(true)){
-          collectCommand.setCorrectState(STATE_PREPARE);
+        if (IO.getHIDAxis(0) >= 1) {
+          collector.rotateArms(.4);
+        } else if (IO.getHIDAxis(0) <= -1) {
+          collector.rotateArms(-.4);
+        } else {
+          collector.rotateArms(0);
         }
 
-        if(IO.yButtonIsPressed(true)){
-          collectCommand.setCorrectState(STATE_DRIVEROP);
+        // collectCommand.correctDistance();
 
-        }
-
-        // if(collectCommand.getCorrectState() == STATE_CORRECT_DONE) {
-        //   collectCommand.setCollectorState(STATE_PREPARE_TO_SHOOT);
+        // if(IO.aButtonIsPressed(true)){
+        //   collectCommand.setCorrectState(STATE_PREPARE);
         // }
+
+        // if(IO.yButtonIsPressed(true)){
+        //   collectCommand.setCorrectState(STATE_DRIVEROP);
+        // }
+
+        // // if(collectCommand.getCorrectState() == STATE_CORRECT_DONE) {
+        // //   collectCommand.setCollectorState(STATE_PREPARE_TO_SHOOT);
+        // // }
 
         collectCommand.collect(true);
 
-        if(collectCommand.getCorrectState() != STATE_CORRECT_DISTANCE || climbCommand.getState() <= ST_LIFTER_UNKNOWN) {
+        correctDist();
+
+        if(IO.bButtonIsPressed(true)) {
+          isShooting = true;
+          rotateState = STATE_PREPARE;
+        }
+
+        // if(IO.isHIDButtonPressed(HID_SHOOT_AUTO_MODE, false)) {
+        //   shootingAuto = !shootingAuto;
+        //   collectCommand.setAutoShoot(shootingAuto);
+        // }
+
+        // if(collectCommand.getCollectorState() == STATE_NOT_COLLECTING || collectCommand.getCollectorState() == STATE_COLLECTING ||
+        //    IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)  || collectCommand.getCorrectState() < STATE_CORRECT_DISTANCE 
+        //    || collectCommand.getCorrectState() > STATE_CORRECT_ANGLE || climbCommand.getState() <= ST_LIFTER_UNKNOWN) {
+        //   isShooting = false;
+        // }
+        
+        // if(collectCommand.getCollectorState() > STATE_PREPARE_TO_SHOOT) {
+        //   isShooting = true;
+        //   rumbleTimer = 0;
+
+        // }
+
+        if(!isShooting) {
+          if(rumbleTimer < 20){
+            IO.setRumble(true, 1);
+            rumbleTimer++;
+          } else {
+            IO.setRumble(true, 0);
+          }
           drivetrain.arcadeDrive();
         }
 
-        if(IO.isHIDButtonPressed(HID_SHOOT_AUTO_MODE, false)) {
-          shootingAuto = !shootingAuto;
-          collectCommand.setAutoShoot(shootingAuto);
-        }
-
-        /*
-        if(IO.startButtonIsPressed(true)) {
-          drivetrain.setAutoDrive(false);
-        }
+        //This is the code that should correct for distance and angle
         
-        if(!drivetrain.getAutoDrive()) {
-          
-        } */
+        // if (IO.xButtonIsPressed(true)) {
+        //   collectCommand.setCollectorState(STATE_RESET);
+        // }
+        
+        // SmartDashboard.putBoolean("Loaded?", collector.isBallLoaded());
+        // shooter.shooterPeriodic();
+
+        
+        // if (collector.isBallLoaded()) {
+        //   led.set(Relay.Value.kOn);
+        // } else {
+        //   led.set(Relay.Value.kOff);
+        // }
+
+        
 
         /*
+        // TEMP
+        // SmartDashboard.putBoolean("Arms Homed", lifter.isArmsHome());
+        //SmartDashboard.putNumber("HID Ax 0", IO.getHIDAxis(0));
+        //SmartDashboard.putNumber("HID Ax 1", IO.getHIDAxis(1));
+        // climbCommand.climb(false);
+
         lifter.show();
         // Manual Lifter
         if (IO.getHIDAxis(0) >= 1) {
@@ -324,16 +365,6 @@ public class Robot extends TimedRobot {
             lifter.stopSpin();
           }
         }
-        */
-        
-
-        SmartDashboard.putBoolean("Arms Homed", lifter.isArmsHome());
-
-
-        if (IO.xButtonIsPressed(true)) {
-          collectCommand.setCollectorState(STATE_RESET);
-        }
-
         //SmartDashboard.putBoolean("lifter hook state", lhc);
 
 
@@ -345,21 +376,11 @@ public class Robot extends TimedRobot {
         if(IO.bButtonIsPressed(true)) {
           lifter.setLifterHookState(false);
         }
-
-        SmartDashboard.putBoolean("Loaded?", collector.isBallLoaded());
-        shooter.shooterPeriodic();
-
-        
-        if (collector.isBallLoaded()) {
-          led.set(Relay.Value.kOn);
-        } else {
-          led.set(Relay.Value.kOff);
-        }
-        
+        */
+        // lifter.rollLifter(IO.getHIDAxis(1));
 
     }
 
-    // TEST SHOULD NOW BE A MATCH SIMULATION ------------------------------------------------------------------------------------------------------------------
 
     /** This function is called once each time the robot enters test mode. */
     @Override

@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 // import edu.wpi.first.wpilibj.GenericHID.*;
@@ -111,6 +112,11 @@ public class IO {
     /**gets whether the A button on the controller has been released**/
     public static boolean startButtonIsPressed(boolean isDriver) {
         return (isDriver ? driver : shootController).getStartButtonPressed();
+    }
+
+    public static void setRumble(boolean isDriver, double power) {
+        (isDriver ? driver : shootController).setRumble(RumbleType.kLeftRumble, power);
+        (isDriver ? driver : shootController).setRumble(RumbleType.kRightRumble, power);
     }
 
     /**Initialize the NetworkTables for reading camera and distance data. */

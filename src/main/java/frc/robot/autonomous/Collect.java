@@ -26,10 +26,12 @@ public class Collect {
     private Drive driveCommand;
 
     //autoshoot variables
-    double desiredDistance;
-    double threshold;
+    private double desiredDistance;
+    private double threshold;
+    private double maxDistance;
+    private double minDistance;
     boolean autoShoot;
-    
+
     public UsbCamera frontCamera;
     public UsbCamera rearCamera;
     public CameraServer camServe;
@@ -71,24 +73,6 @@ public class Collect {
         return rotateState;
     }
 
-    public void init() {
-   //     frontCamera = CameraServer.startAutomaticCapture(0);
-   //     rearCamera = CameraServer.startAutomaticCapture(1);
-        // vidSink = CameraServer.getServer();
-        // vidSink.setSource(frontCamera);
-
-    
-   //     cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
-
-        // Set the resolution
-   //     frontCamera.setResolution(640, 480);
-   //     rearCamera.setResolution(640, 480);
-
-   //     frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-   //     rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    }
-
-
     /**Sets the distance away from the goal we want to shoot from */
     public void setDesiredDistance(double dist) {
         desiredDistance = dist;
@@ -105,8 +89,10 @@ public class Collect {
 
     /**Set both desired distance and threshold */
     public void setAutoShootConstraints(double dist, double thresh) {
-        setDesiredDistance(dist);
-        setShootThreshold(thresh);
+        desiredDistance = dist;
+        threshold = thresh;
+        minDistance = desiredDistance - threshold;
+        maxDistance = desiredDistance + threshold;
     }
 
     
@@ -123,14 +109,15 @@ public class Collect {
         SmartDashboard.putNumber("Goal Angle", IO.getLimelightYAngle());
         //System.out.println("Distance to Goal: " + distanceToGoalInches);
         SmartDashboard.putNumber("Rotate State", rotateState);
+        SmartDashboard.putNumber("Max", minDistance);
+        SmartDashboard.putNumber("Min", maxDistance);
         
         
         double targetOffsetAngleHorizontal = IO.getLimelightXAngle();
         SmartDashboard.putNumber("Target Offset", targetOffsetAngleHorizontal);
         //System.out.println(targetOffsetAngleHorizontal);
       
-        double minDistance = desiredDistance - threshold;
-        double maxDistance = desiredDistance + threshold;
+        
         
         //This is the code that should correct for distance and angle
         switch(rotateState) {
@@ -142,30 +129,37 @@ public class Collect {
             drivetrain.zeroEncoders();
             rotateState = STATE_CORRECT_DISTANCE;
             break;
-          case STATE_CORRECT_DISTANCE: /*
+          case STATE_CORRECT_DISTANCE: 
             if(distanceToGoalInches > minDistance && distanceToGoalInches < maxDistance) {
               drivetrain.driveAuto(0);
               rotateState = STATE_CORRECT_ANGLE;
-            } else if(distanceToGoalInches > maxDistance) {  //73 is the distance to goal in inches that shoots in low power mode to into the goal on the stools
+            } else if(distanceToGoalInches > maxDistance) { 
               drivetrain.driveAuto(-0.7); 
             } else if (distanceToGoalInches < minDistance) {
               drivetrain.driveAuto(0.7);
             } 
 
-            */
+            
             SmartDashboard.putNumber("Desired", desiredDistance);
             SmartDashboard.putNumber("TO Goal", distanceToGoalInches);
 
-            drivetrain.driveAuto(5, (desiredDistance - distanceToGoalInches), 0);
+            /*drivetrain.driveAuto(5, (desiredDistance - distanceToGoalInches), 0);
             if(distanceToGoalInches > minDistance && distanceToGoalInches < maxDistance) {
                 rotateState = STATE_CORRECT_ANGLE;
-            }
+            }*/
             break;
           case STATE_CORRECT_ANGLE:
             // driveCommand.turnToAngle(driveCommand.getRotationalPower(0.043, -targetOffsetAngleHorizontal)); //Turn to angle has a +/- 10 degree window where it will stop
-            System.out.println("Target Offset: " + targetOffsetAngleHorizontal);
-            double rotateRCW = driveCommand.getRotationalPower(0.043, targetOffsetAngleHorizontal);
+            double rotateRCW = driveCommand.getRotationalPower(0.043, -targetOffsetAngleHorizontal);
             SmartDashboard.putNumber("RCW", rotateRCW);
+            if(0 >= (targetOffsetAngleHorizontal - 2) && 0 <= (targetOffsetAngleHorizontal + 2)) {
+                driveCommand.turnToAngle(rotateRCW);
+                iter++;
+            } else {
+                rotateState = STATE_RESET;
+                iter = 0;
+            }
+            /*
             if(Math.abs(rotateRCW) <= 0.01) {
                 rotateState = STATE_RESET;
                 iter = 0;
@@ -173,7 +167,7 @@ public class Collect {
                 driveCommand.turnToAngle(rotateRCW);
                 iter ++;
               }
-            
+            */
             break;
           case STATE_RESET:
             drivetrain.driveAuto(0);
@@ -191,7 +185,7 @@ public class Collect {
     public void collect(boolean isAuto) {
         SmartDashboard.putNumber("Col. State", state);
         //System.out.println("Collect State " + state);
-        if(IO.xButtonIsPressed(false) || IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
+        if(IO.xButtonIsPressed(true) || IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
             state = STATE_NOT_COLLECTING;
         }
         // int ballColor = arduino.getBallColor();
@@ -211,7 +205,7 @@ public class Collect {
                     //SmartDashboard.putBoolean("Low Shooter Power Mode", lowPower);
 
                     //MOVE INTO THE NEXT STATE ---------
-                    if(IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {  // IO.aButtonIsPressed(false) || 
+                    if( IO.aButtonIsPressed(true) || IO.isHIDButtonPressed(HID_COLLECTOR_ON, false)) {   
                        state = STATE_COLLECTING; 
                     } if (IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
                         state = STATE_REVERSE_COLLECTOR;
@@ -234,7 +228,7 @@ public class Collect {
                     }
                     if(IO.isHIDButtonPressed(HID_COLLECTOR_OFF, false)) {
                         state = STATE_NOT_COLLECTING;
-                    }if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
+                    }if(IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false) || IO.xButtonIsPressed(true) ) {
                         state = STATE_REVERSE_COLLECTOR;
                     }
                     break;
@@ -259,25 +253,25 @@ public class Collect {
                     if (IO.isHIDButtonPressed(HID_COLLECTOR_REVERSE, false)) {
                         state = STATE_REVERSE_COLLECTOR;
                     }
-                    if (IO.isHIDButtonPressed(HID_SHOOT_HIGH, false)) {
-                        shooter.setShotPower(SHOOT_HIGH_POWER);
+                    if (IO.isHIDButtonPressed(HID_SHOOT_LOW, false) || IO.yButtonIsPressed(true)) {
+                        shooter.setShotPower(SHOOT_LOW_POWER);
                         //SmartDashboard.putNumber("Shooter Power", 1);
                         state = STATE_PREPARE_TO_SHOOT;
                     }
-                    if (IO.isHIDButtonPressed(HID_SHOOT_LOW, false)) {
-                        shooter.setShotPower(SHOOT_LOW_POWER);
-                        //SmartDashboard.putNumber("Shooter Power", 2);
-                        if(autoShoot) {
-                            state = STATE_POSITION_SHOT;
-                        } else {
-                            state = STATE_PREPARE_TO_SHOOT;
-                        }
-                    }
-                    if (IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {
-                        shooter.setShotPower(SHOOT_LAUNCH_POWER);  // .9 or 1?
-                        //SmartDashboard.putNumber("Shooter Power", 3);
-                        state = STATE_PREPARE_TO_SHOOT;
-                    }
+                    // if (IO.isHIDButtonPressed(HID_SHOOT_LOW, false) || IO.aButtonIsPressed(true)) {
+                    //     shooter.setShotPower(SHOOT_LOW_POWER);
+                    //     //SmartDashboard.putNumber("Shooter Power", 2);
+                    //     if(autoShoot) {
+                    //         state = STATE_POSITION_SHOT;
+                    //     } else {
+                    //         state = STATE_PREPARE_TO_SHOOT;
+                    //     }
+                    // }
+                    // if (IO.isHIDButtonPressed(HID_SHOOT_LAUNCH_PAD, false)) {
+                    //     shooter.setShotPower(SHOOT_LAUNCH_POWER);  // .9 or 1?
+                    //     //SmartDashboard.putNumber("Shooter Power", 3);
+                    //     state = STATE_PREPARE_TO_SHOOT;
+                    // }
                     if (IO.isHIDButtonPressed(HID_SHOOT_EJECT, false)) {
                         shooter.setShotPower(0.15);
                         //SmartDashboard.putNumber("Shooter Power", 4);
@@ -339,4 +333,24 @@ public class Collect {
                 break;
         }
     }
+
+    /*
+    public void init() {
+        //     frontCamera = CameraServer.startAutomaticCapture(0);
+        //     rearCamera = CameraServer.startAutomaticCapture(1);
+                // vidSink = CameraServer.getServer();
+                // vidSink.setSource(frontCamera);
+
+            
+        //     cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+
+                // Set the resolution
+        //     frontCamera.setResolution(640, 480);
+        //     rearCamera.setResolution(640, 480);
+
+        //     frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+        //     rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    } */
+
+
 }

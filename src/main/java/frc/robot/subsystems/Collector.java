@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 import static frc.robot.RobotMap.*;
 
-//import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import frc.robot.IO;
 
@@ -19,6 +19,7 @@ public class Collector {
     private Compressor airCompressor = new Compressor(ID_PNEUMATIC_HUB, PneumaticsModuleType.REVPH);
     private Solenoid solBallLifter = new Solenoid(PneumaticsModuleType.REVPH, ID_SOL_BALL_LIFTER);
     private WPI_VictorSPX intakeMotor = new WPI_VictorSPX(ID_INTAKE_MOTOR);
+    private WPI_TalonSRX arms = new WPI_TalonSRX(13);
 
 
     /** Gets sensor data of whether the ball is loaded in the shooter or not */
@@ -35,6 +36,10 @@ public class Collector {
     /** Sets whether the flippers are up or not */
     public void setBallLifterState(boolean up) {
         solBallLifter.set(up);
+    }
+
+    public void rotateArms(double spd) {
+        arms.set(spd);
     }
 
     

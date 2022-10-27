@@ -94,11 +94,12 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_SHOOT = 5;
     public static final int STATE_POSITION_SHOT = 10;
     public static final int STATE_REVERSE_COLLECTOR = 11;
+    public static final int STATE_RUMBLE = 12;
 
 
-    public static final double SHOOT_HIGH_POWER = 0.7;
-    public static final double SHOOT_LOW_POWER = 0.5;
-    public static final double SHOOT_LAUNCH_POWER = 1;
+    public static final double SHOOT_HIGH_POWER = 0.4;
+    public static final double SHOOT_LOW_POWER = 0.4;
+    public static final double SHOOT_LAUNCH_POWER = 0.4;
     public static final double SHOOT_AUTO = 0.7;
 
     //STATE FOR AUTOMATED SHOOTING CORRECTION

@@ -106,7 +106,7 @@ public class Drive{
         integral += I * (time / 60);
         rcw = error * P;
         //System.out.println("rcw: " + rcw);
-        drivetrain.turn(-rcw);
+        drivetrain.turn(rcw);
         //System.out.println("angle from gyro: " + getAngle());
         //System.out.println("angle raw: " + getAngle());
         return (getAngle() <= angle + 10 && getAngle() >= angle - 10);
