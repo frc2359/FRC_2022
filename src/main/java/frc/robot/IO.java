@@ -58,6 +58,12 @@ public class IO {
         return (isDriver ? driver : shootController).getLeftX();
     }
 
+    /**gets the amount of tilt in the y-axis for speed control**/
+    public static double getLeftYAxis(boolean isDriver) {
+    SmartDashboard.putNumber(("LeftY"), (isDriver ? driver : shootController).getLeftY());
+    return (isDriver ? driver : shootController).getLeftY();
+    }
+
     /**gets the amount of tilt in the x-axis for velocity control**/
     public static double getRightXAxis(boolean isDriver) {
         SmartDashboard.putNumber(("RightX"), (isDriver ? driver : shootController).getRightX());

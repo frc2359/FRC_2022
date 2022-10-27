@@ -1,5 +1,8 @@
 package frc.robot;
-import math;
+
+import frc.robot.subsystems.WheelDrive;
+
+import frc.robot.subsystems.WheelDrive;
 
 
 // some other stuff Siven gotta import
@@ -7,11 +10,11 @@ import math;
 public class SwerveDrive{
     
     // the distance between each wheel axle on the length and width.
-    public final double L = LENGTH_YOU_WROTE;
-    public final double W = WIDTH_YOU_WROTE; 
+    public final double L = 10;
+    public final double W = 10; 
 
     public void drive (double x1, double y1, double x2) {
-        double r = Math.sqrt ((L * L) + (W * W));
+        double r = Math.sqrt((L * L) + (W * W));
         y1 *= -1;
 
         double a = x1 - x2 * (L / r);
@@ -29,10 +32,10 @@ public class SwerveDrive{
 
         // These will be in a range of -1 to 1, if you wish to turn this range into real degrees then simply multiply by 180
 
-        double backRightAngle = Math.atan2 (a, d) / Math.pi;
-        double backLeftAngle = Math.atan2 (a, c) / Math.pi;
-        double frontRightAngle = Math.atan2 (b, d) / Math.pi;
-        double frontLeftAngle = Math.atan2 (b, c) / Math.pi;
+        double backRightAngle = Math.atan2 (a, d) / Math.PI;
+        double backLeftAngle = Math.atan2 (a, c) / Math.PI;
+        double frontRightAngle = Math.atan2 (b, d) / Math.PI;
+        double frontLeftAngle = Math.atan2 (b, c) / Math.PI;
     }
 
     private WheelDrive backRight;
