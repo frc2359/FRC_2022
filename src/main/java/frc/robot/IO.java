@@ -60,6 +60,20 @@ public class IO {
         return (isDriver ? driver : shootController).getRightX();
     }
 
+    /**gets the amount of tilt in the y-axis for directional steering**/
+    public static double getLeftYAxis(boolean isDriver) {
+        SmartDashboard.putNumber(("LeftY"), (isDriver ? driver : shootController).getLeftY());
+        return (isDriver ? driver : shootController).getLeftY();
+    }
+
+    /**gets the amount of tilt in the y-axis for velocity control**/
+    public static double getRightYAxis(boolean isDriver) {
+        SmartDashboard.putNumber(("RightY"), (isDriver ? driver : shootController).getRightY());
+        return (isDriver ? driver : shootController).getRightY();
+    }
+
+    
+
     /**gets throttle value (negative is backwards, positive is forwards)**/
     public static double getThrottle() {
         return (getDriveTrigger(true) - getReverseTrigger(true)) * DRIVE_SPEED_MULT;

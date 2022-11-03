@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //classes we make are imported here:
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.SwerveTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Collector;
 import frc.robot.autonomous.*;
@@ -25,12 +25,8 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
  * directory.
  */
 public class Robot extends TimedRobot {
-    public static final Drivetrain drivetrain = new Drivetrain();
-    public static final Shooter shooter = new Shooter();
-    public static final Collector collector = new Collector();
+    public static final SwerveTest swerve = new SwerveTest();
     public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
-    public static final Drive driveCommand = new Drive(drivetrain);
-    public static final Collect collectCommand = new Collect(collector, shooter, drivetrain, gyro, driveCommand);
 
     int rotateState;
 
@@ -40,11 +36,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-
         // initiate subsystems
-        drivetrain.init();
-        shooter.init();
-        collector.init();
+        swerve.init();
 
         // Calibrate Gyro
         gyro.calibrate();
@@ -55,7 +48,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         //zero encoders and gyros
-        drivetrain.zeroEncoders();
+        // swerve.zeroEncoders();
         gyro.reset();
     }
     
@@ -67,9 +60,8 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters teleoperated mode. */
     @Override
     public void teleopInit() {
-        collectCommand.setCollectorState(1);
         SmartDashboard.putNumber("Speed", 0);
-        drivetrain.zeroEncoders();
+        // swerve.zeroEncoders();
         rotateState = 0;
         gyro.reset();
     }
@@ -77,12 +69,7 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
-        collectCommand.collect(true);
-        drivetrain.arcadeDrive();
-        
-        if (IO.xButtonIsPressed(true)) {
-          collectCommand.setCollectorState(STATE_RESET);
-        }
-        
+        swerve.drive();
+        swerve.display();
     }
 }
