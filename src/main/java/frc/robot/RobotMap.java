@@ -46,11 +46,8 @@ public interface RobotMap { // Change this to an enum
     public static final ControlMode DRIVE_CONTROL_MODE = ControlMode.PercentOutput; //this controls in what unit drive is measured in.
     public static final ControlMode AUTO_CONTROL_MODE = ControlMode.Velocity;
 
-    final int COUNTS_PER_REV = 2048;
-    final double DRIVE_GEAR_RATIO = 1 / 10.71; //1:14.7959 0.0675862069 10.71:1
-    final double DRIVE_DIAMETER = 6;
-    final double DRIVE_RADIUS = DRIVE_DIAMETER / 2;
-    final double DRIVE_RADIUS_FEET = DRIVE_RADIUS / 12;
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 1;
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 1;
 
     //LED-----------------
     public static final int ID_LED = 1;
