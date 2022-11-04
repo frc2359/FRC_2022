@@ -10,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
  */
 
 public interface RobotMap { // Change this to an enum
+
+
     
     /* DRIVE ------------------------------------------------------------------------------------------------------------------------ */
     public static final int ID_DRIVE_FR = 0;
@@ -98,5 +100,31 @@ public interface RobotMap { // Change this to an enum
     public static final int STATE_CORRECT_DISTANCE = 2;
     public static final int STATE_CORRECT_ANGLE = 3;
     public static final int STATE_RESET = 4;
+
+    // SwerveDrive FACTS
+    public static final double Wheel_Width = 0; // width between two wheels (center to center)
+    public static final double Wheel_Length = 0; // length between two wheel (center to center)
+
+    
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 0; //  Set front left module drive motor ID
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 0; //  Set front left module steer motor ID
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 0; //  Set front left steer encoder ID
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(0.0); //   Measure and set front left steer offset
+
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 0; //  Set front right drive motor ID
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 0; //  Set front right steer motor ID
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 0; //  Set front right steer encoder ID
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0.0); //   Measure and set front right steer offset
+
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 0; //  Set back left drive motor ID
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 0; //  Set back left steer motor ID
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 0; //  Set back left steer encoder ID
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(0.0); //   Measure and set back left steer offset
+
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 0; //  Set back right drive motor ID
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 0; //  Set back right steer motor ID
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 0; //  Set back right steer encoder ID
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0.0); //   Measure and set back right steer offset
+
 
 }
