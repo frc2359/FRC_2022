@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.*;
 import static frc.robot.RobotMap.*;
 import edu.wpi.first.math.util.Units;
+import java.lang.Math;
 
 // import com.ctre.phoenix.motorcontrol.can.BaseMotorController.*;
 // import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -72,7 +73,21 @@ public class IO {
         return (isDriver ? driver : shootController).getRightY();
     }
 
-    
+    /***gets the angle that the joystick is rotated at **/
+    // public static double getLeftJoyAngle(){
+    //     int add = Math.cos(getRightYAxis(true)/getRightXAxis(true)) < 0 ? 180 : 0;
+    //     return Math.atan(getLeftYAxis(true)/getLeftXAxis(true)) * (180/Math.PI);
+    // }
+
+    /***gets the angle that the joystick is rotated at **/
+    public static double getRJoyAngle(){
+        int add = Math.cos(getRightYAxis(true)/getRightXAxis(true)) < 0 ? 180 : 0;
+        return (Math.atan(getRightYAxis(true)/getRightXAxis(true)) * (180/Math.PI)) + add;
+    }
+
+    public static double getDriveMagnitude() {
+        return Math.sqrt(Math.pow(getLeftYAxis(true), 2) + Math.pow(getRightYAxis(true), 2));
+    }
 
     /**gets throttle value (negative is backwards, positive is forwards)**/
     public static double getThrottle() {

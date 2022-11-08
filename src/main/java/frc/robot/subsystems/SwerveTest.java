@@ -9,6 +9,8 @@ import static frc.robot.RobotMap.*;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 
 //We need to make this more cool. This is how: https://github.com/SwerveDriveSpecialties/swerve-template
 
@@ -17,7 +19,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 public class SwerveTest {
     WPI_TalonFX speed = new WPI_TalonFX(0);
     WPI_TalonFX rotate = new WPI_TalonFX(1);
-    CANCoder cancoder = new CANCoder(0);
+    CANCoder cancoder = new CANCoder(2);
+    AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 200);
 
 
     /** initialize the drivetrain **/
@@ -65,11 +68,22 @@ public class SwerveTest {
         cancoder.setPosition(0);
     }
 
+    public void turnRobot(){
+        while(navX.getAngle() > IO.getRJoyAngle() + 5 || navX.getAngle() < IO.getRJoyAngle() - 5){
+            double rot = -1;
+            rotate.set(rot * .4);  
+        }
+
+    }
+
+    
+
     /** Drive the robot, using the x and y axis of the driver's motor*/
     public void drive() {
         double rot = IO.getLeftXAxis(true);
-        double sp = IO.getLeftYAxis(true);
-        speed.set(sp);
-        rotate.set(rot);
+        double sp = IO.getRightYAxis(true);
+        speed.set(sp * 0.4);
+        rotate.set(rot * 0.4);
+        
     }
 }

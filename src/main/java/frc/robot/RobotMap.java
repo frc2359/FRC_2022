@@ -48,6 +48,10 @@ public interface RobotMap { // Change this to an enum
 
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 1;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 1;
+    public static final double DRIVE_GEAR_RATIO = 1;
+    public static final double COUNTS_PER_REV = 1;
+    public static final double DRIVE_RADIUS_FEET = 1;
+    public static final double DRIVE_RADIUS = 1;
 
     //LED-----------------
     public static final int ID_LED = 1;

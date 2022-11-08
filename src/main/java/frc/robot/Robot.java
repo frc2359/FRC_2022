@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
  */
 public class Robot extends TimedRobot {
     public static final SwerveTest swerve = new SwerveTest();
-    public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+    // public static final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
     int rotateState;
 
@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
         swerve.init();
 
         // Calibrate Gyro
-        gyro.calibrate();
+        // gyro.calibrate();
     }
 
     
@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         //zero encoders and gyros
         // swerve.zeroEncoders();
-        gyro.reset();
+        // gyro.reset();
     }
     
     
@@ -61,9 +61,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         SmartDashboard.putNumber("Speed", 0);
-        // swerve.zeroEncoders();
+        swerve.zeroEncoders();
         rotateState = 0;
-        gyro.reset();
+        // gyro.reset();
     }
 
     /** This function is called periodically during teleoperated mode. */
