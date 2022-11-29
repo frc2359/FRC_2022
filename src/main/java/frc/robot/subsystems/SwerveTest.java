@@ -58,7 +58,11 @@ public class SwerveTest {
         SmartDashboard.putNumber(("Cancoder Values: "), cancoder.getPosition());
         SmartDashboard.putNumber(("Falcon Speed: "), speed.getSelectedSensorPosition());
         SmartDashboard.putNumber(("Falcon Rotate: "), rotate.getSelectedSensorPosition());
-
+        SmartDashboard.putNumber("Angle", navX.getAngle());
+        SmartDashboard.putNumber("JoyAng", IO.getRJoyAngle());
+        SmartDashboard.putNumber("JoyY", IO.getRightYAxis(true));
+        SmartDashboard.putNumber("JoyX", IO.getRightXAxis(true));
+        SmartDashboard.putNumber("JoyMag", IO.getDriveMagnitude());
     }
 
     /**Zero each of the encoders. */
@@ -66,12 +70,21 @@ public class SwerveTest {
         speed.setSelectedSensorPosition(0);
         rotate.setSelectedSensorPosition(0);
         cancoder.setPosition(0);
+        navX.zeroYaw();
+    }
+
+    public double getAng() {
+        return rotate.getSelectedSensorPosition() > 4400 ? (rotate.getSelectedSensorPosition() / 4400) : 0;
     }
 
     public void turnRobot(){
-        while(navX.getAngle() > IO.getRJoyAngle() + 5 || navX.getAngle() < IO.getRJoyAngle() - 5){
+        SmartDashboard.putNumber("Angle", getAng());
+        SmartDashboard.putNumber("JoyAng", IO.getRJoyAngle());
+        if(getAng() > IO.getRJoyAngle() + 10 || getAng() < IO.getRJoyAngle() - 10){
             double rot = -1;
             rotate.set(rot * .4);  
+        } else {
+            rotate.set(0);
         }
 
     }
@@ -85,5 +98,9 @@ public class SwerveTest {
         speed.set(sp * 0.4);
         rotate.set(rot * 0.4);
         
+    }
+
+    public void testRot() {
+
     }
 }

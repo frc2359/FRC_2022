@@ -82,11 +82,15 @@ public class IO {
     /***gets the angle that the joystick is rotated at **/
     public static double getRJoyAngle(){
         int add = Math.cos(getRightYAxis(true)/getRightXAxis(true)) < 0 ? 180 : 0;
-        return (Math.atan(getRightYAxis(true)/getRightXAxis(true)) * (180/Math.PI)) + add;
+        int m = getDriveMagnitude() == 0 ? 0 : 1;
+        int s = getRightYAxis(true) < 0 ? 1 : -1;
+        double ret = s * m * Math.abs(Math.toDegrees(Math.atan(getRightYAxis(true)/getRightXAxis(true))));
+        return IO.getDriveMagnitude() > 0.1 ? ret : 0;
     }
 
     public static double getDriveMagnitude() {
-        return Math.sqrt(Math.pow(getLeftYAxis(true), 2) + Math.pow(getRightYAxis(true), 2));
+        double c = Math.sqrt(Math.pow(getRightYAxis(true), 2) + Math.pow(getRightXAxis(true), 2));
+        return c > 1 ? 1 : c > 0.1 ? c : 0;
     }
 
     /**gets throttle value (negative is backwards, positive is forwards)**/
