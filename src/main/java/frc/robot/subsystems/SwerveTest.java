@@ -69,7 +69,7 @@ public class SwerveTest {
     }
 
     public void turnRobot(){
-        while(navX.getAngle() > IO.getRJoyAngle() + 5 || navX.getAngle() < IO.getRJoyAngle() - 5){
+        while(navX.getAngle() > IO.getJoyAngle(false) + 10 || navX.getAngle() < IO.getJoyAngle(false) - 10){
             double rot = -1;
             rotate.set(rot * .4);  
         }

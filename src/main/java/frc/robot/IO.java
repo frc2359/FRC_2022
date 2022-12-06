@@ -73,16 +73,18 @@ public class IO {
         return (isDriver ? driver : shootController).getRightY();
     }
 
-    /***gets the angle that the joystick is rotated at **/
-    // public static double getLeftJoyAngle(){
-    //     int add = Math.cos(getRightYAxis(true)/getRightXAxis(true)) < 0 ? 180 : 0;
-    //     return Math.atan(getLeftYAxis(true)/getLeftXAxis(true)) * (180/Math.PI);
-    // }
+    /***Gets the angle that the right joystick is rotated at 
+     * @param isRight specifies if the joystick being checked is the right or left joystick**/
 
-    /***gets the angle that the joystick is rotated at **/
-    public static double getRJoyAngle(){
-        int add = Math.cos(getRightYAxis(true)/getRightXAxis(true)) < 0 ? 180 : 0;
-        return (Math.atan(getRightYAxis(true)/getRightXAxis(true)) * (180/Math.PI)) + add;
+    public static double getJoyAngle(boolean isRight){
+        if(isRight) {
+            int m = getRightYAxis(true) > 0 ? 1 : -1;
+            return m * Math.abs(Math.atan(getRightYAxis(true)/getRightXAxis(true)) * (180/Math.PI));
+        } else {
+            int m = getLeftYAxis(true) > 0 ? 1 : -1;
+            return m * Math.abs(Math.atan(getLeftYAxis(true)/getLeftXAxis(true)) * (180/Math.PI));
+        }
+        
     }
 
     public static double getDriveMagnitude() {
@@ -94,52 +96,73 @@ public class IO {
         return (getDriveTrigger(true) - getReverseTrigger(true)) * DRIVE_SPEED_MULT;
     }
 
-    /**gets whether the B button on the controller has been pressed**/
+    /**gets whether the B button on the controller has been pressed
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean bButtonIsPressed(boolean isDriver) {
         return (isDriver ? driver : shootController).getBButtonPressed();
     }
 
-    /**gets whether the B button on the controller has been released**/
+    /**gets whether the B button on the controller has been released* 
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean bButtonIsReleased(boolean isDriver) {
         return (isDriver ? driver : shootController).getBButtonReleased();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
+    
     public static boolean aButtonIsPressed(boolean isDriver) {
         return (isDriver ? driver : shootController).getAButtonPressed();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean aButtonIsReleased(boolean isDriver) {
         return (isDriver ? driver : shootController).getAButtonReleased();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean xButtonIsPressed(boolean isDriver) {
         return (isDriver ? driver : shootController).getXButtonPressed();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean xButtonIsReleased(boolean isDriver) {
         return (isDriver ? driver : shootController).getXButtonReleased();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean yButtonIsPressed(boolean isDriver) {
         return (isDriver ? driver : shootController).getYButtonPressed();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean yButtonIsReleased(boolean isDriver) {
         return (isDriver ? driver : shootController).getYButtonReleased();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean startButtonIsPressed(boolean isDriver) {
         return (isDriver ? driver : shootController).getStartButtonPressed();
     }
 
-    /**gets whether the A button on the controller has been released**/
+    /**gets whether the A button on the controller has been released
+     * @param isDriver specifies if the selected input is from the driver
+     * **/
     public static boolean isHIDButtonPressed(int button, boolean isDriver) {
         return (isDriver ? driver : otherController).getRawButton(button);
     }
