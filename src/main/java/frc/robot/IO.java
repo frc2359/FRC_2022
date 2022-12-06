@@ -76,19 +76,18 @@ public class IO {
     /***Gets the angle that the right joystick is rotated at 
      * @param isRight specifies if the joystick being checked is the right or left joystick**/
 
-    public static double getJoyAngle(boolean isRight){
-        if(isRight) {
-            int m = getRightYAxis(true) > 0 ? 1 : -1;
-            return m * Math.abs(Math.atan(getRightYAxis(true)/getRightXAxis(true)) * (180/Math.PI));
-        } else {
-            int m = getLeftYAxis(true) > 0 ? 1 : -1;
-            return m * Math.abs(Math.atan(getLeftYAxis(true)/getLeftXAxis(true)) * (180/Math.PI));
-        }
-        
+    /***gets the angle that the joystick is rotated at **/
+    public static double getRJoyAngle(){
+        int add = Math.cos(getRightYAxis(true)/getRightXAxis(true)) < 0 ? 180 : 0;
+        int m = getDriveMagnitude() == 0 ? 0 : 1;
+        int s = getRightYAxis(true) < 0 ? 1 : -1;
+        double ret = s * m * Math.abs(Math.toDegrees(Math.atan(getRightYAxis(true)/getRightXAxis(true))));
+        return IO.getDriveMagnitude() > 0.1 ? ret : 0;
     }
 
     public static double getDriveMagnitude() {
-        return Math.sqrt(Math.pow(getLeftYAxis(true), 2) + Math.pow(getRightYAxis(true), 2));
+        double c = Math.sqrt(Math.pow(getRightYAxis(true), 2) + Math.pow(getRightXAxis(true), 2));
+        return c > 1 ? 1 : c > 0.1 ? c : 0;
     }
 
     /**gets throttle value (negative is backwards, positive is forwards)**/

@@ -69,7 +69,8 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic() {
-        swerve.drive();
+        // swerve.drive();
         swerve.display();
-    }
+        swerve.turnRobot();
+   }
 }
