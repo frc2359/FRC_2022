@@ -127,5 +127,7 @@ public interface RobotMap { // Change this to an enum
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 0; //  Set back right steer encoder ID
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0.0); //   Measure and set back right steer offset
 
+    public static final double STEER_GEAR_RATIO = 150/7;
+    public static final int FALCON_ENC_COUNT = 2048;
 
 }

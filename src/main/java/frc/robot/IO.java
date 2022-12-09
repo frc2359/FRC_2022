@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 // import edu.wpi.first.wpilibj.GenericHID.*;
-// import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.*;
 import static frc.robot.RobotMap.*;
@@ -24,139 +24,17 @@ import java.lang.Math;
 
 public class IO {
     //Driver Controller
-    private static XboxController driver = new XboxController(DRIVE_PORT);
-    private static XboxController shootController = new XboxController(SHOOT_PORT);
+    private static Joystick driver = new Joystick(SHOOT_PORT);;
     private static GenericHID otherController = new GenericHID(HID_PORT);
-
     
-    /**Returns whether or not the trigger mapped to the throttle is pressed.**/
-    public static boolean throttleTriggerIsPressed(boolean isDriver) {
-        return (isDriver ? driver : shootController).getRightTriggerAxis() > 0 ? true : false;
-    }
-    
-    /**Returns the current value of the trigger mapped to the throttle.**/
-    public static double getDriveTrigger(boolean isDriver) {
-        return (isDriver ? driver : shootController).getRightTriggerAxis();
+    /**Returns the angle of the DRIVER joystick in degrees */
+    public static double getDriveDirection() {
+        return driver.getDirectionDegrees();
     }
 
-    /**Returns whether or not the trigger mapped to reverse is pressed.**/
-    public static boolean reverseTriggerIsPressed(boolean isDriver) {
-        return (isDriver ? driver : shootController).getLeftTriggerAxis() > 0 ? true : false;
-    }
-
-    /**Returns the current value of the trigger mapped to the reverse.**/
-    public static double getReverseTrigger(boolean isDriver) {
-        return (isDriver ? driver : shootController).getLeftTriggerAxis();
-    }
-
-    /**gets the amount of tilt in the x-axis for directional steering**/
-    public static double getLeftXAxis(boolean isDriver) {
-        SmartDashboard.putNumber(("LeftX"), (isDriver ? driver : shootController).getLeftX());
-        return (isDriver ? driver : shootController).getLeftX();
-    }
-
-    /**gets the amount of tilt in the x-axis for velocity control**/
-    public static double getRightXAxis(boolean isDriver) {
-        SmartDashboard.putNumber(("RightX"), (isDriver ? driver : shootController).getRightX());
-        return (isDriver ? driver : shootController).getRightX();
-    }
-
-    /**gets the amount of tilt in the y-axis for directional steering**/
-    public static double getLeftYAxis(boolean isDriver) {
-        SmartDashboard.putNumber(("LeftY"), (isDriver ? driver : shootController).getLeftY());
-        return (isDriver ? driver : shootController).getLeftY();
-    }
-
-    /**gets the amount of tilt in the y-axis for velocity control**/
-    public static double getRightYAxis(boolean isDriver) {
-        SmartDashboard.putNumber(("RightY"), (isDriver ? driver : shootController).getRightY());
-        return (isDriver ? driver : shootController).getRightY();
-    }
-
-    /***Gets the angle that the right joystick is rotated at 
-     * @param isRight specifies if the joystick being checked is the right or left joystick**/
-
-    /***gets the angle that the joystick is rotated at **/
-    public static double getRJoyAngle(){
-        int add = Math.cos(getRightYAxis(true)/getRightXAxis(true)) < 0 ? 180 : 0;
-        int m = getDriveMagnitude() == 0 ? 0 : 1;
-        int s = getRightYAxis(true) < 0 ? 1 : -1;
-        double ret = s * m * Math.abs(Math.toDegrees(Math.atan(getRightYAxis(true)/getRightXAxis(true))));
-        return IO.getDriveMagnitude() > 0.1 ? ret : 0;
-    }
-
+    /**Returns the magnitude of the DRIVER joystick in degrees */
     public static double getDriveMagnitude() {
-        double c = Math.sqrt(Math.pow(getRightYAxis(true), 2) + Math.pow(getRightXAxis(true), 2));
-        return c > 1 ? 1 : c > 0.1 ? c : 0;
-    }
-
-    /**gets throttle value (negative is backwards, positive is forwards)**/
-    public static double getThrottle() {
-        return (getDriveTrigger(true) - getReverseTrigger(true)) * DRIVE_SPEED_MULT;
-    }
-
-    /**gets whether the B button on the controller has been pressed
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean bButtonIsPressed(boolean isDriver) {
-        return (isDriver ? driver : shootController).getBButtonPressed();
-    }
-
-    /**gets whether the B button on the controller has been released* 
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean bButtonIsReleased(boolean isDriver) {
-        return (isDriver ? driver : shootController).getBButtonReleased();
-    }
-
-    /**gets whether the A button on the controller has been released
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    
-    public static boolean aButtonIsPressed(boolean isDriver) {
-        return (isDriver ? driver : shootController).getAButtonPressed();
-    }
-
-    /**gets whether the A button on the controller has been released
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean aButtonIsReleased(boolean isDriver) {
-        return (isDriver ? driver : shootController).getAButtonReleased();
-    }
-
-    /**gets whether the A button on the controller has been released
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean xButtonIsPressed(boolean isDriver) {
-        return (isDriver ? driver : shootController).getXButtonPressed();
-    }
-
-    /**gets whether the A button on the controller has been released
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean xButtonIsReleased(boolean isDriver) {
-        return (isDriver ? driver : shootController).getXButtonReleased();
-    }
-
-    /**gets whether the A button on the controller has been released
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean yButtonIsPressed(boolean isDriver) {
-        return (isDriver ? driver : shootController).getYButtonPressed();
-    }
-
-    /**gets whether the A button on the controller has been released
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean yButtonIsReleased(boolean isDriver) {
-        return (isDriver ? driver : shootController).getYButtonReleased();
-    }
-
-    /**gets whether the A button on the controller has been released
-     * @param isDriver specifies if the selected input is from the driver
-     * **/
-    public static boolean startButtonIsPressed(boolean isDriver) {
-        return (isDriver ? driver : shootController).getStartButtonPressed();
+        return driver.getMagnitude();
     }
 
     /**gets whether the A button on the controller has been released
@@ -213,20 +91,6 @@ public class IO {
         double angleToGoalRadians = Units.degreesToRadians(angleToGoalDegrees);
         return (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
     }
-
-    /**Gets the left stick value when a is pushed - mod for setting intake velocity */
-    public static double getIntakeX(boolean isLeft) {
-        if (aButtonIsPressed(true) && isLeft) {
-            return driver.getLeftTriggerAxis();
-        } else if (aButtonIsPressed(true) && !isLeft) {
-            return driver.getRightTriggerAxis();
-        } else {
-            return 0;
-        }
-    }
-
-    //We are using IO to interface with SmartDashboard to reduce the amount of imports we will need to make per file
-
     /**Puts number of the "value" at the id of "key" */
     public static void putNumberToSmartDashboard(String id, double value) {
         SmartDashboard.putNumber(id,  value); //NOTE: WPILib refers to this "id" as a "key". Since the 2022 devs are familiar with HTML/JS, the "id" tag was more intuitive for us

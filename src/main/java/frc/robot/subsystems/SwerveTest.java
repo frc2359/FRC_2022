@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.SPI;
 
 //another really cool link to look at https://github.com/SwerveDriveSpecialties/swerve-lib
 
+//this is the real link that should be looked at https://jacobmisirian.gitbooks.io/frc-swerve-drive-programming/content/chapter1.html
+
 public class SwerveTest {
     WPI_TalonFX speed = new WPI_TalonFX(0);
     WPI_TalonFX rotate = new WPI_TalonFX(1);
@@ -59,9 +61,7 @@ public class SwerveTest {
         SmartDashboard.putNumber(("Falcon Speed: "), speed.getSelectedSensorPosition());
         SmartDashboard.putNumber(("Falcon Rotate: "), rotate.getSelectedSensorPosition());
         SmartDashboard.putNumber("Angle", navX.getAngle());
-        SmartDashboard.putNumber("JoyAng", IO.getRJoyAngle());
-        SmartDashboard.putNumber("JoyY", IO.getRightYAxis(true));
-        SmartDashboard.putNumber("JoyX", IO.getRightXAxis(true));
+        SmartDashboard.putNumber("JoyAng", IO.getDriveDirection());
         SmartDashboard.putNumber("JoyMag", IO.getDriveMagnitude());
     }
 
@@ -74,30 +74,21 @@ public class SwerveTest {
     }
 
     public double getAng() {
-        return rotate.getSelectedSensorPosition() > 4400 ? (rotate.getSelectedSensorPosition() / 4400) : 0;
+        // question ? true : false
+        // 2048 counts = 360 deg
+        return (rotate.getSelectedSensorPosition() / STEER_GEAR_RATIO) / FALCON_ENC_COUNT;
     }
 
     public void turnRobot(){
         SmartDashboard.putNumber("Angle", getAng());
-        SmartDashboard.putNumber("JoyAng", IO.getRJoyAngle());
-        if(getAng() > IO.getRJoyAngle() + 10 || getAng() < IO.getRJoyAngle() - 10){
+        SmartDashboard.putNumber("JoyAng", IO.getDriveDirection());
+        if(getAng() > IO.getDriveDirection() + 10 || getAng() < IO.getDriveDirection() - 10){
             double rot = -1;
             rotate.set(rot * .4);  
         } else {
             rotate.set(0);
         }
 
-    }
-
-    
-
-    /** Drive the robot, using the x and y axis of the driver's motor*/
-    public void drive() {
-        double rot = IO.getLeftXAxis(true);
-        double sp = IO.getRightYAxis(true);
-        speed.set(sp * 0.4);
-        rotate.set(rot * 0.4);
-        
     }
 
     public void testRot() {
