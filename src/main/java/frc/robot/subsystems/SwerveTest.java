@@ -19,47 +19,59 @@ import edu.wpi.first.wpilibj.SPI;
 //this is the real link that should be looked at https://jacobmisirian.gitbooks.io/frc-swerve-drive-programming/content/chapter1.html
 
 public class SwerveTest {
-    WPI_TalonFX speed = new WPI_TalonFX(0);
-    WPI_TalonFX rotate = new WPI_TalonFX(1);
-    CANCoder cancoder = new CANCoder(2);
+    WheelDrive left = new WheelDrive(1, 0, 0);
+    WheelDrive right = new WheelDrive(2, 3, 2);
     AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 200);
 
 
     /** initialize the drivetrain **/
     public void init() {
         //Reset Motor Controllers to Factory Configuration
-        speed.configFactoryDefault();
-        rotate.configFactoryDefault();
+        left.getSpeedMotor().configFactoryDefault();
+        right.getSpeedMotor().configFactoryDefault();
+        left.getAngleMotor().configFactoryDefault();
+        right.getAngleMotor().configFactoryDefault();
 
 
         //Sets the motor's direction to the actual movement of the robot
-        speed.setInverted(false);
-        rotate.setInverted(true); 
+        left.getSpeedMotor().setInverted(false);
+        right.getSpeedMotor().setInverted(false);
+        left.getAngleMotor().setInverted(true); 
+        right.getAngleMotor().setInverted(true); 
 
         //Sets the sensor's detection of direction to the actual movement of the robot
-        speed.setSensorPhase(false);
-        rotate.setSensorPhase(true);
+        left.getSpeedMotor().setSensorPhase(false);
+        right.getSpeedMotor().setSensorPhase(false);
+        left.getAngleMotor().setSensorPhase(true);
+        right.getAngleMotor().setSensorPhase(true);
 
         //reset motor sensors
-        speed.setSelectedSensorPosition(0);
-        rotate.setSelectedSensorPosition(0);
+        left.getSpeedMotor().setSelectedSensorPosition(0);
+        right.getSpeedMotor().setSelectedSensorPosition(0);
+        left.getAngleMotor().setSelectedSensorPosition(0);
+        right.getAngleMotor().setSelectedSensorPosition(0);
 
         //Set Brake/Coast Options
-        speed.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
-        rotate.setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        left.getSpeedMotor().setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        right.getSpeedMotor().setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        left.getAngleMotor().setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
+        right.getAngleMotor().setNeutralMode(BRAKE_MODE_DRIVE ? NeutralMode.Brake : NeutralMode.Coast);
         
 
         //Set Math.clamp Switch Positions
         final int kTimeoutMs = 30;
-        speed.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, kTimeoutMs);
-        rotate.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, kTimeoutMs);
+        left.getSpeedMotor().configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, kTimeoutMs);
+        right.getSpeedMotor().configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, kTimeoutMs);
+        left.getAngleMotor().configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, kTimeoutMs);
+        right.getAngleMotor().configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, kTimeoutMs);
     }
 
     /**Display encoder values for each of the motor */
     public void display(){
-        SmartDashboard.putNumber(("Cancoder Values: "), cancoder.getPosition());
-        SmartDashboard.putNumber(("Falcon Speed: "), speed.getSelectedSensorPosition());
-        SmartDashboard.putNumber(("Falcon Rotate: "), rotate.getSelectedSensorPosition());
+        SmartDashboard.putNumber(("1 Cancoder Values: "), left.getEncoder().getPosition());
+        SmartDashboard.putNumber(("2 Cancoder Values: "), right.getEncoder().getPosition());
+        SmartDashboard.putNumber(("Falcon Speed: "), left.getSpeedMotor().getSelectedSensorPosition());
+        SmartDashboard.putNumber(("Falcon Rotate: "), left.getAngleMotor().getSelectedSensorPosition());
         SmartDashboard.putNumber("Angle", navX.getAngle());
         SmartDashboard.putNumber("JoyAng", IO.getDriveDirection());
         SmartDashboard.putNumber("JoyMag", IO.getDriveMagnitude());
@@ -67,16 +79,20 @@ public class SwerveTest {
 
     /**Zero each of the encoders. */
     public void zeroEncoders() {
-        speed.setSelectedSensorPosition(0);
-        rotate.setSelectedSensorPosition(0);
-        cancoder.setPosition(0);
+        left.getSpeedMotor().setSelectedSensorPosition(0);
+        right.getSpeedMotor().setSelectedSensorPosition(0);
+        left.getAngleMotor().setSelectedSensorPosition(0);
+        right.getAngleMotor().setSelectedSensorPosition(0);
+        left.getEncoder().setPosition(0);
+        right.getEncoder().setPosition(0);
         navX.zeroYaw();
     }
 
     public double getAng() {
         // question ? true : false
         // 2048 counts = 360 deg
-        return (rotate.getSelectedSensorPosition() / STEER_GEAR_RATIO) / FALCON_ENC_COUNT;
+        double x = (left.getAngleMotor().getSelectedSensorPosition() + right.getAngleMotor().getSelectedSensorPosition()) / 2;
+        return ( x / STEER_GEAR_RATIO) / FALCON_ENC_COUNT;
     }
 
     public void turnRobot(){
@@ -84,9 +100,11 @@ public class SwerveTest {
         SmartDashboard.putNumber("JoyAng", IO.getDriveDirection());
         if(getAng() > IO.getDriveDirection() + 10 || getAng() < IO.getDriveDirection() - 10){
             double rot = -1;
-            rotate.set(rot * .4);  
+            left.getAngleMotor().set(rot * .4 * IO.getDriveMagnitude());  
+            right.getAngleMotor().set(rot * .4 * IO.getDriveMagnitude());  
         } else {
-            rotate.set(0);
+            left.getAngleMotor().set(0);
+            right.getAngleMotor().set(0);
         }
 
     }

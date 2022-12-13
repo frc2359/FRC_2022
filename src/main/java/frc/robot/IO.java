@@ -24,7 +24,7 @@ import java.lang.Math;
 
 public class IO {
     //Driver Controller
-    private static Joystick driver = new Joystick(SHOOT_PORT);;
+    private static Joystick driver = new Joystick(DRIVE_PORT);;
     private static GenericHID otherController = new GenericHID(HID_PORT);
     
     /**Returns the angle of the DRIVER joystick in degrees */

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SwerveTest;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Collector;
-import frc.robot.autonomous.*;
 import static frc.robot.RobotMap.*;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
